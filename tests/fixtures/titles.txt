@@ -1,0 +1,30 @@
+2026/11/8 群馬スタリオンズvs東海シーガルズ	2026-11-08	gunma-stallions	tokai-seagulls
+2026/11/1 浦和ウラワーズvs鎌倉ラザロ	2026-11-01	urawa-urawaz	kamakura-lazaro
+2026/11/1 立川ファルコンズvs川崎グリズリーズ	2026-11-01	tachikawa-falcons	kawasaki-grizzlies
+2026/10/25 ブランディングスvs所沢アウトローズ	2026-10-25	brandings	tokorozawa-outlaws
+2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同	2026-10-25	kofu-atsugi-titans	geese-broncos
+2026/10/11 ワイルドギース&東京ブロンコスvs所沢アウトローズ	2026-10-11	geese-broncos	tokorozawa-outlaws
+2026/10/11 ブランディングスvs甲府厚木タイタンズ	2026-10-11	brandings	kofu-atsugi-titans
+2026 10 4 川崎グリズリーズvs群馬スタリオンズ	2026-10-04	kawasaki-grizzlies	gunma-stallions
+2026 10 4 鎌倉ラザロvs東海シーガルズ	2026-10-04	kamakura-lazaro	tokai-seagulls
+2026/9/13 立川ファルコンズvs東海シーガルズ	2026-09-13	tachikawa-falcons	tokai-seagulls
+2026/9/13　浦和ウラワーズvs群馬スタリオンズ	2026-09-13	urawa-urawaz	gunma-stallions
+2025準決勝　川崎グリズリーズvs浦和ウラワーズ	-	kawasaki-grizzlies	urawa-urawaz
+2025準決勝 立川ファルコンズvs鎌倉ラザロ	-	tachikawa-falcons	kamakura-lazaro
+2025/12/07 プレーオフ 東海シーガルズvsワイルドギース	2025-12-07	tokai-seagulls	-
+2025/11/30 プレーオフ 東京ブロンコスvs鎌倉ラザロ	2025-11-30	-	kamakura-lazaro
+2025/11/30 プレーオフ　浦和ウラワーズvs群馬スタリオンズ	2025-11-30	urawa-urawaz	gunma-stallions
+2025/11/16 所沢アウトローズvs横浜甲府合同	2025-11-16	tokorozawa-outlaws	-
+2025/11/16  川崎グリズリーズvs東京ブロンコス	2025-11-16	kawasaki-grizzlies	-
+2025/11/9 浦和ウラワーズvs立川ファルコンズ	2025-11-09	urawa-urawaz	tachikawa-falcons
+2025/11/9 ワイルドギースvs群馬スタリオンズ	2025-11-09	-	gunma-stallions
+20251102 横浜甲府合同チーム vs ブランディングス	2025-11-02	-	brandings
+20251102 東海シーガルズ vs 鎌倉ラザロ	2025-11-02	tokai-seagulls	kamakura-lazaro
+2025/10/19 所沢アウトローズvsブランディングス	2025-10-19	tokorozawa-outlaws	brandings
+2025/10/19 浦和ウラワーズvs東海シーガルズ	2025-10-19	urawa-urawaz	tokai-seagulls
+2025/10/12  立川ファルコンズvs鎌倉ラザロ	2025-10-12	tachikawa-falcons	kamakura-lazaro
+2025/10/12  川崎グリズリーズvsワイルドギース	2025-10-12	kawasaki-grizzlies	-
+2025/10/5 東京ブロンコスvs群馬スタリオンズ	2025-10-05	-	gunma-stallions
+2025/10/5 所沢アウトローズvs横浜・甲府合同チーム	2025-10-05	tokorozawa-outlaws	-
+2025/09/21 横浜・甲府合同チームvsブランディングス	2025-09-21	-	brandings
+2025/09/21 立川ファルコンズvs東海シーガルズ	2025-09-21	tachikawa-falcons	tokai-seagulls

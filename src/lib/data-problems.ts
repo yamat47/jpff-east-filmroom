@@ -1,6 +1,6 @@
 import { gameIdOf } from "./game-id.ts";
-import { normalizeSpelling } from "./normalize.ts";
 import type { SiteData } from "./schema.ts";
+import { spellingsOf } from "./team-spellings.ts";
 
 /**
  * What the files under data/ get wrong when read together. Each file already fits its schema;
@@ -21,7 +21,7 @@ function teamProblems({ teams }: SiteData): string[] {
     seenIds.add(team.id);
 
     // The name is matched in titles like an alias, so it must be unambiguous in the same way.
-    for (const spelling of new Set([team.name, ...team.aliases].map(normalizeSpelling))) {
+    for (const spelling of spellingsOf(team)) {
       const owner = ownerOfSpelling.get(spelling);
       if (owner !== undefined && owner !== team.id) {
         problems.push(`team ${team.id}: "${spelling}" already names team ${owner}`);

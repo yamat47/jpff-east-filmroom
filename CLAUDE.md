@@ -16,10 +16,12 @@ scope changes that file in the same pull request.
 | `data/games/{seasonId}.json` | The games of one season and their videos |
 | `data/excluded.json` | Videos judged not to be games, so that they do not come back |
 | `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
-| `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, spelling normalization |
+| `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
 | `src/pages/`, `src/site.ts` | The routes, and the site's name, address and official links |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
-| `tests/` | Vitest tests of the functions under `src/lib/` |
+| `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
+| `tests/` | Vitest tests of the functions under `src/lib/` and `scripts/` |
+| `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date and the two team IDs the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
 
 `docs/requirements.md` lists the files that are still to come (the import scripts, the pages).
@@ -66,6 +68,9 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   goes into the schema, a rule that spans files or entries into `src/lib/data-problems.ts`.
 - **A URL ends with a slash.** `astro.config.ts` builds every page as a directory, so internal
   links are written `/games/{gameId}/`, never without the slash.
+- **Title parsing and season derivation stay pure.** They take what they need as arguments and
+  call no API, read no file and no clock, so that tests can fix their behaviour on real titles.
+  A title the rules cannot read is reported as unread (`null`), never guessed.
 - Scripts run on Node's type stripping (tests go through Vitest), so a module imports its
   neighbours with the `.ts` extension and uses no syntax that needs compiling (`enum`,
   `namespace`, parameter properties). `erasableSyntaxOnly` in `tsconfig.json` makes the typecheck
