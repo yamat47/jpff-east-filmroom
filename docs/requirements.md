@@ -115,9 +115,9 @@ The centre of the site. After a video, the visitor goes straight on to the next 
 1. Heading: "A vs B" in the order of the title, game date, season, type.
 2. Player: the YouTube embed. Split videos are stacked as Part 1, Part 2.
 3. The original title of each video and a link "YouTubeで開く".
-4. Earlier games of team A, newest first.
-5. Earlier games of team B, newest first.
-6. Games of the same season, newest first.
+4. The other games of team A, newest first.
+5. The other games of team B, newest first.
+6. The other games of the same season, newest first.
 
 Lists 4 to 6 leave out the game on the page and show at most ten games each. The rest is
 reached through "すべて見る" links to the team page and the season page.
@@ -128,6 +128,8 @@ reached through "すべて見る" links to the team page and the season page.
   split game shows the number of videos, a live stream its state.
 - Thumbnails point at YouTube's thumbnail URLs. No image is copied.
 - The player loads its iframe only after the thumbnail is pressed, to keep the first paint light.
+  Until then it is a link to the video on YouTube, so it works without JavaScript. The iframe
+  comes from `youtube-nocookie.com`.
 - The filter state of the top page is in the URL query, for example
   `/?season=2026-2027&team=kamakura-lazaro&type=league`.
 - `gameId` has the form `{date}-{teamA}-vs-{teamB}`, for example
@@ -368,7 +370,7 @@ and no database.
 | Area | Choice | Reason |
 | --- | --- | --- |
 | Site generation | Astro, static output | Most pages are lists and details built from data, with little interaction |
-| Interactive parts | React, as Astro islands | Only the filter on the top page and the live state switch |
+| Interactive parts | React, as Astro islands | Only the filter above a list of games (top page, season page) and the live state switch |
 | Data validation | Zod | One schema shared by the site and the import scripts |
 | Import scripts | Node.js and TypeScript | Same language and types as the site |
 | Tests | Vitest | Title parsing and season derivation, verified on real titles |
@@ -385,7 +387,7 @@ and no database.
 │       └── 2026-2027.json
 ├── src/
 │   ├── pages/            index, games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
-│   ├── components/       GameCard, Player, FilterBar and so on
+│   ├── components/       GameCard, GameList, FilteredGames, Player
 │   └── lib/              schema (Zod), season derivation, data loading
 ├── scripts/
 │   ├── sync.ts           import of new videos (--season writes one season only)
@@ -410,6 +412,9 @@ and no database.
   browser. No search server.
 - With JavaScript off, the lists and the links to game pages still work.
 - No team logos or photographs. Text and YouTube thumbnails only.
+- The look: white, text first, phone first. System fonts only, so that no font is requested from
+  another site. A list of games is rows with a small thumbnail; the matchup on a game page is the
+  largest thing on the site. Every design value is in `src/styles/tokens.css`.
 
 ## 10. Operations
 
@@ -456,8 +461,8 @@ as pull requests.
 
 - Every game of the channel's videos has a game page, and a second upload of a game is the
   only game video that is on none. No other video is on a page.
-- Every game page lists earlier games of team A, earlier games of team B and games of the same
-  season, newest first, as links.
+- Every game page lists the other games of team A, the other games of team B and the other
+  games of the same season, newest first, as links.
 - The five titles in section 7 parse into the right date and teams (automated test).
 - 「WG＆ブロンコス合同」 and 「ワイルドギース&東京ブロンコス」 resolve to the same team (automated
   test).
@@ -492,11 +497,10 @@ Each has a working assumption so that the work does not stop.
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | When a renamed team first appears; the first import met none |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
-| Design direction | White, text first, phone first | When the pages are built |
 | Connection to the existing GitHub Pages setup | Not worked out | Before publication |
 | Which identity the import workflows act as | Not decided. With `github.token` a push to `main` is refused by the repository's ruleset, and a pull request it opens starts neither CI nor a deployment. A GitHub App token for the pull requests is the likely answer; how the live state reaches `main` is decided with it | Before step 5 |
 | What a correction does to a published game ID | Not decided. The ID never changes once published, yet it must equal its date and teams, so correcting either breaks one of the two rules. Until publication every ID follows its date and teams | Before publication |
-| Whether a game with `needsReview: true` may be merged | Not decided. CI does not look at the flag yet | Before step 5 |
+| Whether a game with `needsReview: true` may be merged | Not decided. CI does not look at the flag yet, and the pages show a flagged game like any other; every flag is cleared before publication | Before step 5 |
 | Claude API model | Named by an environment variable, chosen by accuracy and cost | When the LLM judgement is built |
 
 ## Sources

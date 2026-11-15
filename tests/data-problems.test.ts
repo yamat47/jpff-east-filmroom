@@ -121,6 +121,16 @@ describe("findDataProblems", () => {
     ]);
   });
 
+  it("reports a split game whose videos are listed out of part order", () => {
+    const split = game({
+      videos: [video({ part: 2 }), video({ videoId: "bbbbbbbbbbb", part: 1 })],
+    });
+
+    expect(findDataProblems(data({ games: [split] }))).toEqual([
+      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: its videos are not in the order of their part numbers",
+    ]);
+  });
+
   it("accepts a split game whose videos are numbered apart", () => {
     const split = game({ videos: [video(), video({ videoId: "bbbbbbbbbbb", part: 2 })] });
 

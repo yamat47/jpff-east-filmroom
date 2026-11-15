@@ -1,0 +1,23 @@
+---
+import Base from "../../layouts/Base.astro";
+import { gamesOfSeason } from "../../lib/catalog.ts";
+import { catalog } from "../../lib/site-data.ts";
+
+const seasons = catalog.seasons.map((season) => ({
+  season,
+  games: gamesOfSeason(catalog, season).length,
+}));
+---
+
+<Base title="シーズン" description="J.P.F.F East の試合動画があるシーズンの一覧です。">
+  <h1 class="page-title">シーズン</h1>
+  <p class="lead">シーズンは3月1日から翌年2月末日までです。</p>
+  <ul class="index-list">
+    {seasons.map(({ season, games }) => (
+      <li>
+        <a href={`/seasons/${season}/`}>{season}シーズン</a>
+        <span class="index-list__count">{games}試合</span>
+      </li>
+    ))}
+  </ul>
+</Base>

@@ -7,7 +7,9 @@
     // The scripts run on Node's type stripping, which refuses syntax that needs compiling
     // (enum, namespace, parameter properties). Without this the typecheck and the tests, which
     // go through Vite, would accept it, and only the script that loads the module would fail.
-    "erasableSyntaxOnly": true
+    "erasableSyntaxOnly": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]

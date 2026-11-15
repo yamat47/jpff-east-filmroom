@@ -1,0 +1,60 @@
+/* Every design value of the site: colours, fonts, sizes, weights, line heights, widths and radii.
+   The other stylesheets read these and set none of their own. What stays there is what belongs
+   to one rule only: hairline borders, offsets relative to the text (em), and the breakpoint of
+   a media query, which cannot read a variable. */
+:root {
+  color-scheme: light;
+
+  /* White first; the thumbnails bring the only pictures and most of the colour. */
+  --color-paper: #ffffff;
+  --color-ink: #16191d;
+  --color-muted: #59626c;
+  --color-line: #d7dce1;
+  --color-surface: #f3f5f7;
+  /* The orange of a pylon: where to go next (links, the current page, focus). */
+  --color-pylon: #c2410c;
+  /* The yellow of a penalty flag: a playoff game. */
+  --color-flag: #ffd43b;
+
+  /* System faces only, so that no font is requested from another site. */
+  --font-sans:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Noto Sans JP",
+    "Noto Sans CJK JP", Meiryo, system-ui, sans-serif;
+
+  --size-xs: 0.75rem;
+  --size-sm: 0.875rem;
+  --size-base: 1rem;
+  --size-lg: 1.25rem;
+  --size-xl: 1.625rem;
+  /* The matchup on a game page: as large as a phone allows, capped on a desk. */
+  --size-matchup: clamp(1.625rem, 6.4vw, 2.75rem);
+
+  --weight-regular: 400;
+  --weight-bold: 700;
+  --weight-heavy: 800;
+
+  --leading-body: 1.75;
+  --leading-tight: 1.3;
+  /* A mark, a badge, a button: one line in a box. */
+  --leading-label: 1.55;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2.5rem;
+  --space-12: 4rem;
+
+  --width-page: 68rem;
+  --width-text: 40rem;
+  --width-thumb: 7.5rem;
+  /* The narrowest a row of a game list may get before the list takes fewer columns. */
+  --width-card-min: 19rem;
+  --width-field-min: 9.5rem;
+  --width-players: 60rem;
+
+  --radius: 3px;
+  --radius-pill: 999px;
+  --focus-ring: 3px solid var(--color-pylon);
+}

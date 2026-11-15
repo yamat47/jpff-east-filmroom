@@ -1,0 +1,79 @@
+---
+import { SITE } from "../site.ts";
+import "../styles/tokens.css";
+import "../styles/global.css";
+
+interface Props {
+  /** The page's own title; the site's name follows it. Omitted on the top page. */
+  title?: string;
+  description?: string;
+  /** `false` for a page that has no address of its own, as the not-found page. */
+  canonical?: boolean;
+}
+
+const { title, description, canonical = true } = Astro.props;
+const fullTitle = title === undefined ? SITE.nameWithMark : `${title} | ${SITE.nameWithMark}`;
+const NAV = [
+  { href: "/", label: "試合" },
+  { href: "/teams/", label: "チーム" },
+  { href: "/seasons/", label: "シーズン" },
+  { href: "/about/", label: "このサイトについて" },
+];
+const path = Astro.url.pathname;
+// "page" on the entry that is this page, "true" on the entry this page belongs under. A game
+// page belongs under the list of games, which is the top page.
+const currentOf = (href: string) => {
+  if (path === href) return "page";
+  const under = href === "/" ? path.startsWith("/games/") : path.startsWith(href);
+  return under ? "true" : undefined;
+};
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description ?? SITE.description} />
+    {canonical && <link rel="canonical" href={new URL(path, SITE.url)} />}
+    {/* The filter above a list works only with JavaScript; without it the full list stands. */}
+    <noscript><style>.filter { display: none; }</style></noscript>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap site-header__inner">
+        <a class="site-name" href="/">
+          <span class="site-name__text">{SITE.name}</span>
+          <span class="site-name__mark">非公式</span>
+        </a>
+        <nav class="site-nav" aria-label="サイト内">
+          <ul>
+            {NAV.map(({ href, label }) => (
+              <li>
+                <a href={href} aria-current={currentOf(href)}>{label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          このサイトは非公式のファンサイトで、JPFF とは関係がありません。動画は
+          <a href={SITE.channelUrl}>J.P.F.F East の公式 YouTube チャンネル</a>
+          のものを埋め込み表示しており、権利は各権利者にあります。
+        </p>
+        <p class="site-footer__official">
+          <a href={SITE.officialSiteUrl}>JPFF 東日本支部 公式サイト</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

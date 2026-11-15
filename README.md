@@ -14,6 +14,14 @@ their videos, and the videos that are in no game, because they are not game foot
 the game was uploaded more than once. `make validate` checks them
 against the schema in [`src/lib/schema.ts`](src/lib/schema.ts) and against each other.
 
+## Pages
+
+The top page lists every game, newest first, with a filter by season, team and game type whose
+state is in the URL. A game page shows the video and links on to the other games of both teams
+and of the season; a team page and a season page list their games. The player is a link to
+YouTube until a visitor starts it, and nothing but YouTube's thumbnails is loaded from another
+site before that.
+
 ## Importing videos
 
 `make sync` asks the YouTube Data API for the channel's uploads, places the ones the data does

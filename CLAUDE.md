@@ -17,7 +17,13 @@ scope changes that file in the same pull request.
 | `data/excluded.json` | Videos that are in no game, with the reason: not game footage, or one game uploaded again. Listed so that the import does not offer them again |
 | `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
 | `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
-| `src/pages/`, `src/site.ts` | The routes, and the site's name, address and official links |
+| `src/lib/catalog.ts`, `src/lib/site-data.ts` | The data as the pages read it: every game newest first, the games of a team or a season, the lists a game page links on to. `site-data.ts` reads `data/` once per build |
+| `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a card shows of a game, the Japanese words for dates and types, and the YouTube addresses of thumbnails, videos and the player |
+| `src/lib/game-filter.ts`, `src/lib/game-types.ts` | The rules of the filter above a list (what a URL query selects, which games it leaves), and the closed sets of the model without the schema library |
+| `src/pages/`, `src/site.ts` | The routes (top, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
+| `src/layouts/Base.astro` | The shell of every page: header, navigation, and the footer with the unofficial notice |
+| `src/components/` | `GameCard` and `GameList` (React, rendered to HTML at build time), `FilteredGames` (React, the only component sent to the browser), `Player.astro` (the click-to-load YouTube player) |
+| `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
 | `scripts/youtube.ts` | The YouTube Data API calls the import makes: the channel's uploads and the details of videos |
@@ -27,7 +33,8 @@ scope changes that file in the same pull request.
 | `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date, the two team IDs and the part the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
 
-`docs/requirements.md` lists the files that are still to come (the import scripts, the pages).
+`docs/requirements.md` lists the files that are still to come (the Claude API judgement, the
+removal check, the workflows).
 
 ## Always run commands through make
 
@@ -43,7 +50,7 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 | Check the data | `make validate` (always after editing a file under `data/`) |
 | Import new videos | `make sync` (needs `YOUTUBE_API_KEY` in `.env`; `ARGS="--season=2026-2027"` writes one season only) |
 | Build the site | `make build` (`dist/`) |
-| Dev server | `make up` (http://localhost:4321) / `make logs` / `make down` |
+| Dev server | `make up` (http://localhost:4321) / `make logs` / `make down`. The pages themselves have no tests: after changing one, look at it there at phone width |
 | Add or update dependencies | `make pnpm ARGS="add -D <pkg>"` (the lockfile is also updated on the host) |
 | First run, or after changing the Dockerfile | `make setup` |
 
@@ -72,6 +79,18 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 - **The schema is written once.** `src/lib/schema.ts` is the only description of the data
   files; the site, the scripts and the tests derive their types from it. A rule about one file
   goes into the schema, a rule that spans files or entries into `src/lib/data-problems.ts`.
+- **Design values live in `src/styles/tokens.css` only.** Colours, sizes, weights and fonts are
+  read through its variables everywhere else. Fonts are the system's: no font, script or image
+  is requested from another site, except YouTube's thumbnails and, once a visitor starts a
+  video, its player.
+- **The pages work without JavaScript.** Every list and every link is in the built HTML. React
+  runs in the browser for one thing, the filter above a list (`FilteredGames`), which keeps its
+  state in the URL query; the live state switch of step 6 will be the second. Without
+  JavaScript the filter is hidden and the full list stands. Do not add an island for anything a
+  link can do.
+- **Code that runs in the browser does not import `src/lib/schema.ts`.** That module builds the
+  Zod schemas when it loads, and one import put the whole library into the page. The closed sets
+  a component needs are in `src/lib/game-types.ts`; a type-only import of the schema is fine.
 - **A URL ends with a slash.** `astro.config.ts` builds every page as a directory, so internal
   links are written `/games/{gameId}/`, never without the slash.
 - **Title parsing and season derivation stay pure.** They take what they need as arguments and
