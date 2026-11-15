@@ -29,12 +29,23 @@ const LEADING_DATE =
 
 const VERSUS = /\s*vs\.?\s*/i;
 
+// "1Q 東海シーガルズvs...": the quarter the video covers, before everything else.
+const LEADING_QUARTER = /^([1-4])Q\s+/i;
+
+// What some titles put between the date and the first team: the game's number on that day
+// ("-1", " 2", "①", "2HD"), the round ("第4節", "第13節第2試合"), and the half the video covers
+// ("前半", "【後半】"). A lone "-" or "_" only separates the date from the team.
+const GAME_LABEL =
+  /^[-_]?\s*(?:\d(?!\d)(?:HD)?)?\s*(?:第\d+節)?\s*(?:第\d+試合)?\s*(?:【?(前半|後半)】?)?\s*/;
+
 // After the second team's name. NFKC has already turned a circled number (①) into a digit. A
 // part has one or two digits and starts at 1, so a trailing year is not taken for one.
 const PART_MARKERS: readonly {
   readonly pattern: RegExp;
   readonly part: (match: RegExpExecArray) => number;
 }[] = [
+  // "1Q" to "4Q", also as "前半2Q": the quarter is the part.
+  { pattern: /\s*(?:前半|後半)?\s*([1-4])Q$/i, part: (match) => Number(match[1]) },
   { pattern: /\s*前半$/, part: () => 1 },
   { pattern: /\s*後半$/, part: () => 2 },
   { pattern: /\s*part\s*([1-9]\d?)$/i, part: (match) => Number(match[1]) },
@@ -59,23 +70,29 @@ export function parseTitle(title: string, teams: readonly Team[]): ParsedTitle {
   // A date that is not on the calendar is still not part of the first team's name.
   const matchup = normalized.slice(dateMatch?.[0].length ?? 0).trim();
 
-  const versus = VERSUS.exec(matchup);
-  const first = versus === null ? "" : matchup.slice(0, versus.index);
-  const rest = versus === null ? "" : matchup.slice(versus.index + versus[0].length);
-  if (first === "" || rest === "") return { date, sides: null, part: null, type };
+  const quarter = LEADING_QUARTER.exec(matchup);
+  const versus = VERSUS.exec(matchup.slice(quarter?.[0].length ?? 0));
+  const beforeVersus = versus?.input.slice(0, versus.index) ?? "";
+  const rest = versus?.input.slice(versus.index + versus[0].length) ?? "";
+  if (beforeVersus === "" || rest === "") return { date, sides: null, part: null, type };
 
   const teamOfSpelling = indexTeamSpellings(teams);
   const side = (spelling: string): TitleSide => ({
     spelling,
     teamId: teamOfSpelling.get(spelling) ?? null,
   });
+
+  const { first, half } = splitGameLabel(beforeVersus, teamOfSpelling);
   const firstSide = side(withoutLabel(first, teamOfSpelling));
+  const partBefore = quarter === null ? half : Number(quarter[1]);
 
   // A name that itself ends like a marker ("... 2") is a team first and a part second.
-  if (teamOfSpelling.has(rest)) return { date, sides: [firstSide, side(rest)], part: null, type };
+  if (teamOfSpelling.has(rest)) {
+    return { date, sides: [firstSide, side(rest)], part: partBefore, type };
+  }
 
   const { second, part } = splitPartMarker(rest);
-  return { date, sides: [firstSide, side(second)], part, type };
+  return { date, sides: [firstSide, side(second)], part: part ?? partBefore, type };
 }
 
 function calendarDate(match: RegExpExecArray): string | null {
@@ -94,6 +111,25 @@ function calendarDate(match: RegExpExecArray): string | null {
     return null;
   }
   return date.toISOString().slice(0, 10);
+}
+
+/**
+ * The first side without the label some titles put after the date, and the half that label
+ * names, if it names one. A side that names a registered team as it stands has no label.
+ */
+function splitGameLabel(
+  beforeVersus: string,
+  teamOfSpelling: ReadonlyMap<string, string>,
+): { first: string; half: number | null } {
+  if (teamOfSpelling.has(beforeVersus)) return { first: beforeVersus, half: null };
+
+  const label = GAME_LABEL.exec(beforeVersus);
+  const first = beforeVersus.slice(label?.[0].length ?? 0);
+  // The label is never the whole side: a team's name has to be left after it.
+  if (label === null || first === "") return { first: beforeVersus, half: null };
+
+  const half = label[1] === "前半" ? 1 : label[1] === "後半" ? 2 : null;
+  return { first, half };
 }
 
 /**
