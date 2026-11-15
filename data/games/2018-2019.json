@@ -1,0 +1,23 @@
+[
+  {
+    "id": "2018-07-08-jpff-east-allstars-vs-kcff-allstars",
+    "date": "2018-07-08",
+    "season": "2018-2019",
+    "type": "allstar",
+    "teams": [
+      "jpff-east-allstars",
+      "kcff-allstars"
+    ],
+    "needsReview": true,
+    "videos": [
+      {
+        "videoId": "wfeIgIHCkmY",
+        "part": 1,
+        "title": "2018JP東vsKCFFオールスター",
+        "publishedAt": "2023-09-28T12:55:54Z",
+        "durationSec": 2787,
+        "live": null
+      }
+    ]
+  }
+]
