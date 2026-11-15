@@ -270,14 +270,22 @@ Titles seen so far (October 2026):
 Three habits show: the date is separated by slashes or by spaces, `vs` has spaces around it or
 not, and one team appears under different spellings.
 
+The channel's video list on 2026-11-15 showed two more in the titles of 2025: a date written
+as `20251102`, and playoff titles that name the occasion first, one of them with a year and no
+date (`2025準決勝　川崎グリズリーズvs浦和ウラワーズ`). A title without a full date is read as
+having no date.
+
 ### Rules
 
 1. Normalize: Unicode NFKC turns full-width letters, digits and symbols into half-width ones,
    and runs of spaces become one.
 2. Date: read "year month day" at the start. The separator may be `/`, a space, `-` or `.`, and
-   month and day may have one digit or two.
+   month and day may have one digit or two. Eight digits with no separator (`20251102`) are a
+   date too.
 3. Matchup: split the rest at `vs`, in any case, with or without spaces around it.
-4. Teams: match each side exactly against the alias dictionary.
+4. Teams: match each side exactly against the alias dictionary. Words before the first team
+   that name the occasion, as in 「プレーオフ 東海シーガルズ」 or 「2025準決勝 川崎グリズリーズ」,
+   are not part of its name.
 5. Split marker: words after the team name such as 「前半」「後半」「Part 2」「①」 become `part`.
 6. Type keywords: 「プレーオフ」「決勝」「ボウル」「オールスター」「練習試合」 and the like in the
    title decide the type.
