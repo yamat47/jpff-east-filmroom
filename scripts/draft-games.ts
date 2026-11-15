@@ -24,41 +24,64 @@ export function draftGames(videos: readonly ChannelVideo[], data: SiteData): Dra
     ...data.excluded.map((video) => video.videoId),
   ]);
 
-  const games = new Map(knownGames.map((game) => [game.id, game]));
-  const gained = new Map<string, { game: Game; videos: NewVideo[] }>();
+  // Where a title leads. A game is found by its date and its two teams in either order, and
+  // also by what the titles of its own videos say: a person may have corrected its date or its
+  // teams against them, and another upload of the game carries the same uncorrected title.
+  const gameOf = new Map(knownGames.map((game) => [matchupOf(game), game]));
+  for (const game of knownGames) {
+    for (const video of game.videos) {
+      const titled = placeTitle(video.title, data.teams);
+      if ("game" in titled && !gameOf.has(matchupOf(titled.game))) {
+        gameOf.set(matchupOf(titled.game), game);
+      }
+    }
+  }
+
+  const gained = new Map<string, { game: Game; videos: NewVideo[]; offTitle: boolean }>();
   const unread: UnreadVideo[] = [];
 
   const oldestFirst = [...videos].sort((a, b) => a.publishedAt.localeCompare(b.publishedAt));
   for (const video of oldestFirst) {
     if (knownVideoIds.has(video.videoId)) continue;
 
-    const placed = placeVideo(video, data.teams);
+    const placed: ReturnType<typeof placeTitle> = video.isLiveStream
+      ? { reason: "a live stream, which the import does not handle yet" }
+      : placeTitle(video.title, data.teams);
     if ("reason" in placed) {
       unread.push({ video, reason: placed.reason });
       continue;
     }
+
     // A game the data already has keeps what a person decided about it: its type, its flag.
-    const entry = gained.get(placed.game.id) ?? {
-      game: games.get(placed.game.id) ?? placed.game,
-      videos: [],
-    };
+    const game = gameOf.get(matchupOf(placed.game)) ?? placed.game;
+    gameOf.set(matchupOf(placed.game), game);
+
+    const entry = gained.get(game.id) ?? { game, videos: [], offTitle: false };
     entry.videos.push({ video, part: placed.part });
-    gained.set(placed.game.id, entry);
+    // The title alone would have made another game of this video.
+    entry.offTitle ||= game.id !== placed.game.id;
+    gained.set(game.id, entry);
   }
 
-  const drafted = [...gained.values()].map(({ game, videos }) => withVideos(game, videos));
+  const drafted = [...gained.values()].map(({ game, videos, offTitle }) => {
+    const withNew = withVideos(game, videos);
+    return offTitle ? { ...withNew, needsReview: true } : withNew;
+  });
   return { games: drafted.sort((a, b) => a.id.localeCompare(b.id)), unread };
+}
+
+/** What two videos of one game share whatever order their titles name the teams in. */
+function matchupOf(game: Pick<Game, "date" | "teams">): string {
+  return [game.date, ...[...game.teams].sort()].join(" ");
 }
 
 type NewVideo = { readonly video: ChannelVideo; readonly part: number | null };
 
-function placeVideo(
-  video: ChannelVideo,
+function placeTitle(
+  title: string,
   registered: readonly Team[],
 ): { game: Game; part: number | null } | { reason: string } {
-  if (video.isLiveStream) return { reason: "a live stream, which the import does not handle yet" };
-
-  const parsed = parseTitle(video.title, registered);
+  const parsed = parseTitle(title, registered);
   if (parsed.sides === null) return { reason: "no matchup in the title" };
 
   const [first, second] = parsed.sides;
@@ -141,7 +164,7 @@ export function seasonFilesOf(data: SiteData, drafted: readonly Game[]): Map<str
       ]),
     );
     // Through the schema, so that the keys are written in its order whatever built the game, and
-    // a file `make validate` would refuse is not written at all.
+    // a file that does not fit the schema is not written at all.
     files.set(season, Games.parse([...games.values()].sort((a, b) => a.id.localeCompare(b.id))));
   }
   return files;

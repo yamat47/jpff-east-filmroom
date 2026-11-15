@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { draftGames, renderDraft, seasonFilesOf } from "../scripts/draft-games.ts";
 import type { ChannelVideo } from "../scripts/youtube.ts";
 import type { Game, SiteData, Team } from "../src/lib/schema.ts";
@@ -8,7 +8,13 @@ const TEAMS: Team[] = [
   { id: "tokai-seagulls", name: "東海シーガルズ", aliases: ["東海"] },
 ];
 
+// Each test numbers its own uploads, so that their order of publication is the order they
+// were made in.
 let nextId = 0;
+beforeEach(() => {
+  nextId = 0;
+});
+
 function upload(title: string, overrides: Partial<ChannelVideo> = {}): ChannelVideo {
   nextId += 1;
   return {
@@ -140,6 +146,48 @@ describe("draftGames", () => {
     expect(games).toHaveLength(1);
     expect(games[0]?.type).toBe("playoff");
     expect(games[0]?.videos.map((video) => video.videoId)).toEqual(["known-first", second.videoId]);
+  });
+
+  it("adds another upload to the game a person moved to another date", () => {
+    const corrected: Game = {
+      id: "2022-12-04-kamakura-lazaro-vs-tokai-seagulls",
+      date: "2022-12-04",
+      season: "2022-2023",
+      type: "league",
+      teams: ["kamakura-lazaro", "tokai-seagulls"],
+      needsReview: false,
+      videos: [
+        {
+          videoId: "known-first",
+          part: 1,
+          title: "20221203-1 鎌倉vs東海",
+          publishedAt: "2022-12-04T12:00:00Z",
+          durationSec: 800,
+          live: null,
+        },
+      ],
+    };
+    const again = upload("20221203-1 鎌倉vs東海");
+
+    const { games } = draftGames(
+      [again],
+      data({ seasons: [{ season: "2022-2023", games: [corrected] }] }),
+    );
+
+    expect(games.map((game) => game.id)).toEqual(["2022-12-04-kamakura-lazaro-vs-tokai-seagulls"]);
+    expect(games[0]?.videos.map((video) => video.videoId)).toEqual(["known-first", again.videoId]);
+    expect(games[0]?.needsReview).toBe(true);
+  });
+
+  it("joins two uploads that name the teams in opposite orders, and asks for a review", () => {
+    const first = upload("2026 10 4 鎌倉ラザロvs東海シーガルズ");
+    const second = upload("2026 10 4 東海シーガルズvs鎌倉ラザロ");
+
+    const { games } = draftGames([first, second], data());
+
+    expect(games.map((game) => game.id)).toEqual(["2026-10-04-kamakura-lazaro-vs-tokai-seagulls"]);
+    expect(games[0]?.videos.map((video) => video.videoId)).toEqual([first.videoId, second.videoId]);
+    expect(games[0]?.needsReview).toBe(true);
   });
 
   it("leaves alone a video that is already in a game or on the exclusion list", () => {
