@@ -50,6 +50,13 @@ describe("Team", () => {
     expect(Team.parse({ id: "kamakura-lazaro", name: "鎌倉ラザロ" }).aliases).toEqual([]);
   });
 
+  it.each([
+    ["a name", { id: "kamakura-lazaro", name: "　" }],
+    ["an alias", { id: "kamakura-lazaro", name: "鎌倉ラザロ", aliases: [" "] }],
+  ])("rejects %s made of spaces alone, which no title can spell", (_case, team) => {
+    expect(Team.safeParse(team).success).toBe(false);
+  });
+
   it.each(["Kamakura-Lazaro", "kamakura_lazaro", "鎌倉ラザロ", "kamakura--lazaro", "-lazaro"])(
     "rejects the ID %s, which a URL would not keep as written",
     (id) => {

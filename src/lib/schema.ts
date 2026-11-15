@@ -11,7 +11,7 @@ const TeamId = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lower-case letters, digits and hyphens");
 
-const SeasonId = z
+export const SeasonId = z
   .string()
   .regex(/^\d{4}-\d{4}$/, "two years, as in 2026-2027")
   .refine(
@@ -23,8 +23,8 @@ const VideoId = z.string().regex(/^[A-Za-z0-9_-]{11}$/, "a YouTube video ID");
 
 export const Team = z.strictObject({
   id: TeamId,
-  name: z.string().min(1),
-  aliases: z.array(z.string().min(1)).default([]),
+  name: z.string().trim().min(1),
+  aliases: z.array(z.string().trim().min(1)).default([]),
 });
 export type Team = z.infer<typeof Team>;
 
