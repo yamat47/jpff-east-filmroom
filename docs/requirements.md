@@ -261,19 +261,22 @@ Titles seen so far (October 2026):
 
 ```
 2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同
-2026/10/11 ワイルドギース&東京ブロンコス vs 所沢アウトローズ
-2026/10/11 ブランディングス vs 甲府厚木タイタンズ
-2026 10 4 川崎グリズリーズ vs 群馬スタリオンズ
-2026 10 4 鎌倉ラザロ vs 東海シーガルズ
+2026/10/11 ワイルドギース&東京ブロンコスvs所沢アウトローズ
+2026/10/11 ブランディングスvs甲府厚木タイタンズ
+2026 10 4 川崎グリズリーズvs群馬スタリオンズ
+2026 10 4 鎌倉ラザロvs東海シーガルズ
 ```
 
 Three habits show: the date is separated by slashes or by spaces, `vs` has spaces around it or
 not, and one team appears under different spellings.
 
-The channel's video list on 2026-11-15 showed two more in the titles of 2025: a date written
-as `20251102`, and playoff titles that name the occasion first, one of them with a year and no
-date (`2025準決勝　川崎グリズリーズvs浦和ウラワーズ`). A title without a full date is read as
-having no date.
+The channel's video list on 2026-11-15 showed more in the titles of 2025. The five titles above
+are written here as that list has them; `vs` with spaces around it is in
+`20251102 横浜甲府合同チーム vs ブランディングス`, which also writes its date as eight digits.
+Playoff titles name the occasion first (`2025/12/07 プレーオフ 東海シーガルズvsワイルドギース`),
+one kind with a year and no date (`2025準決勝　川崎グリズリーズvs浦和ウラワーズ`). A title without
+a full date is read as having no date. The titles of that list are in
+`tests/fixtures/titles.txt`.
 
 ### Rules
 
@@ -287,6 +290,7 @@ having no date.
    that name the occasion, as in 「プレーオフ 東海シーガルズ」 or 「2025準決勝 川崎グリズリーズ」,
    are not part of its name.
 5. Split marker: words after the team name such as 「前半」「後半」「Part 2」「①」 become `part`.
+   A number counts as a part only from 1 to 99, so a year at the end is not one.
 6. Type keywords: 「プレーオフ」「決勝」「ボウル」「オールスター」「練習試合」 and the like in the
    title decide the type.
 
@@ -468,7 +472,7 @@ Each has a working assumption so that the work does not stop.
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
 | Whether all-star and select teams get a team page | They do, like any other team | At the first import |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | At the first import |
-| Split markers in titles | 「前半」「後半」 and the like. No real example seen yet | At the first import |
+| Split markers in titles | 「前半」「後半」, 「Part 2」 and a number after a space (「①」 included). No real example seen yet, and a circled number written without a space is not read | At the first import |
 | Number and format of old videos | Unknown. A few hundred, in the 2026 format | At the first import |
 | Design direction | White, text first, phone first | When the pages are built |
 | Connection to the existing GitHub Pages setup | Not worked out | Before publication |

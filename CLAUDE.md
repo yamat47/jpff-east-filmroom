@@ -21,7 +21,7 @@ scope changes that file in the same pull request.
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
 | `tests/` | Vitest tests of the functions under `src/lib/` and `scripts/` |
-| `tests/fixtures/titles.txt` | Real titles from the channel, one per line. Every one of them must parse; add a title here when a new way of writing one turns up |
+| `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date and the two team IDs the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
 
 `docs/requirements.md` lists the files that are still to come (the import scripts, the pages).

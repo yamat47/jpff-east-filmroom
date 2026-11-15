@@ -14,4 +14,11 @@ describe("seasonOf", () => {
   ])("puts %s in %s (%s)", (date, season) => {
     expect(seasonOf(date)).toBe(season);
   });
+
+  it.each(["2026-3-1", "2026/03/01", "20260301", ""])(
+    "refuses %s, which is not written as YYYY-MM-DD",
+    (date) => {
+      expect(() => seasonOf(date)).toThrow(TypeError);
+    },
+  );
 });

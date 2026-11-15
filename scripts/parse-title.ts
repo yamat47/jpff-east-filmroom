@@ -2,7 +2,10 @@ import { normalizeSpelling } from "../src/lib/normalize.ts";
 import type { GameType, Team } from "../src/lib/schema.ts";
 import { indexTeamSpellings } from "../src/lib/team-spellings.ts";
 
-/** One side of the matchup: what the title says, and the team that spelling names, if any. */
+/**
+ * One side of the matchup: its spelling in the title, normalized and without the name of the
+ * occasion, and the team that spelling names, if any.
+ */
 export type TitleSide = { readonly spelling: string; readonly teamId: string | null };
 
 /**
@@ -26,15 +29,16 @@ const LEADING_DATE =
 
 const VERSUS = /\s*vs\.?\s*/i;
 
-// After the second team's name. NFKC has already turned a circled number (①) into a digit.
+// After the second team's name. NFKC has already turned a circled number (①) into a digit. A
+// part has one or two digits and starts at 1, so a trailing year is not taken for one.
 const PART_MARKERS: readonly {
   readonly pattern: RegExp;
   readonly part: (match: RegExpExecArray) => number;
 }[] = [
   { pattern: /\s*前半$/, part: () => 1 },
   { pattern: /\s*後半$/, part: () => 2 },
-  { pattern: /\s*part\s*(\d+)$/i, part: (match) => Number(match[1]) },
-  { pattern: /\s+(\d+)$/, part: (match) => Number(match[1]) },
+  { pattern: /\s*part\s*([1-9]\d?)$/i, part: (match) => Number(match[1]) },
+  { pattern: /\s+([1-9]\d?)$/, part: (match) => Number(match[1]) },
 ];
 
 // The first keyword found decides, so the narrower types come before 「ボウル」, which an
@@ -94,27 +98,20 @@ function calendarDate(match: RegExpExecArray): string | null {
 
 /**
  * The first side without the name of the occasion that some titles put before it, as in
- * 「プレーオフ 東海シーガルズ」 or 「2025準決勝 川崎グリズリーズ」.
+ * 「プレーオフ 東海シーガルズ」 or 「2025準決勝 川崎グリズリーズ」. Only words that say what kind
+ * of game it is count as such a name: any other word before a team may be part of a team's name,
+ * and dropping it would report a team the title does not name.
  */
 function withoutLabel(first: string, teamOfSpelling: ReadonlyMap<string, string>): string {
+  // A team whose own name has a keyword in it is kept whole.
+  if (teamOfSpelling.has(first)) return first;
+
+  // The last word is never the label: a name has to be left after it.
   const words = first.split(" ");
-
-  // A known team at the end decides: whatever stands before it is the label. The whole side is
-  // tried first, so a team whose own name has a space or a keyword in it is kept whole.
-  for (let start = 0; start < words.length; start++) {
-    const candidate = words.slice(start).join(" ");
-    if (teamOfSpelling.has(candidate)) return candidate;
-  }
-
-  // For a team nobody has registered yet, only words that say what kind of game it is are
-  // taken for a label, and only when a name is left after them.
-  const lastLabelWord = words.findLastIndex((word) =>
-    TYPE_KEYWORDS.some(({ pattern }) => pattern.test(word)),
-  );
-  if (lastLabelWord >= 0 && lastLabelWord < words.length - 1) {
-    return words.slice(lastLabelWord + 1).join(" ");
-  }
-  return first;
+  const lastLabelWord = words
+    .slice(0, -1)
+    .findLastIndex((word) => TYPE_KEYWORDS.some(({ pattern }) => pattern.test(word)));
+  return words.slice(lastLabelWord + 1).join(" ");
 }
 
 function splitPartMarker(rest: string): { second: string; part: number | null } {

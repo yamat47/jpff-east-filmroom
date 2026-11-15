@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { parseTitle } from "../scripts/parse-title.ts";
 import { loadData } from "../src/lib/load-data.ts";
 import type { Team } from "../src/lib/schema.ts";
@@ -11,66 +11,35 @@ const TEAMS = [LAZARO, SEAGULLS];
 const teamIds = (title: string, teams: readonly Team[] = TEAMS) =>
   parseTitle(title, teams).sides?.map((side) => side.teamId);
 
+// Each line of the fixture is a title as written on the channel, then the date and the two team
+// IDs the rules must read from it, separated by tabs. "-" stands for what the rules leave unread:
+// a date the title does not carry, or a team that is not in data/teams.yaml yet.
+const FIXTURE = await readFile(new URL("./fixtures/titles.txt", import.meta.url), "utf8");
+const { teams: REGISTERED_TEAMS } = await loadData(new URL("../data/", import.meta.url));
+
 describe("parseTitle on the titles seen on the channel", () => {
-  let teams: readonly Team[];
-  let titles: string[];
+  it("reads from every title in the fixture what the fixture says", () => {
+    const lines = FIXTURE.split("\n").filter((line) => line !== "");
+    const readings = lines.map((line) => {
+      const title = line.split("\t")[0] ?? "";
+      const parsed = parseTitle(title, REGISTERED_TEAMS);
+      const sides = parsed.sides?.map((side) => side.teamId ?? "-") ?? ["-", "-"];
+      return [title, parsed.date ?? "-", ...sides].join("\t");
+    });
 
-  beforeAll(async () => {
-    ({ teams } = await loadData(new URL("../data/", import.meta.url)));
-    const fixture = await readFile(new URL("./fixtures/titles.txt", import.meta.url), "utf8");
-    titles = fixture.split("\n").filter((line) => line !== "");
-  });
-
-  it.each([
-    [
-      "2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同",
-      "2026-10-25",
-      ["kofu-atsugi-titans", "geese-broncos"],
-    ],
-    [
-      "2026/10/11 ワイルドギース&東京ブロンコス vs 所沢アウトローズ",
-      "2026-10-11",
-      ["geese-broncos", "tokorozawa-outlaws"],
-    ],
-    [
-      "2026/10/11 ブランディングス vs 甲府厚木タイタンズ",
-      "2026-10-11",
-      ["brandings", "kofu-atsugi-titans"],
-    ],
-    [
-      "2026 10 4 川崎グリズリーズ vs 群馬スタリオンズ",
-      "2026-10-04",
-      ["kawasaki-grizzlies", "gunma-stallions"],
-    ],
-    ["2026 10 4 鎌倉ラザロ vs 東海シーガルズ", "2026-10-04", ["kamakura-lazaro", "tokai-seagulls"]],
-  ])("reads %s", (title, date, expectedTeams) => {
-    const parsed = parseTitle(title, teams);
-
-    expect(parsed.date).toBe(date);
-    expect(parsed.sides?.map((side) => side.teamId)).toEqual(expectedTeams);
-    expect(parsed.part).toBeNull();
-    expect(parsed.type).toBeNull();
+    expect(lines.length).toBeGreaterThan(0);
+    expect(readings).toEqual(lines);
   });
 
   it("resolves both spellings of the joint team to the same team", () => {
-    const short = parseTitle("2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同", teams);
-    const long = parseTitle("2026/10/11 ワイルドギース&東京ブロンコス vs 所沢アウトローズ", teams);
+    const short = parseTitle("2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同", REGISTERED_TEAMS);
+    const long = parseTitle(
+      "2026/10/11 ワイルドギース&東京ブロンコスvs所沢アウトローズ",
+      REGISTERED_TEAMS,
+    );
 
     expect(short.sides?.[1].teamId).toBe("geese-broncos");
     expect(long.sides?.[0].teamId).toBe("geese-broncos");
-  });
-
-  it("reads a date and two known teams from every title collected in the fixture", () => {
-    const unread = titles.filter((title) => {
-      const parsed = parseTitle(title, teams);
-      return (
-        parsed.date === null ||
-        parsed.sides === null ||
-        parsed.sides.some((side) => side.teamId === null)
-      );
-    });
-
-    expect(unread).toEqual([]);
   });
 });
 
@@ -146,7 +115,6 @@ describe("parseTitle", () => {
     ["2025/12/07 プレーオフ 鎌倉ラザロvs東海シーガルズ", "the kind of game"],
     ["2025準決勝　鎌倉ラザロvs東海シーガルズ", "a year and the round, with a full-width space"],
     ["2027/1/10 Ocean Bowl 鎌倉ラザロvs東海シーガルズ", "the name of a bowl game"],
-    ["2027/1/10 第10回記念試合 鎌倉ラザロvs東海シーガルズ", "words the rules do not know"],
   ])("reads the first team of %s, which has %s before it", (title) => {
     expect(teamIds(title)).toEqual(["kamakura-lazaro", "tokai-seagulls"]);
   });
@@ -164,10 +132,29 @@ describe("parseTitle", () => {
     expect(parsed.sides?.[0]).toEqual({ spelling: "東京ブロンコス", teamId: null });
   });
 
-  it("keeps unknown words before a team it does not know, for a person to sort out", () => {
-    const parsed = parseTitle("2027/1/10 第10回記念試合 東京ブロンコスvs鎌倉ラザロ", TEAMS);
+  it("does not drop words that do not name an occasion, even before a team it knows", () => {
+    const parsed = parseTitle("2027/1/10 第10回記念試合 鎌倉ラザロvs東海シーガルズ", TEAMS);
 
-    expect(parsed.sides?.[0]).toEqual({ spelling: "第10回記念試合 東京ブロンコス", teamId: null });
+    expect(parsed.sides?.[0]).toEqual({ spelling: "第10回記念試合 鎌倉ラザロ", teamId: null });
+  });
+
+  it("does not read a joint team as the team its spelling ends with", () => {
+    const broncos: Team = { id: "tokyo-broncos", name: "東京ブロンコス", aliases: [] };
+    const parsed = parseTitle("2026/10/11 ワイルドギース & 東京ブロンコス vs 鎌倉ラザロ", [
+      ...TEAMS,
+      broncos,
+    ]);
+
+    expect(parsed.sides?.[0]).toEqual({
+      spelling: "ワイルドギース & 東京ブロンコス",
+      teamId: null,
+    });
+  });
+
+  it("drops the occasion before a team whose own name has a keyword in it", () => {
+    const parsed = parseTitle("2027/2/7 オールスター 関東選抜 vs 関西選抜", TEAMS);
+
+    expect(parsed.sides?.map((side) => side.spelling)).toEqual(["関東選抜", "関西選抜"]);
   });
 
   it("keeps a keyword that is part of a registered team's name", () => {
@@ -195,6 +182,16 @@ describe("parseTitle", () => {
 
     expect(parsed.part).toBe(part);
     expect(parsed.sides?.[1].teamId).toBe("tokai-seagulls");
+  });
+
+  it.each([
+    ["2025準決勝 鎌倉ラザロ vs 東海シーガルズ 2025", "a year"],
+    ["2026/10/4 鎌倉ラザロ vs 東海シーガルズ Part 0", "a part before the first"],
+  ])("reads no part from %s, which ends with %s", (title) => {
+    const parsed = parseTitle(title, TEAMS);
+
+    expect(parsed.part).toBeNull();
+    expect(parsed.sides?.[1].teamId).toBeNull();
   });
 
   it("takes a trailing number for the team when a team is spelled that way", () => {
