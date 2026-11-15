@@ -185,7 +185,7 @@ A game and its videos:
 | Field | Meaning |
 | --- | --- |
 | `id` | `{date}-{teams[0]}-vs-{teams[1]}`. Never changed once published |
-| `date` | Game date in Japan time. The date in the title wins |
+| `date` | Game date in Japan time. The date in the title wins, unless the league's or a team's own record shows the title is wrong; such a date is set by hand |
 | `season` | By default the value derived from `date`. Rewritten by hand only for an exception |
 | `type` | `league` / `playoff` / `allstar` / `other` |
 | `teams` | Two team IDs, in the order of the title |
@@ -301,6 +301,10 @@ a full date is read as having no date. The titles of that list are in
    (`1Q` to `4Q`, before everything else or after the teams, also as `前半2Q`) is the part.
 7. Type keywords: 「プレーオフ」「決勝」「ボウル」「オールスター」「練習試合」 and the like in the
    title decide the type.
+
+The league's own result pages are the authority for the type: a game they list under a round
+(第N節) is `league`, and one under プレーオフ, 準決勝 or ハーバーボウル is `playoff`. The first import
+was checked against them game by game.
 
 A title without a type keyword is drafted as `league`. Until the Claude API judgement exists
 (step 5) such a game is not marked `needsReview` on that ground alone: nearly every game would
@@ -483,9 +487,8 @@ Each has a working assumption so that the work does not stop.
 | Item | Working assumption | Decided |
 | --- | --- | --- |
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
-| Whether all-star and select teams get a team page | They do, like any other team | At the first import |
+| Whether all-star and select teams get a team page | They do, like any other team: the two sides of the 2018 all-star game are registered as teams | In the review of the first import |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | At the first import |
-| The 2018 all-star game (`2018JP東vsKCFFオールスター`, video `wfeIgIHCkmY`) | In no game: its title and description give only "July 2018", and a game needs a date. Listed as unread by every import until it is dated or excluded | In the review of the first import |
 | What a second upload of a game is | One version on the game page, the others on the exclusion list. Whether a visitor should be able to reach the other versions is not decided | In the review of the first import |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
 | Design direction | White, text first, phone first | When the pages are built |
@@ -500,5 +503,14 @@ Each has a working assumption so that the work does not stop.
 - [J.P.F.F East on YouTube](https://youtube.com/@jpffeast): the channel and its ID.
 - [JPFF East official site](https://jpffeast.jimdofree.com/): the teams of the 2026-2027 season
   and which are merged or joint.
+- [JPFF East results of past seasons](https://jpffeast.jimdofree.com/過去のresult/), and the
+  result pages of [2023-2024](https://jpffeast.jimdofree.com/2023-2024-seasonresult/),
+  [2024-2025](https://jpffeast.jimdofree.com/2024-2025-seasonresult/) and
+  [2025-2026](https://jpffeast.jimdofree.com/2025-2026-seasonresult/): every game by round, which
+  decides league or playoff. Most give no dates.
+- [JPFF East news](https://jpffeast.jimdofree.com/news/): the dates of the 2024 playoffs and of
+  the 2018 all-star game.
+- [東海シーガルズ, 試合](https://tokaiseagulls.com/試合/): the team's own record with the date of
+  each of its games.
 - [YouTube Data API quota costs](https://developers.google.com/youtube/v3/determine_quota_cost).
 - The example titles are from the channel's video list as seen on 2026-11-14.

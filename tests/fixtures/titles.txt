@@ -80,7 +80,7 @@
 20231015-2 WGvs横浜甲府	2023-10-15	wild-geese	yokohama-kofu	-
 20231008-2 ブロンコスvsブラ	2023-10-08	tokyo-broncos	brandings	-
 20231008-1 浦和vs立川	2023-10-08	urawa-ulowers	tachikawa-falcons	-
-2018JP東vsKCFFオールスター	-	-	-	-
+2018JP東vsKCFFオールスター	-	-	kcff-allstars	-
 20230924-1 浦和vsWG	2023-09-24	urawa-ulowers	wild-geese	-
 20230924-2 立川vs鎌倉	2023-09-24	tachikawa-falcons	kamakura-lazaro	-
 20230917 ブラ vs 群馬	2023-09-17	brandings	gunma-stallions	-

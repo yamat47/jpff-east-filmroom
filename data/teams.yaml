@@ -87,3 +87,12 @@
   name: 栃木マダガスカルズ&群馬スタリオンズ
   aliases:
     - 群馬栃木
+
+# The select teams of the all-star game between JPFF East and KCFF, the Kanto college league.
+- id: jpff-east-allstars
+  name: JPFF東日本オールスター
+  aliases:
+    - JP東
+
+- id: kcff-allstars
+  name: KCFFオールスター
