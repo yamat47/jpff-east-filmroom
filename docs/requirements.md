@@ -189,7 +189,7 @@ A game and its videos:
 | `season` | By default the value derived from `date`. Rewritten by hand only for an exception |
 | `type` | `league` / `playoff` / `allstar` / `other` |
 | `teams` | Two team IDs, in the order of the title |
-| `needsReview` | `true` when the automatic judgement is unsure. Set to `false` by the person who checks it in the pull request |
+| `needsReview` | `true` when the automatic judgement is unsure, or a person placing a game by hand leaves a decision open. A type of `league` by default does not set it (section 7). Set to `false` by the person who checks it in the pull request |
 | `videos[].part` | Order of split videos. `1` for a single video |
 | `videos[].durationSec` | Length in seconds. `null` for a live stream that has not ended |
 | `videos[].title` | The title on YouTube as written. Used to verify the parsing and shown on the page |
@@ -248,8 +248,8 @@ directly:
 - The same script runs from a local machine. It looks at every upload on every run, and
   `--season` limits which season's file it writes.
 - One pull request per season, to keep each reviewable.
-- The alias dictionary is made here: every spelling found in the titles is listed, the Claude
-  API proposes, a person decides.
+- The alias dictionary is made here: every spelling found in the titles is listed, and a
+  person decides which team each names. The first import did this without the Claude API.
 
 ### By hand
 
@@ -390,6 +390,8 @@ and no database.
 │   ├── sync.ts           import of new videos (--season writes one season only)
 │   ├── check-removed.ts  removal check
 │   ├── parse-title.ts    title parsing
+│   ├── youtube.ts        YouTube Data API calls
+│   ├── draft-games.ts    placing new videos into games by rule
 │   ├── classify.ts       Claude API calls
 │   └── validate.ts       data validation
 ├── tests/
@@ -428,7 +430,7 @@ Quota, from the [official cost table](https://developers.google.com/youtube/v3/d
 10,000 units a day by default, and `playlistItems.list` and `videos.list` cost one unit a call.
 The import uses a few units a day and the removal check one unit per 50 videos. `search.list` is
 limited to 100 calls a day and is not used. The Claude API is called only when there are new
-videos, a few a week; only the first full import calls it in bulk.
+videos, a few a week. The first full import ran without it.
 
 When something fails:
 
@@ -487,7 +489,7 @@ Each has a working assumption so that the work does not stop.
 | Item | Working assumption | Decided |
 | --- | --- | --- |
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
-| Whether all-star and select teams get a team page | They do, like any other team: the two sides of the 2018 all-star game are registered as teams | In the review of the first import |
+| Whether all-star and select teams get a team page | They do, like any other team | At the first import |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | At the first import |
 | What a second upload of a game is | One version on the game page, the others on the exclusion list. Whether a visitor should be able to reach the other versions is not decided | In the review of the first import |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |

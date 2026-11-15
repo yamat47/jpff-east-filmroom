@@ -54,6 +54,8 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 - **Nothing reaches the site without a person's check.** A new game, a new team, an alias and a
   removal arrive as a pull request that a person merges. An automatic judgement, by rule or by
   the Claude API, is a draft: when it is unsure it sets `needsReview` and never decides alone.
+  One default is not marked: a game whose title names no occasion is drafted as `league`
+  without the flag, until the Claude API judgement exists (requirements, section 7).
   The only exception is what YouTube itself reports about a game that is already merged: the
   state of a live stream, its scheduled start and the length of the video (requirements,
   section 6).
