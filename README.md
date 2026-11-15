@@ -7,6 +7,23 @@ videos are embedded from YouTube; the site hosts none of them and is not affilia
 What the site does, how its data is modelled and the order it is built in are in
 [docs/requirements.md](docs/requirements.md).
 
+## Data
+
+The site is built from the files under [`data/`](data/): the teams, the games of each season with
+their videos, and the videos left out because they are not games. `make validate` checks them
+against the schema in [`src/lib/schema.ts`](src/lib/schema.ts) and against each other.
+
+## Development
+
+Everything runs in Docker; only Docker and `make` are needed on the host.
+
+```sh
+make setup   # build the image and install the dependencies
+make up      # dev server at http://localhost:4321 (make down stops it)
+make check   # typecheck, lint, test, validate the data, and build
+make help    # list the targets
+```
+
 ## Agent skills
 
 The skills under `.claude/skills/` are not written here. They are installed from
