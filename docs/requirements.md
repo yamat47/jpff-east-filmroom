@@ -46,7 +46,7 @@ Out of scope:
 - Videos that are not games (they go to the exclusion list when found).
 - A second upload of a game that is already shown: the same footage converted again, cut
   differently, or uploaded by mistake. One version is on the game page and the others go to the
-  exclusion list, each naming the game.
+  exclusion list, each naming the game. The site does not link to them.
 - Linking a merged or joint team to the teams it came from.
 - Favorites, multi-view, watch history, a page per matchup.
 - Analytics, a contact form, login, comments.
@@ -85,6 +85,7 @@ There are three kinds of tag, season, game type and team, and each is attached t
 - Different spellings of one team are registered as aliases of that team. 「WG＆ブロンコス合同」
   and 「ワイルドギース&東京ブロンコス」 are the same joint team.
 - Whether a spelling is an alias or another team is decided by a person in pull request review.
+- The select teams of an all-star game are teams like any other, with a page of their own.
 
 The seed is the ten teams of the 2026-2027 season on the
 [official site](https://jpffeast.jimdofree.com/): 立川ファルコンズ, 鎌倉ラザロ, 群馬スタリオンズ,
@@ -489,9 +490,7 @@ Each has a working assumption so that the work does not stop.
 | Item | Working assumption | Decided |
 | --- | --- | --- |
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
-| Whether all-star and select teams get a team page | They do, like any other team: the two sides of the 2018 all-star game are registered as teams | Decided with that game |
-| Renamed teams | One team with aliases. Only merged and joint teams are separate teams | At the first import |
-| What a second upload of a game is | One version on the game page, the others on the exclusion list. Whether a visitor should be able to reach the other versions is not decided | In the review of the first import |
+| Renamed teams | One team with aliases. Only merged and joint teams are separate teams | When a renamed team first appears; the first import met none |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
 | Design direction | White, text first, phone first | When the pages are built |
 | Connection to the existing GitHub Pages setup | Not worked out | Before publication |
