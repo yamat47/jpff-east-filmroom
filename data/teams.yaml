@@ -64,7 +64,8 @@
   aliases:
     - ブラ
 
-# 横浜タイタンズ and 甲府ユリシーズ, playing as one team from 2022 to 2025.
+# 横浜タイタンズ and 甲府ユリシーズ playing as one team, in the seasons 2022-2023 to 2025-2026
+# that the channel has videos of.
 - id: yokohama-kofu
   name: 横浜・甲府合同チーム
   aliases:
@@ -87,12 +88,3 @@
   name: 栃木マダガスカルズ&群馬スタリオンズ
   aliases:
     - 群馬栃木
-
-# The select teams of the all-star game between JPFF East and KCFF, the Kanto college league.
-- id: jpff-east-allstars
-  name: JPFF東日本オールスター
-  aliases:
-    - JP東
-
-- id: kcff-allstars
-  name: KCFFオールスター
