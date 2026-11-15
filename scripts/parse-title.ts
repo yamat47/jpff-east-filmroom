@@ -83,7 +83,7 @@ export function parseTitle(title: string, teams: readonly Team[]): ParsedTitle {
   });
 
   const { first, half } = splitGameLabel(beforeVersus, teamOfSpelling);
-  const firstSide = side(withoutLabel(first, teamOfSpelling));
+  const firstSide = side(withoutOccasion(first, teamOfSpelling));
   const partBefore = quarter === null ? half : Number(quarter[1]);
 
   // A name that itself ends like a marker ("... 2") is a team first and a part second.
@@ -138,7 +138,7 @@ function splitGameLabel(
  * of game it is count as such a name: any other word before a team may be part of a team's name,
  * and dropping it would report a team the title does not name.
  */
-function withoutLabel(first: string, teamOfSpelling: ReadonlyMap<string, string>): string {
+function withoutOccasion(first: string, teamOfSpelling: ReadonlyMap<string, string>): string {
   // A team whose own name has a keyword in it is kept whole.
   if (teamOfSpelling.has(first)) return first;
 
