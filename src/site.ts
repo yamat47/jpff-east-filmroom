@@ -6,5 +6,6 @@ export const SITE = {
   url: "https://jpff-east-filmroom.yamat47.me",
   lang: "ja",
   channelUrl: "https://youtube.com/@jpffeast",
+  channelId: "UCgJ7OL5RIVnTI1MlRsy61ig",
   officialSiteUrl: "https://jpffeast.jimdofree.com/",
 } as const;

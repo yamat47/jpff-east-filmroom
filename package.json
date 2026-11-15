@@ -16,6 +16,7 @@
     "lint:fix": "biome check --write .",
     "test": "vitest run",
     "validate": "node scripts/validate.ts",
+    "sync": "node --env-file-if-exists=.env scripts/sync.ts",
     "check": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run validate && pnpm run build"
   },
   "packageManager": "pnpm@11.8.0",

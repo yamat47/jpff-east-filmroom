@@ -70,6 +70,10 @@ test: ## Run the unit tests (Vitest)
 validate: ## Check the files under data/ against the schema and against each other
 	$(PNPM) run validate
 
+.PHONY: sync
+sync: ## Draft games from the channel's new videos (example: make sync ARGS="--season=2021-2022")
+	$(PNPM) run sync $(ARGS)
+
 .PHONY: check
 check: ## Typecheck, lint, test, validate and build (what CI runs, minus zizmor)
 	$(PNPM) run check

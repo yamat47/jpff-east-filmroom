@@ -1,0 +1,149 @@
+import { describe, expect, it } from "vitest";
+import { createYoutubeClient, secondsOf } from "../scripts/youtube.ts";
+
+type Call = { resource: string; params: Record<string, string> };
+
+/** A stand-in for the API that answers from a table and records what it was asked. */
+function fakeApi(answer: (call: Call) => unknown, status = 200) {
+  const calls: Call[] = [];
+  const fetch = async (input: string | URL | Request): Promise<Response> => {
+    const url = new URL(String(input));
+    const call = {
+      resource: url.pathname.split("/").at(-1) ?? "",
+      params: Object.fromEntries(url.searchParams),
+    };
+    calls.push(call);
+    return new Response(JSON.stringify(answer(call)), { status });
+  };
+  return { fetch, calls };
+}
+
+const video = (id: string, overrides: Record<string, unknown> = {}) => ({
+  id,
+  snippet: {
+    title: "2026 10 4 鎌倉ラザロvs東海シーガルズ",
+    publishedAt: "2026-10-06T03:00:00Z",
+    liveBroadcastContent: "none",
+  },
+  contentDetails: { duration: "PT25M38S" },
+  ...overrides,
+});
+
+describe("listUploadIds", () => {
+  it("follows the channel's uploads playlist through every page", async () => {
+    const api = fakeApi(({ resource, params }) => {
+      if (resource === "channels") {
+        return { items: [{ contentDetails: { relatedPlaylists: { uploads: "UUchannel" } } }] };
+      }
+      return params.pageToken === undefined
+        ? { nextPageToken: "second", items: [{ contentDetails: { videoId: "a" } }] }
+        : { items: [{ contentDetails: { videoId: "b" } }] };
+    });
+    const youtube = createYoutubeClient({ apiKey: "key", fetch: api.fetch });
+
+    expect(await youtube.listUploadIds("UCchannel")).toEqual(["a", "b"]);
+    expect(
+      api.calls.map(({ resource, params }) => [resource, params.playlistId, params.pageToken]),
+    ).toEqual([
+      ["channels", undefined, undefined],
+      ["playlistItems", "UUchannel", undefined],
+      ["playlistItems", "UUchannel", "second"],
+    ]);
+  });
+
+  it("fails when the channel does not exist", async () => {
+    const youtube = createYoutubeClient({
+      apiKey: "key",
+      fetch: fakeApi(() => ({ pageInfo: { totalResults: 0 } })).fetch,
+    });
+
+    await expect(youtube.listUploadIds("UCmissing")).rejects.toThrow("no channel UCmissing");
+  });
+});
+
+describe("getVideos", () => {
+  it("reads the title, the publication time and the length in seconds", async () => {
+    const api = fakeApi(() => ({ items: [video("aaaaaaaaaaa")] }));
+    const youtube = createYoutubeClient({ apiKey: "key", fetch: api.fetch });
+
+    expect(await youtube.getVideos(["aaaaaaaaaaa"])).toEqual([
+      {
+        videoId: "aaaaaaaaaaa",
+        title: "2026 10 4 鎌倉ラザロvs東海シーガルズ",
+        publishedAt: "2026-10-06T03:00:00Z",
+        durationSec: 1538,
+        isLiveStream: false,
+      },
+    ]);
+  });
+
+  it("asks for at most fifty videos in one call", async () => {
+    const ids = Array.from({ length: 120 }, (_, index) => `video-${index}`);
+    const api = fakeApi(({ params }) => ({
+      items: (params.id ?? "").split(",").map((id) => video(id)),
+    }));
+    const youtube = createYoutubeClient({ apiKey: "key", fetch: api.fetch });
+
+    const videos = await youtube.getVideos(ids);
+
+    expect(videos.map((item) => item.videoId)).toEqual(ids);
+    expect(api.calls.map(({ params }) => (params.id ?? "").split(",").length)).toEqual([
+      50, 50, 20,
+    ]);
+  });
+
+  it("leaves out a video the API does not return, as for one deleted or made private", async () => {
+    const api = fakeApi(() => ({ items: [video("aaaaaaaaaaa")] }));
+    const youtube = createYoutubeClient({ apiKey: "key", fetch: api.fetch });
+
+    const videos = await youtube.getVideos(["aaaaaaaaaaa", "bbbbbbbbbbb"]);
+
+    expect(videos.map((item) => item.videoId)).toEqual(["aaaaaaaaaaa"]);
+  });
+
+  it.each([
+    [
+      "a stream that is scheduled",
+      { snippet: { ...video("x").snippet, liveBroadcastContent: "upcoming" } },
+    ],
+    [
+      "a stream that is on air",
+      { snippet: { ...video("x").snippet, liveBroadcastContent: "live" } },
+    ],
+    [
+      "a stream that has ended",
+      { liveStreamingDetails: { actualEndTime: "2026-12-20T06:00:00Z" } },
+    ],
+  ])("marks %s as a live stream", async (_case, overrides) => {
+    const api = fakeApi(() => ({ items: [video("aaaaaaaaaaa", overrides)] }));
+    const youtube = createYoutubeClient({ apiKey: "key", fetch: api.fetch });
+
+    expect((await youtube.getVideos(["aaaaaaaaaaa"]))[0]?.isLiveStream).toBe(true);
+  });
+
+  it("reports a refused call without the key or the response body", async () => {
+    const api = fakeApi(() => ({ error: { message: "API key SECRET-KEY not valid" } }), 400);
+    const youtube = createYoutubeClient({ apiKey: "SECRET-KEY", fetch: api.fetch });
+
+    const error = await youtube.getVideos(["aaaaaaaaaaa"]).catch((caught: unknown) => caught);
+
+    expect(error).toHaveProperty("message", "YouTube Data API: videos answered 400");
+  });
+});
+
+describe("secondsOf", () => {
+  it.each([
+    ["PT29M57S", 1797],
+    ["PT45S", 45],
+    ["PT1H41M", 6060],
+    ["PT2H", 7200],
+    ["P1DT1S", 86401],
+    ["P0D", 0],
+  ])("reads %s as %i seconds", (duration, seconds) => {
+    expect(secondsOf(duration)).toBe(seconds);
+  });
+
+  it("refuses a text that is not a duration", () => {
+    expect(() => secondsOf("29:57")).toThrow("not an ISO 8601 duration");
+  });
+});
