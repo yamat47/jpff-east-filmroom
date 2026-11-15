@@ -15,6 +15,9 @@ scope changes that file in the same pull request.
 - **Nothing reaches the site without a person's check.** A new game, a new team, an alias and a
   removal arrive as a pull request that a person merges. An automatic judgement, by rule or by
   the Claude API, is a draft: when it is unsure it sets `needsReview` and never decides alone.
+  The only exception is what YouTube itself reports about a game that is already merged: the
+  state of a live stream, its scheduled start and the length of the video (requirements,
+  section 6).
 - **A published game ID never changes.** It is the URL of the game page
   (`/games/{date}-{teamA}-vs-{teamB}/`).
 - **No analytics, no advertising, no contact form, no login.** Do not add a script from another

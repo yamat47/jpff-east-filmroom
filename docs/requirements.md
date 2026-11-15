@@ -153,6 +153,9 @@ A team:
     - ワイルドギース&東京ブロンコス
 ```
 
+A title names a team by its `name` or by one of its `aliases`; the two together are the alias
+dictionary of section 7.
+
 A game and its videos:
 
 ```json
@@ -185,6 +188,7 @@ A game and its videos:
 | `teams` | Two team IDs, in the order of the title |
 | `needsReview` | `true` when the automatic judgement is unsure. Set to `false` by the person who checks it in the pull request |
 | `videos[].part` | Order of split videos. `1` for a single video |
+| `videos[].durationSec` | Length in seconds. `null` for a live stream that has not ended |
 | `videos[].title` | The title on YouTube as written. Used to verify the parsing and shown on the page |
 | `videos[].live` | `null` for an ordinary video. For a live stream `{ "status": "upcoming" \| "live" \| "archived", "scheduledStartTime": "..." }` |
 
@@ -201,7 +205,8 @@ View counts, descriptions, scores and venues are not stored.
 ## 6. Update flow
 
 New videos are picked up automatically, and a person reviews and merges the pull request that
-carries their draft tags. Nothing reaches the site without a person's check.
+carries their draft tags. Nothing reaches the site without a person's check, except the few
+values named under "Changes that do not go through a pull request".
 
 ### Fetching new videos (GitHub Actions, once a day)
 
@@ -350,7 +355,7 @@ and no database.
 │   └── games/
 │       └── 2026-2027.json
 ├── src/
-│   ├── pages/            index, games/[id], teams/[id], seasons/[id], about
+│   ├── pages/            index, games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
 │   ├── components/       GameCard, Player, FilterBar and so on
 │   └── lib/              schema (Zod), season derivation, data loading
 ├── scripts/
@@ -365,7 +370,8 @@ and no database.
     ├── ci.yml            per pull request: validation, tests, build
     ├── deploy.yml        on push to main: build and publish
     ├── sync.yml          once a day, and by hand
-    └── check-removed.yml once a day, and by hand
+    ├── check-removed.yml once a day, and by hand
+    └── update-skills.yml once a month: the agent skills under .claude/skills/
 ```
 
 - Title parsing and season derivation are pure functions with no external API, fixed by tests.
@@ -458,6 +464,9 @@ Each has a working assumption so that the work does not stop.
 | Number and format of old videos | Unknown. A few hundred, in the 2026 format | At the first import |
 | Design direction | White, text first, phone first | When the pages are built |
 | Connection to the existing GitHub Pages setup | Not worked out | Before publication |
+| Which identity the import workflows act as | Not decided. With `github.token` a push to `main` is refused by the repository's ruleset, and a pull request it opens starts neither CI nor a deployment. A GitHub App token for the pull requests is the likely answer; how the live state reaches `main` is decided with it | Before step 5 |
+| What a correction does to a published game ID | Not decided. The ID never changes once published, yet it must equal its date and teams, so correcting either breaks one of the two rules. Until publication every ID follows its date and teams | Before publication |
+| Whether a game with `needsReview: true` may be merged | Not decided. CI does not look at the flag yet | Before step 5 |
 | Claude API model | Named by an environment variable, chosen by accuracy and cost | When the LLM judgement is built |
 
 ## Sources

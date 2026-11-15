@@ -1,6 +1,7 @@
 # API keys for the import scripts
 .env
 .env.*
+!.env.example
 
 # Claude Code settings that belong to one machine
 .claude/settings.local.json
