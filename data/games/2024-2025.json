@@ -1,0 +1,514 @@
+[
+  {
+    "id": "2024-08-25-kawasaki-grizzlies-vs-gunma-stallions",
+    "date": "2024-08-25",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "kawasaki-grizzlies",
+      "gunma-stallions"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "tSGjF5tUl7I",
+        "part": 1,
+        "title": "20240825第1節川崎vs群馬",
+        "publishedAt": "2024-08-25T14:21:13Z",
+        "durationSec": 2341,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-08-tokai-seagulls-vs-brandings",
+    "date": "2024-09-08",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokai-seagulls",
+      "brandings"
+    ],
+    "needsReview": true,
+    "videos": [
+      {
+        "videoId": "-zi4hEOLdSA",
+        "part": 1,
+        "title": "20240908-東海vsブラ 4K",
+        "publishedAt": "2024-09-08T09:18:47Z",
+        "durationSec": 830,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-08-tokyo-broncos-vs-kamakura-lazaro",
+    "date": "2024-09-08",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokyo-broncos",
+      "kamakura-lazaro"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "STGtOlPEsDk",
+        "part": 1,
+        "title": "20240908-1 東京vs鎌倉 4K",
+        "publishedAt": "2024-09-08T09:10:25Z",
+        "durationSec": 1622,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-15-tokorozawa-outlaws-vs-yokohama-kofu",
+    "date": "2024-09-15",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokorozawa-outlaws",
+      "yokohama-kofu"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "DNOGAxsWn3c",
+        "part": 1,
+        "title": "20240915所沢vs合同",
+        "publishedAt": "2024-09-18T02:11:33Z",
+        "durationSec": 1762,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-15-urawa-ulowers-vs-wild-geese",
+    "date": "2024-09-15",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "urawa-ulowers",
+      "wild-geese"
+    ],
+    "needsReview": true,
+    "videos": [
+      {
+        "videoId": "uoO2f0j7-kk",
+        "part": 1,
+        "title": "2024/09/15 第4節　浦和vsWG",
+        "publishedAt": "2024-09-17T16:06:15Z",
+        "durationSec": 1466,
+        "live": null
+      },
+      {
+        "videoId": "6cK-qGT0zYA",
+        "part": 2,
+        "title": "20240915 浦和 vs ギース",
+        "publishedAt": "2024-09-17T21:24:19Z",
+        "durationSec": 1523,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-22-kawasaki-grizzlies-vs-kamakura-lazaro",
+    "date": "2024-09-22",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "kawasaki-grizzlies",
+      "kamakura-lazaro"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "kCzp3nnohzg",
+        "part": 1,
+        "title": "2024/09/22  川崎vs鎌倉",
+        "publishedAt": "2024-09-27T18:37:29Z",
+        "durationSec": 1952,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-22-tokai-seagulls-vs-gunma-stallions",
+    "date": "2024-09-22",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokai-seagulls",
+      "gunma-stallions"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "SCHJvNrc4TQ",
+        "part": 1,
+        "title": "2024/09/22 東海vs群馬",
+        "publishedAt": "2024-09-27T17:32:06Z",
+        "durationSec": 2334,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-09-29-tachikawa-falcons-vs-wild-geese",
+    "date": "2024-09-29",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tachikawa-falcons",
+      "wild-geese"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "FJNl4TKfCaM",
+        "part": 1,
+        "title": "2024/09/29  立川vsWG",
+        "publishedAt": "2024-09-29T08:44:17Z",
+        "durationSec": 1465,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-06-kawasaki-grizzlies-vs-tokai-seagulls",
+    "date": "2024-10-06",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "kawasaki-grizzlies",
+      "tokai-seagulls"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "FjuqiEEnoZk",
+        "part": 1,
+        "title": "20241006 川崎vs東海",
+        "publishedAt": "2024-10-07T13:14:37Z",
+        "durationSec": 1315,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-13-brandings-vs-kamakura-lazaro",
+    "date": "2024-10-13",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "brandings",
+      "kamakura-lazaro"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "h5xsMKkPW9w",
+        "part": 1,
+        "title": "20241013 ブランディングスvs鎌倉ラザロ",
+        "publishedAt": "2024-10-14T03:37:40Z",
+        "durationSec": 1706,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-13-tokyo-broncos-vs-gunma-stallions",
+    "date": "2024-10-13",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokyo-broncos",
+      "gunma-stallions"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "wLnfgORwgcE",
+        "part": 1,
+        "title": "20241013 東京ブロンコスvs群馬スタリオンズ",
+        "publishedAt": "2024-10-13T21:26:54Z",
+        "durationSec": 3100,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-20-urawa-ulowers-vs-tokorozawa-outlaws",
+    "date": "2024-10-20",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "urawa-ulowers",
+      "tokorozawa-outlaws"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "IDhivg4UYTA",
+        "part": 1,
+        "title": "20241020-1 浦和vs所沢",
+        "publishedAt": "2024-10-20T10:41:45Z",
+        "durationSec": 1117,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-20-wild-geese-vs-yokohama-kofu",
+    "date": "2024-10-20",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "wild-geese",
+      "yokohama-kofu"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "F54xr7rzwsQ",
+        "part": 1,
+        "title": "20241020-2 WGvs横浜甲府",
+        "publishedAt": "2024-10-20T10:59:39Z",
+        "durationSec": 1626,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-27-kawasaki-grizzlies-vs-brandings",
+    "date": "2024-10-27",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "kawasaki-grizzlies",
+      "brandings"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "GCq_7aRiSxU",
+        "part": 1,
+        "title": "20241027 川崎グリズリーズ  vs ブランディングス",
+        "publishedAt": "2024-10-28T13:18:06Z",
+        "durationSec": 2475,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-10-27-tokai-seagulls-vs-kamakura-lazaro",
+    "date": "2024-10-27",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokai-seagulls",
+      "kamakura-lazaro"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "dW7l6iyXO_4",
+        "part": 1,
+        "title": "20241027 東海シーガルズ  vs  鎌倉ラザロ",
+        "publishedAt": "2024-10-28T13:24:16Z",
+        "durationSec": 2312,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-11-10-tachikawa-falcons-vs-yokohama-kofu",
+    "date": "2024-11-10",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tachikawa-falcons",
+      "yokohama-kofu"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "QIeF7myynRQ",
+        "part": 1,
+        "title": "20241110_立川ファルコンズvs横浜甲府合同チーム",
+        "publishedAt": "2024-11-11T15:29:42Z",
+        "durationSec": 1672,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-11-10-tokyo-broncos-vs-tokai-seagulls",
+    "date": "2024-11-10",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokyo-broncos",
+      "tokai-seagulls"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "z3QsIoWKI7Q",
+        "part": 1,
+        "title": "20241110_東京ブロンコスvs東海シーガルズ",
+        "publishedAt": "2024-11-10T16:16:17Z",
+        "durationSec": 2277,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-11-17-brandings-vs-gunma-stallions",
+    "date": "2024-11-17",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "brandings",
+      "gunma-stallions"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "KzZAmBgGZjM",
+        "part": 1,
+        "title": "20241117ブランディングスvs群馬スタリオンズ",
+        "publishedAt": "2024-11-17T11:45:33Z",
+        "durationSec": 1658,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-11-17-tokorozawa-outlaws-vs-wild-geese",
+    "date": "2024-11-17",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "tokorozawa-outlaws",
+      "wild-geese"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "5hQk6_30X-o",
+        "part": 1,
+        "title": "20241117 所沢アウトローズvsワイルドギース",
+        "publishedAt": "2024-11-17T10:57:14Z",
+        "durationSec": 2239,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-11-24-kawasaki-grizzlies-vs-tokyo-broncos",
+    "date": "2024-11-24",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "kawasaki-grizzlies",
+      "tokyo-broncos"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "VKlktWHg2Zg",
+        "part": 1,
+        "title": "20241124-1 川崎vs東京",
+        "publishedAt": "2024-11-24T08:40:27Z",
+        "durationSec": 2483,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-11-24-urawa-ulowers-vs-tachikawa-falcons",
+    "date": "2024-11-24",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "urawa-ulowers",
+      "tachikawa-falcons"
+    ],
+    "needsReview": true,
+    "videos": [
+      {
+        "videoId": "yrf3me1Fnm8",
+        "part": 1,
+        "title": "2024/11/24 　浦和vs立川",
+        "publishedAt": "2024-11-24T13:50:52Z",
+        "durationSec": 2290,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-12-01-kamakura-lazaro-vs-gunma-stallions",
+    "date": "2024-12-01",
+    "season": "2024-2025",
+    "type": "league",
+    "teams": [
+      "kamakura-lazaro",
+      "gunma-stallions"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "qfYbW2i8tdI",
+        "part": 1,
+        "title": "20241201 鎌倉vs群馬",
+        "publishedAt": "2024-12-03T10:16:57Z",
+        "durationSec": 2181,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-12-15-kawasaki-grizzlies-vs-tachikawa-falcons",
+    "date": "2024-12-15",
+    "season": "2024-2025",
+    "type": "playoff",
+    "teams": [
+      "kawasaki-grizzlies",
+      "tachikawa-falcons"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "jXwDcR3coU0",
+        "part": 1,
+        "title": "2024 準決勝 川崎グリズリーズvs立川ファルコンズ　改",
+        "publishedAt": "2024-12-15T14:09:33Z",
+        "durationSec": 1492,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2024-12-15-urawa-ulowers-vs-tokyo-broncos",
+    "date": "2024-12-15",
+    "season": "2024-2025",
+    "type": "playoff",
+    "teams": [
+      "urawa-ulowers",
+      "tokyo-broncos"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "8ebvREsgQ0U",
+        "part": 1,
+        "title": "2024 準決勝 浦和ウラワーズvs東京ブロンコス",
+        "publishedAt": "2024-12-15T12:54:40Z",
+        "durationSec": 2321,
+        "live": null
+      }
+    ]
+  }
+]
