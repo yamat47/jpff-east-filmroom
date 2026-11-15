@@ -44,6 +44,9 @@ Out of scope:
 - Scores, venues, standings, block assignments.
 - Tags on plays or timestamps.
 - Videos that are not games (they go to the exclusion list when found).
+- A second upload of a game that is already shown: the same footage converted again, cut
+  differently, or uploaded by mistake. One version is on the game page and the others go to the
+  exclusion list, each naming the game.
 - Linking a merged or joint team to the teams it came from.
 - Favorites, multi-view, watch history, a page per matchup.
 - Analytics, a contact form, login, comments.
@@ -141,7 +144,7 @@ which is what makes a split game natural.
 | --- | --- |
 | `data/teams.yaml` | The teams and their aliases |
 | `data/games/{seasonId}.json` | Games and their videos, one file per season so that a pull request diff stays readable |
-| `data/excluded.json` | IDs of videos judged not to be games, with the reason, so that they do not come back in a pull request |
+| `data/excluded.json` | IDs of videos that are in no game, with the reason (not a game, or a second upload of one), so that they do not come back in a pull request |
 
 A team:
 
@@ -242,7 +245,8 @@ directly:
 
 ### The first full import
 
-- The same script runs in a "full" mode from a local machine.
+- The same script runs from a local machine. It looks at every upload on every run, and
+  `--season` limits which season's file it writes.
 - One pull request per season, to keep each reviewable.
 - The alias dictionary is made here: every spelling found in the titles is listed, the Claude
   API proposes, a person decides.
@@ -286,13 +290,21 @@ a full date is read as having no date. The titles of that list are in
    month and day may have one digit or two. Eight digits with no separator (`20251102`) are a
    date too.
 3. Matchup: split the rest at `vs`, in any case, with or without spaces around it.
-4. Teams: match each side exactly against the alias dictionary. Words before the first team
+4. Label: what stands between the date and the first team is not part of its name when it is
+   the game's number on that day (`-1`, ` 2`, `①`, `2HD`), the round (`第4節`,
+   `第13節第2試合`), the half the video covers (`前半`, `【後半】`), or a lone `-` or `_`.
+5. Teams: match each side exactly against the alias dictionary. Words before the first team
    that name the occasion, as in 「プレーオフ 東海シーガルズ」 or 「2025準決勝 川崎グリズリーズ」,
    are not part of its name.
-5. Split marker: words after the team name such as 「前半」「後半」「Part 2」「①」 become `part`.
-   A number counts as a part only from 1 to 99, so a year at the end is not one.
-6. Type keywords: 「プレーオフ」「決勝」「ボウル」「オールスター」「練習試合」 and the like in the
+6. Split marker: words after the team name such as 「前半」「後半」「Part 2」「①」 become `part`.
+   A number counts as a part only from 1 to 99, so a year at the end is not one. A quarter
+   (`1Q` to `4Q`, before everything else or after the teams, also as `前半2Q`) is the part.
+7. Type keywords: 「プレーオフ」「決勝」「ボウル」「オールスター」「練習試合」 and the like in the
    title decide the type.
+
+A title without a type keyword is drafted as `league`. Until the Claude API judgement exists
+(step 5) such a game is not marked `needsReview` on that ground alone: nearly every game would
+be, and the mark would no longer single out the games with something to decide.
 
 A video whose date, `vs` or team could not be read goes to the LLM judgement as needing review.
 Older videos may be written differently, so the first import looks at the real data and adds
@@ -371,7 +383,7 @@ and no database.
 │   ├── components/       GameCard, Player, FilterBar and so on
 │   └── lib/              schema (Zod), season derivation, data loading
 ├── scripts/
-│   ├── sync.ts           import of new videos (with a full mode)
+│   ├── sync.ts           import of new videos (--season writes one season only)
 │   ├── check-removed.ts  removal check
 │   ├── parse-title.ts    title parsing
 │   ├── classify.ts       Claude API calls
@@ -435,7 +447,8 @@ On the site:
 Done means: every game is listed, a visitor can move from game to game, and new videos arrive
 as pull requests.
 
-- Every game video of the channel is on some game page. No other video is.
+- Every game of the channel's videos has a game page, and a second upload of a game is the
+  only game video that is on none. No other video is on a page.
 - Every game page lists earlier games of team A, earlier games of team B and games of the same
   season, newest first, as links.
 - The five titles in section 7 parse into the right date and teams (automated test).
@@ -472,8 +485,9 @@ Each has a working assumption so that the work does not stop.
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
 | Whether all-star and select teams get a team page | They do, like any other team | At the first import |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | At the first import |
-| Split markers in titles | 「前半」「後半」, 「Part 2」 and a number after a space (「①」 included). No real example seen yet, and a circled number written without a space is not read | At the first import |
-| Number and format of old videos | Unknown. A few hundred, in the 2026 format | At the first import |
+| The 2018 all-star game (`2018JP東vsKCFFオールスター`, video `wfeIgIHCkmY`) | In no game: its title and description give only "July 2018", and a game needs a date. Listed as unread by every import until it is dated or excluded | In the review of the first import |
+| What a second upload of a game is | One version on the game page, the others on the exclusion list. Whether a visitor should be able to reach the other versions is not decided | In the review of the first import |
+| Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
 | Design direction | White, text first, phone first | When the pages are built |
 | Connection to the existing GitHub Pages setup | Not worked out | Before publication |
 | Which identity the import workflows act as | Not decided. With `github.token` a push to `main` is refused by the repository's ruleset, and a pull request it opens starts neither CI nor a deployment. A GitHub App token for the pull requests is the likely answer; how the live state reaches `main` is decided with it | Before step 5 |

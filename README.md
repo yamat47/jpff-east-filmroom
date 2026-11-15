@@ -10,8 +10,17 @@ What the site does, how its data is modelled and the order it is built in are in
 ## Data
 
 The site is built from the files under [`data/`](data/): the teams, the games of each season with
-their videos, and the videos left out because they are not games. `make validate` checks them
+their videos, and the videos that are in no game, because they are not game footage or because
+the game was uploaded more than once. `make validate` checks them
 against the schema in [`src/lib/schema.ts`](src/lib/schema.ts) and against each other.
+
+## Importing videos
+
+`make sync` asks the YouTube Data API for the channel's uploads, places the ones the data does
+not know yet into games by the rules in [`scripts/parse-title.ts`](scripts/parse-title.ts),
+writes the season files and prints a draft for the pull request body. A video the rules cannot
+read is listed as unread and placed by hand. It needs `YOUTUBE_API_KEY` in `.env`
+([`.env.example`](.env.example) says where the key comes from).
 
 ## Development
 
