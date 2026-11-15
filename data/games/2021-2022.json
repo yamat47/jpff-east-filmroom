@@ -1,0 +1,353 @@
+[
+  {
+    "id": "2021-10-31-wild-geese-vs-tochigi-gunma",
+    "date": "2021-10-31",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "wild-geese",
+      "tochigi-gunma"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "MEGkXWxkaGk",
+        "part": 1,
+        "title": "１Ｑ　ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　",
+        "publishedAt": "2021-10-31T07:33:06Z",
+        "durationSec": 730,
+        "live": null
+      },
+      {
+        "videoId": "aPNFEgDU4J8",
+        "part": 2,
+        "title": "２Ｑ　ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　",
+        "publishedAt": "2021-10-31T07:15:35Z",
+        "durationSec": 779,
+        "live": null
+      },
+      {
+        "videoId": "DkMJiSh-eB4",
+        "part": 3,
+        "title": "３Ｑ　ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　",
+        "publishedAt": "2021-10-31T07:23:44Z",
+        "durationSec": 572,
+        "live": null
+      },
+      {
+        "videoId": "ba9dkSabDZ4",
+        "part": 4,
+        "title": "4Ｑ ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　",
+        "publishedAt": "2021-10-31T07:38:54Z",
+        "durationSec": 535,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-11-07-tokai-seagulls-vs-brandings",
+    "date": "2021-11-07",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "tokai-seagulls",
+      "brandings"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "6w6IZcO0JIg",
+        "part": 1,
+        "title": "1Q 東海シーガルズvsブランディングス",
+        "publishedAt": "2021-11-09T12:18:03Z",
+        "durationSec": 424,
+        "live": null
+      },
+      {
+        "videoId": "GDXzaFMHjtA",
+        "part": 2,
+        "title": "2Q 東海シーガルズvsブランディングス",
+        "publishedAt": "2021-11-09T12:19:38Z",
+        "durationSec": 478,
+        "live": null
+      },
+      {
+        "videoId": "cOvKK5I3ebY",
+        "part": 3,
+        "title": "3Q 東海シーガルズvsブランディングス",
+        "publishedAt": "2021-11-09T12:20:21Z",
+        "durationSec": 561,
+        "live": null
+      },
+      {
+        "videoId": "clSF4R2SqUQ",
+        "part": 4,
+        "title": "4Q 東海シーガルズvsブランディングス",
+        "publishedAt": "2021-11-09T12:20:47Z",
+        "durationSec": 56,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-11-14-kawasaki-grizzlies-vs-kamakura-lazaro",
+    "date": "2021-11-14",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "kawasaki-grizzlies",
+      "kamakura-lazaro"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "lMKo-yUjTGE",
+        "part": 1,
+        "title": "20211114 1川崎vs鎌倉前半1Q",
+        "publishedAt": "2021-11-15T13:03:51Z",
+        "durationSec": 552,
+        "live": null
+      },
+      {
+        "videoId": "z5iENVfDMF4",
+        "part": 2,
+        "title": "20211114 1川崎vs鎌倉前半2Q",
+        "publishedAt": "2021-11-15T13:04:25Z",
+        "durationSec": 570,
+        "live": null
+      },
+      {
+        "videoId": "jBvS1rC7zf4",
+        "part": 3,
+        "title": "20211114 1川崎vs鎌倉後半",
+        "publishedAt": "2021-11-14T13:45:44Z",
+        "durationSec": 668,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-11-14-urawa-ulowers-vs-wild-geese",
+    "date": "2021-11-14",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "urawa-ulowers",
+      "wild-geese"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "8VnXrUpm0Do",
+        "part": 1,
+        "title": "20211114 2浦和vsWG前半",
+        "publishedAt": "2021-11-14T13:01:06Z",
+        "durationSec": 864,
+        "live": null
+      },
+      {
+        "videoId": "qYvuqijfqSU",
+        "part": 2,
+        "title": "20211114 2浦和vsWG後半",
+        "publishedAt": "2021-11-14T13:01:38Z",
+        "durationSec": 830,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-11-21-tochigi-gunma-vs-tokorozawa-outlaws",
+    "date": "2021-11-21",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "tochigi-gunma",
+      "tokorozawa-outlaws"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "UMtgowjJXKE",
+        "part": 1,
+        "title": "20211121 群馬栃木vs所沢 前半",
+        "publishedAt": "2021-11-25T15:43:28Z",
+        "durationSec": 833,
+        "live": null
+      },
+      {
+        "videoId": "ZpHVN0iNmNo",
+        "part": 2,
+        "title": "20211121 群馬栃木vs所沢 後半",
+        "publishedAt": "2021-11-25T15:44:08Z",
+        "durationSec": 888,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-12-05-brandings-vs-tochigi-gunma",
+    "date": "2021-12-05",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "brandings",
+      "tochigi-gunma"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "xfej9e2h6sI",
+        "part": 1,
+        "title": "20211205 1ブラvs群馬栃木 前半",
+        "publishedAt": "2021-12-05T14:28:58Z",
+        "durationSec": 923,
+        "live": null
+      },
+      {
+        "videoId": "iG_NtQy6vv0",
+        "part": 2,
+        "title": "20211205 1ブラvs群馬栃木 後半",
+        "publishedAt": "2021-12-05T14:29:34Z",
+        "durationSec": 479,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-12-05-wild-geese-vs-kamakura-lazaro",
+    "date": "2021-12-05",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "wild-geese",
+      "kamakura-lazaro"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "we7OuenPMSA",
+        "part": 1,
+        "title": "20211205 2WGvs鎌倉 前半",
+        "publishedAt": "2021-12-05T15:09:26Z",
+        "durationSec": 901,
+        "live": null
+      },
+      {
+        "videoId": "vPHe0pPveo8",
+        "part": 2,
+        "title": "20211205 2WGvs鎌倉 後半",
+        "publishedAt": "2021-12-05T14:36:44Z",
+        "durationSec": 508,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2021-12-19-brandings-vs-wild-geese",
+    "date": "2021-12-19",
+    "season": "2021-2022",
+    "type": "league",
+    "teams": [
+      "brandings",
+      "wild-geese"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "L8yFgy3hhq4",
+        "part": 1,
+        "title": "2021 12 19ブランディングスvsWG 1Q",
+        "publishedAt": "2021-12-20T00:29:40Z",
+        "durationSec": 418,
+        "live": null
+      },
+      {
+        "videoId": "eaV7galINWA",
+        "part": 2,
+        "title": "2021 12 19ブランディングスvsWG 2Q",
+        "publishedAt": "2021-12-20T00:36:58Z",
+        "durationSec": 422,
+        "live": null
+      },
+      {
+        "videoId": "lVmk_RMrR1I",
+        "part": 3,
+        "title": "2021 12 19ブランディングスvsWG 3Q",
+        "publishedAt": "2021-12-20T00:43:02Z",
+        "durationSec": 466,
+        "live": null
+      },
+      {
+        "videoId": "Uu2hpeP_AYk",
+        "part": 4,
+        "title": "2021 12 19ブランディングスvsWG 4Q",
+        "publishedAt": "2021-12-20T00:55:23Z",
+        "durationSec": 655,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2022-01-16-tachikawa-falcons-vs-tokai-seagulls",
+    "date": "2022-01-16",
+    "season": "2021-2022",
+    "type": "playoff",
+    "teams": [
+      "tachikawa-falcons",
+      "tokai-seagulls"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "-697RIivMig",
+        "part": 1,
+        "title": "20220116 立川ファルコンズ vs 東海シーガルズ",
+        "publishedAt": "2022-01-22T12:46:34Z",
+        "durationSec": 1751,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2022-01-16-urawa-ulowers-vs-kawasaki-grizzlies",
+    "date": "2022-01-16",
+    "season": "2021-2022",
+    "type": "playoff",
+    "teams": [
+      "urawa-ulowers",
+      "kawasaki-grizzlies"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "1KaHQRY0tEw",
+        "part": 1,
+        "title": "20220116 浦和ウラワーズ vs 川崎グリズリーズ",
+        "publishedAt": "2022-01-22T13:26:06Z",
+        "durationSec": 2750,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "2022-01-30-urawa-ulowers-vs-tachikawa-falcons",
+    "date": "2022-01-30",
+    "season": "2021-2022",
+    "type": "playoff",
+    "teams": [
+      "urawa-ulowers",
+      "tachikawa-falcons"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "DwiRftHCVhE",
+        "part": 1,
+        "title": "20220130JPFF決勝戦 浦和vs立川",
+        "publishedAt": "2022-01-31T12:42:14Z",
+        "durationSec": 2305,
+        "live": null
+      }
+    ]
+  }
+]
