@@ -14,14 +14,17 @@ scope changes that file in the same pull request.
 |---|---|
 | `data/teams.yaml` | The teams and the spellings their names take in video titles |
 | `data/games/{seasonId}.json` | The games of one season and their videos |
-| `data/excluded.json` | Videos judged not to be games, so that they do not come back |
+| `data/excluded.json` | Videos that are in no game, with the reason: not game footage, or one game uploaded again. Listed so that the import does not offer them again |
 | `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
 | `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
 | `src/pages/`, `src/site.ts` | The routes, and the site's name, address and official links |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
+| `scripts/youtube.ts` | The YouTube Data API calls the import makes: the channel's uploads and the details of videos |
+| `scripts/draft-games.ts` | Places videos the data does not know yet into games, by the rules alone, and renders the draft for a pull request body |
+| `scripts/sync.ts` | The import: fetches, drafts, writes the season files, prints the draft. `make sync` |
 | `tests/` | Vitest tests of the functions under `src/lib/` and `scripts/` |
-| `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date and the two team IDs the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
+| `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date, the two team IDs and the part the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
 
 `docs/requirements.md` lists the files that are still to come (the import scripts, the pages).
@@ -38,6 +41,7 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 | Typecheck, lint, test, validate and build in one go | `make check` (CI runs the same, plus zizmor on the workflows) |
 | Type check / lint / auto-fix / test | `make typecheck` / `make lint` / `make fix` / `make test` |
 | Check the data | `make validate` (always after editing a file under `data/`) |
+| Import new videos | `make sync` (needs `YOUTUBE_API_KEY` in `.env`; `ARGS="--season=2026-2027"` writes one season only) |
 | Build the site | `make build` (`dist/`) |
 | Dev server | `make up` (http://localhost:4321) / `make logs` / `make down` |
 | Add or update dependencies | `make pnpm ARGS="add -D <pkg>"` (the lockfile is also updated on the host) |
@@ -50,6 +54,8 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 - **Nothing reaches the site without a person's check.** A new game, a new team, an alias and a
   removal arrive as a pull request that a person merges. An automatic judgement, by rule or by
   the Claude API, is a draft: when it is unsure it sets `needsReview` and never decides alone.
+  One default is not marked: a game whose title names no occasion is drafted as `league`
+  without the flag, until the Claude API judgement exists (requirements, section 7).
   The only exception is what YouTube itself reports about a game that is already merged: the
   state of a live stream, its scheduled start and the length of the video (requirements,
   section 6).
@@ -71,6 +77,12 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 - **Title parsing and season derivation stay pure.** They take what they need as arguments and
   call no API, read no file and no clock, so that tests can fix their behaviour on real titles.
   A title the rules cannot read is reported as unread (`null`), never guessed.
+- **The import only adds.** `make sync` places videos that are in no game and not on the
+  exclusion list, and never rewrites a video the data already has. So a game corrected by hand
+  stays corrected, and a video the rules cannot read is placed by hand: into a game, or onto the
+  exclusion list with the reason.
+- **A bare 「合同」 is not an alias.** Which joint team it means depends on the year, so a title
+  that says only 「合同」 is placed by hand.
 - Scripts run on Node's type stripping (tests go through Vitest), so a module imports its
   neighbours with the `.ts` extension and uses no syntax that needs compiling (`enum`,
   `namespace`, parameter properties). `erasableSyntaxOnly` in `tsconfig.json` makes the typecheck

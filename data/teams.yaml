@@ -6,26 +6,53 @@
 #            letters, digits and symbols become half-width, runs of spaces become one).
 #
 # A merged or joint team is a team of its own, not an alias of the teams it came from.
+# A bare 「合同」 is not an alias of any team: which joint team it means depends on the year.
 
 - id: tachikawa-falcons
   name: 立川ファルコンズ
+  aliases:
+    - 立川
 
 - id: kamakura-lazaro
   name: 鎌倉ラザロ
+  aliases:
+    - 鎌倉
 
 - id: gunma-stallions
   name: 群馬スタリオンズ
+  aliases:
+    - 群馬
 
 - id: urawa-ulowers
   name: 浦和ウラワーズ
+  aliases:
+    - 浦和
+    # Written with a horizontal bar (―) where the long vowel mark (ー) belongs.
+    - 浦和ウラワ―ズ
 
 - id: kawasaki-grizzlies
   name: 川崎グリズリーズ
+  aliases:
+    - 川崎
 
 - id: tokai-seagulls
   name: 東海シーガルズ
+  aliases:
+    - 東海
 
-# ワイルドギース and 東京ブロンコス, playing as one team.
+- id: wild-geese
+  name: ワイルドギース
+  aliases:
+    - WG
+    - ギース
+
+- id: tokyo-broncos
+  name: 東京ブロンコス
+  aliases:
+    - 東京
+    - ブロンコス
+
+# ワイルドギース and 東京ブロンコス, playing as one team from the 2026-2027 season.
 - id: geese-broncos
   name: ギースブロンコス合同チーム
   aliases:
@@ -34,10 +61,30 @@
 
 - id: brandings
   name: ブランディングス
+  aliases:
+    - ブラ
 
-# 横浜タイタンズ and 甲府ユリシーズ, merged.
+# 横浜タイタンズ and 甲府ユリシーズ playing as one team, in the seasons 2022-2023 to 2025-2026
+# that the channel has videos of.
+- id: yokohama-kofu
+  name: 横浜・甲府合同チーム
+  aliases:
+    - 横浜甲府
+    - 横浜甲府合同
+    - 横浜甲府合同チーム
+
+# 横浜タイタンズ and 甲府ユリシーズ, merged from the 2026-2027 season.
 - id: kofu-atsugi-titans
   name: 甲府厚木タイタンズ
 
 - id: tokorozawa-outlaws
   name: 所沢アウトローズ
+  aliases:
+    - 所沢
+    - アウトローズ
+
+# 栃木マダガスカルズ and 群馬スタリオンズ, playing as one team in the 2021-2022 season.
+- id: tochigi-gunma
+  name: 栃木マダガスカルズ&群馬スタリオンズ
+  aliases:
+    - 群馬栃木

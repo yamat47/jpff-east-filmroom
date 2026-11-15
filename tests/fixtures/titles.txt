@@ -1,30 +1,155 @@
-2026/11/8 群馬スタリオンズvs東海シーガルズ	2026-11-08	gunma-stallions	tokai-seagulls
-2026/11/1 浦和ウラワーズvs鎌倉ラザロ	2026-11-01	urawa-ulowers	kamakura-lazaro
-2026/11/1 立川ファルコンズvs川崎グリズリーズ	2026-11-01	tachikawa-falcons	kawasaki-grizzlies
-2026/10/25 ブランディングスvs所沢アウトローズ	2026-10-25	brandings	tokorozawa-outlaws
-2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同	2026-10-25	kofu-atsugi-titans	geese-broncos
-2026/10/11 ワイルドギース&東京ブロンコスvs所沢アウトローズ	2026-10-11	geese-broncos	tokorozawa-outlaws
-2026/10/11 ブランディングスvs甲府厚木タイタンズ	2026-10-11	brandings	kofu-atsugi-titans
-2026 10 4 川崎グリズリーズvs群馬スタリオンズ	2026-10-04	kawasaki-grizzlies	gunma-stallions
-2026 10 4 鎌倉ラザロvs東海シーガルズ	2026-10-04	kamakura-lazaro	tokai-seagulls
-2026/9/13 立川ファルコンズvs東海シーガルズ	2026-09-13	tachikawa-falcons	tokai-seagulls
-2026/9/13　浦和ウラワーズvs群馬スタリオンズ	2026-09-13	urawa-ulowers	gunma-stallions
-2025準決勝　川崎グリズリーズvs浦和ウラワーズ	-	kawasaki-grizzlies	urawa-ulowers
-2025準決勝 立川ファルコンズvs鎌倉ラザロ	-	tachikawa-falcons	kamakura-lazaro
-2025/12/07 プレーオフ 東海シーガルズvsワイルドギース	2025-12-07	tokai-seagulls	-
-2025/11/30 プレーオフ 東京ブロンコスvs鎌倉ラザロ	2025-11-30	-	kamakura-lazaro
-2025/11/30 プレーオフ　浦和ウラワーズvs群馬スタリオンズ	2025-11-30	urawa-ulowers	gunma-stallions
-2025/11/16 所沢アウトローズvs横浜甲府合同	2025-11-16	tokorozawa-outlaws	-
-2025/11/16  川崎グリズリーズvs東京ブロンコス	2025-11-16	kawasaki-grizzlies	-
-2025/11/9 浦和ウラワーズvs立川ファルコンズ	2025-11-09	urawa-ulowers	tachikawa-falcons
-2025/11/9 ワイルドギースvs群馬スタリオンズ	2025-11-09	-	gunma-stallions
-20251102 横浜甲府合同チーム vs ブランディングス	2025-11-02	-	brandings
-20251102 東海シーガルズ vs 鎌倉ラザロ	2025-11-02	tokai-seagulls	kamakura-lazaro
-2025/10/19 所沢アウトローズvsブランディングス	2025-10-19	tokorozawa-outlaws	brandings
-2025/10/19 浦和ウラワーズvs東海シーガルズ	2025-10-19	urawa-ulowers	tokai-seagulls
-2025/10/12  立川ファルコンズvs鎌倉ラザロ	2025-10-12	tachikawa-falcons	kamakura-lazaro
-2025/10/12  川崎グリズリーズvsワイルドギース	2025-10-12	kawasaki-grizzlies	-
-2025/10/5 東京ブロンコスvs群馬スタリオンズ	2025-10-05	-	gunma-stallions
-2025/10/5 所沢アウトローズvs横浜・甲府合同チーム	2025-10-05	tokorozawa-outlaws	-
-2025/09/21 横浜・甲府合同チームvsブランディングス	2025-09-21	-	brandings
-2025/09/21 立川ファルコンズvs東海シーガルズ	2025-09-21	tachikawa-falcons	tokai-seagulls
+2026/11/8 群馬スタリオンズvs東海シーガルズ	2026-11-08	gunma-stallions	tokai-seagulls	-
+2026/11/1 浦和ウラワーズvs鎌倉ラザロ	2026-11-01	urawa-ulowers	kamakura-lazaro	-
+2026/11/1 立川ファルコンズvs川崎グリズリーズ	2026-11-01	tachikawa-falcons	kawasaki-grizzlies	-
+2026/10/25 ブランディングスvs所沢アウトローズ	2026-10-25	brandings	tokorozawa-outlaws	-
+2026/10/25 甲府厚木タイタンズvsWG＆ブロンコス合同	2026-10-25	kofu-atsugi-titans	geese-broncos	-
+2026/10/11 ワイルドギース&東京ブロンコスvs所沢アウトローズ	2026-10-11	geese-broncos	tokorozawa-outlaws	-
+2026/10/11 ブランディングスvs甲府厚木タイタンズ	2026-10-11	brandings	kofu-atsugi-titans	-
+2026 10 4 川崎グリズリーズvs群馬スタリオンズ	2026-10-04	kawasaki-grizzlies	gunma-stallions	-
+2026 10 4 鎌倉ラザロvs東海シーガルズ	2026-10-04	kamakura-lazaro	tokai-seagulls	-
+2026/9/13 立川ファルコンズvs東海シーガルズ	2026-09-13	tachikawa-falcons	tokai-seagulls	-
+2026/9/13　浦和ウラワーズvs群馬スタリオンズ	2026-09-13	urawa-ulowers	gunma-stallions	-
+2025準決勝　川崎グリズリーズvs浦和ウラワーズ	-	kawasaki-grizzlies	urawa-ulowers	-
+2025準決勝 立川ファルコンズvs鎌倉ラザロ	-	tachikawa-falcons	kamakura-lazaro	-
+2025/12/07 プレーオフ 東海シーガルズvsワイルドギース	2025-12-07	tokai-seagulls	wild-geese	-
+2025/11/30 プレーオフ 東京ブロンコスvs鎌倉ラザロ	2025-11-30	tokyo-broncos	kamakura-lazaro	-
+2025/11/30 プレーオフ　浦和ウラワーズvs群馬スタリオンズ	2025-11-30	urawa-ulowers	gunma-stallions	-
+2025/11/16 所沢アウトローズvs横浜甲府合同	2025-11-16	tokorozawa-outlaws	yokohama-kofu	-
+2025/11/16  川崎グリズリーズvs東京ブロンコス	2025-11-16	kawasaki-grizzlies	tokyo-broncos	-
+2025/11/9 浦和ウラワーズvs立川ファルコンズ	2025-11-09	urawa-ulowers	tachikawa-falcons	-
+2025/11/9 ワイルドギースvs群馬スタリオンズ	2025-11-09	wild-geese	gunma-stallions	-
+20251102 横浜甲府合同チーム vs ブランディングス	2025-11-02	yokohama-kofu	brandings	-
+20251102 東海シーガルズ vs 鎌倉ラザロ	2025-11-02	tokai-seagulls	kamakura-lazaro	-
+2025/10/19 所沢アウトローズvsブランディングス	2025-10-19	tokorozawa-outlaws	brandings	-
+2025/10/19 浦和ウラワーズvs東海シーガルズ	2025-10-19	urawa-ulowers	tokai-seagulls	-
+2025/10/12  立川ファルコンズvs鎌倉ラザロ	2025-10-12	tachikawa-falcons	kamakura-lazaro	-
+2025/10/12  川崎グリズリーズvsワイルドギース	2025-10-12	kawasaki-grizzlies	wild-geese	-
+2025/10/5 東京ブロンコスvs群馬スタリオンズ	2025-10-05	tokyo-broncos	gunma-stallions	-
+2025/10/5 所沢アウトローズvs横浜・甲府合同チーム	2025-10-05	tokorozawa-outlaws	yokohama-kofu	-
+2025/09/21 横浜・甲府合同チームvsブランディングス	2025-09-21	yokohama-kofu	brandings	-
+2025/09/21 立川ファルコンズvs東海シーガルズ	2025-09-21	tachikawa-falcons	tokai-seagulls	-
+2025 9 14 第2試合 東京ブロンコス VS WG	2025-09-14	tokyo-broncos	wild-geese	-
+2025 9 14 第1試合 川崎グリズリーズ VS 群馬スタリオンズ	2025-09-14	kawasaki-grizzlies	gunma-stallions	-
+2025/09/07 所沢アウトローズvsブランディングス	2025-09-07	tokorozawa-outlaws	brandings	-
+2025/09/07  浦和ウラワーズvs鎌倉ラザロ	2025-09-07	urawa-ulowers	kamakura-lazaro	-
+2024 準決勝 川崎グリズリーズvs立川ファルコンズ　改	-	kawasaki-grizzlies	-	-
+2024 準決勝 浦和ウラワーズvs東京ブロンコス	-	urawa-ulowers	tokyo-broncos	-
+20241201 鎌倉vs群馬	2024-12-01	kamakura-lazaro	gunma-stallions	-
+2024/11/24 　浦和vs立川	2024-11-24	urawa-ulowers	tachikawa-falcons	-
+20241124-2浦和vs立川	2024-11-24	urawa-ulowers	tachikawa-falcons	-
+20241124-1 川崎vs東京	2024-11-24	kawasaki-grizzlies	tokyo-broncos	-
+20241117ブランディングスvs群馬スタリオンズ	2024-11-17	brandings	gunma-stallions	-
+20241117 所沢アウトローズvsワイルドギース	2024-11-17	tokorozawa-outlaws	wild-geese	-
+20241110_立川ファルコンズvs横浜甲府合同チーム	2024-11-10	tachikawa-falcons	yokohama-kofu	-
+20241110_東京ブロンコスvs東海シーガルズ	2024-11-10	tokyo-broncos	tokai-seagulls	-
+20241027 東海シーガルズ  vs  鎌倉ラザロ	2024-10-27	tokai-seagulls	kamakura-lazaro	-
+20241027 川崎グリズリーズ  vs ブランディングス	2024-10-27	kawasaki-grizzlies	brandings	-
+20241020-2 WGvs横浜甲府	2024-10-20	wild-geese	yokohama-kofu	-
+20241020-1 浦和vs所沢	2024-10-20	urawa-ulowers	tokorozawa-outlaws	-
+20241013 ブランディングスvs鎌倉ラザロ	2024-10-13	brandings	kamakura-lazaro	-
+20241013 東京ブロンコスvs群馬スタリオンズ	2024-10-13	tokyo-broncos	gunma-stallions	-
+20241006 川崎vs東海	2024-10-06	kawasaki-grizzlies	tokai-seagulls	-
+2024/09/29  立川vsWG	2024-09-29	tachikawa-falcons	wild-geese	-
+2024/09/22  川崎vs鎌倉	2024-09-22	kawasaki-grizzlies	kamakura-lazaro	-
+2024/09/22 東海vs群馬	2024-09-22	tokai-seagulls	gunma-stallions	-
+20240915所沢vs合同	2024-09-15	tokorozawa-outlaws	-	-
+20240915 浦和 vs ギース	2024-09-15	urawa-ulowers	wild-geese	-
+2024/09/15 第4節　浦和vsWG	2024-09-15	urawa-ulowers	wild-geese	-
+20240908-2 東海vsブラ 4K3	2024-09-08	tokai-seagulls	-	-
+20240908-2 東海vsブラ 4K2	2024-09-08	tokai-seagulls	-	-
+20240908-東海vsブラ 4K	2024-09-08	tokai-seagulls	-	-
+20240908-1 東京vs鎌倉 4K	2024-09-08	tokyo-broncos	-	-
+20240825第1節川崎vs群馬	2024-08-25	kawasaki-grizzlies	gunma-stallions	-
+20231217-2 東京vs立川	2023-12-17	tokyo-broncos	tachikawa-falcons	-
+20231217-2前半 東京vs立川 前半	2023-12-17	tokyo-broncos	tachikawa-falcons	1
+20231217-2後半 東京vs立川 後半	2023-12-17	tokyo-broncos	tachikawa-falcons	2
+20231217-1 浦和vs川崎	2023-12-17	urawa-ulowers	kawasaki-grizzlies	-
+20231203 第13節第2試合 川崎vsブロンコス	2023-12-03	kawasaki-grizzlies	tokyo-broncos	-
+20231203 第13節第1試合 浦和vs東海	2023-12-03	urawa-ulowers	tokai-seagulls	-
+20231126-1 立川vsWG	2023-11-26	tachikawa-falcons	wild-geese	-
+20231119 第1試合 ブロンコス VS 群馬	2023-11-19	tokyo-broncos	gunma-stallions	-
+20231119 第2試合 ブランディングス VS アウトローズ	2023-11-19	brandings	tokorozawa-outlaws	-
+2023 11 12 第2試合 合同VS鎌倉	2023-11-12	-	kamakura-lazaro	-
+2023 11 12 第1試合 東海VS立川	2023-11-12	tokai-seagulls	tachikawa-falcons	-
+20231029 ②【後半】WG VS 鎌倉	2023-10-29	wild-geese	kamakura-lazaro	2
+20231029 ②【前半】WG VS 鎌倉	2023-10-29	wild-geese	kamakura-lazaro	1
+20231029 ① 浦和 VS 合同	2023-10-29	urawa-ulowers	-	-
+20231022-2 所沢vs群馬	2023-10-22	tokorozawa-outlaws	gunma-stallions	-
+20231022-1 川崎vsブランディングス	2023-10-22	kawasaki-grizzlies	brandings	-
+20231015-1 東海vs鎌倉	2023-10-15	tokai-seagulls	kamakura-lazaro	-
+20231015-2 WGvs横浜甲府	2023-10-15	wild-geese	yokohama-kofu	-
+20231008-2 ブロンコスvsブラ	2023-10-08	tokyo-broncos	brandings	-
+20231008-1 浦和vs立川	2023-10-08	urawa-ulowers	tachikawa-falcons	-
+2018JP東vsKCFFオールスター	-	-	-	-
+20230924-1 浦和vsWG	2023-09-24	urawa-ulowers	wild-geese	-
+20230924-2 立川vs鎌倉	2023-09-24	tachikawa-falcons	kamakura-lazaro	-
+20230917 ブラ vs 群馬	2023-09-17	brandings	gunma-stallions	-
+20230917 川崎 vs 所沢	2023-09-17	kawasaki-grizzlies	tokorozawa-outlaws	-
+2023/09/10　東海vsＷＧ	2023-09-10	tokai-seagulls	wild-geese	-
+20230903　東京vs所沢	2023-09-03	tokyo-broncos	tokorozawa-outlaws	-
+20230903　川崎vs群馬	2023-09-03	kawasaki-grizzlies	gunma-stallions	-
+20230827 1HD 浦和vs鎌倉	2023-08-27	urawa-ulowers	kamakura-lazaro	-
+20230827 2HD 東海vs横浜甲府	2023-08-27	tokai-seagulls	yokohama-kofu	-
+20230827 2 東海vs横浜甲府	2023-08-27	tokai-seagulls	yokohama-kofu	-
+20230827 1 浦和vs鎌倉	2023-08-27	urawa-ulowers	kamakura-lazaro	-
+20221218-2 東海vs鎌倉	2022-12-18	tokai-seagulls	kamakura-lazaro	-
+20221218-1 立川vsブラ	2022-12-18	tachikawa-falcons	brandings	-
+20221211-1 立川vs群馬	2022-12-11	tachikawa-falcons	gunma-stallions	-
+20221211-2 鎌倉vsブロンコス	2022-12-11	kamakura-lazaro	tokyo-broncos	-
+20221203-1 立川vs川崎	2022-12-03	tachikawa-falcons	kawasaki-grizzlies	-
+20221203-2 浦和vs東海	2022-12-03	urawa-ulowers	tokai-seagulls	-
+20221127-2 ブラvs合同	2022-11-27	brandings	-	-
+20221127-1 鎌倉vs群馬	2022-11-27	kamakura-lazaro	gunma-stallions	-
+20221120-2ブラvsWG	2022-11-20	brandings	wild-geese	-
+20221120 1東海vs合同	2022-11-20	tokai-seagulls	-	-
+20221113 第2試合 東京ブロンコスvs所沢アウトローズ	2022-11-13	tokyo-broncos	tokorozawa-outlaws	-
+20221113 第1試合 川崎グリズリーズvs鎌倉ラザロ	2022-11-13	kawasaki-grizzlies	kamakura-lazaro	-
+20221106浦和ギース	2022-11-06	-	-	-
+2022 10 30 第2試合 群馬 vs ブロンコス	2022-10-30	gunma-stallions	tokyo-broncos	-
+2022 10 30 第1試合 立川 vs 所沢	2022-10-30	tachikawa-falcons	tokorozawa-outlaws	-
+2022 10 23 第２試合 WG vs 横浜甲府	2022-10-23	wild-geese	yokohama-kofu	-
+2022 10 23 第１試合 浦和ウラワ―ズVSブランディングス	2022-10-23	urawa-ulowers	brandings	-
+2022016 第2試合 所沢アウトローズvs群馬スタリオンズ	-	-	gunma-stallions	-
+20221016 第1試合 川崎グリズリーズvs東京ブロンコス	2022-10-16	kawasaki-grizzlies	tokyo-broncos	-
+20221009 2 東海vsブラ	2022-10-09	tokai-seagulls	brandings	-
+20221009-1 立川vs鎌倉	2022-10-09	tachikawa-falcons	kamakura-lazaro	-
+20221009-1後半 立川vs鎌倉 後半	2022-10-09	tachikawa-falcons	kamakura-lazaro	2
+20221009-1前半 立川vs鎌倉 前半	2022-10-09	tachikawa-falcons	kamakura-lazaro	1
+20221009 2 東海vsブラ（ミスで2回ずつ版）	2022-10-09	tokai-seagulls	-	-
+20221009-1後半 立川vs鎌倉 後半（ミスで2回ずつ版）	2022-10-09	tachikawa-falcons	-	2
+20221009-1前半 立川vs鎌倉 前半（ミスで2回ずつ版）	2022-10-09	tachikawa-falcons	-	1
+20221002 立川ファルコンズVS東京ブロンコス	2022-10-02	tachikawa-falcons	tokyo-broncos	-
+20221002 川崎グリズリーズVS所沢アウトローズ	2022-10-02	kawasaki-grizzlies	tokorozawa-outlaws	-
+20220918 浦和ウラワーズ vs ワイルドギース 2Q	2022-09-18	urawa-ulowers	wild-geese	2
+20220918 浦和ウラワーズ vs ワイルドギース 1Q	2022-09-18	urawa-ulowers	wild-geese	1
+20220911　第2試合　鎌倉ラザロvs所沢アウトローズ	2022-09-11	kamakura-lazaro	tokorozawa-outlaws	-
+20220911　第1試合　川崎グリズリーズvs群馬スタリオンズ	2022-09-11	kawasaki-grizzlies	gunma-stallions	-
+20220904 2 東海vsWG	2022-09-04	tokai-seagulls	wild-geese	-
+20220904 1 浦和vs横浜甲府	2022-09-04	urawa-ulowers	yokohama-kofu	-
+20220130JPFF決勝戦 浦和vs立川	2022-01-30	urawa-ulowers	tachikawa-falcons	-
+20220116 浦和ウラワーズ vs 川崎グリズリーズ	2022-01-16	urawa-ulowers	kawasaki-grizzlies	-
+20220116 立川ファルコンズ vs 東海シーガルズ	2022-01-16	tachikawa-falcons	tokai-seagulls	-
+2021 12 19ブランディングスvsWG 4Q	2021-12-19	brandings	wild-geese	4
+2021 12 19ブランディングスvsWG 3Q	2021-12-19	brandings	wild-geese	3
+2021 12 19ブランディングスvsWG 2Q	2021-12-19	brandings	wild-geese	2
+2021 12 19ブランディングスvsWG 1Q	2021-12-19	brandings	wild-geese	1
+20211205 2WGvs鎌倉 前半	2021-12-05	wild-geese	kamakura-lazaro	1
+20211205-2WGvs鎌倉 セレモニー	2021-12-05	wild-geese	-	-
+20211205 2WGvs鎌倉 後半	2021-12-05	wild-geese	kamakura-lazaro	2
+20211205 1ブラvs群馬栃木 後半	2021-12-05	brandings	tochigi-gunma	2
+20211205 1ブラvs群馬栃木 前半	2021-12-05	brandings	tochigi-gunma	1
+20211121 群馬栃木vs所沢 後半	2021-11-21	tochigi-gunma	tokorozawa-outlaws	2
+20211121 群馬栃木vs所沢 前半	2021-11-21	tochigi-gunma	tokorozawa-outlaws	1
+20211114 1川崎vs鎌倉前半2Q	2021-11-14	kawasaki-grizzlies	kamakura-lazaro	2
+20211114 1川崎vs鎌倉前半1Q	2021-11-14	kawasaki-grizzlies	kamakura-lazaro	1
+20211114 1川崎vs鎌倉後半	2021-11-14	kawasaki-grizzlies	kamakura-lazaro	2
+20211114 2浦和vsWG後半	2021-11-14	urawa-ulowers	wild-geese	2
+20211114 2浦和vsWG前半	2021-11-14	urawa-ulowers	wild-geese	1
+4Q 東海シーガルズvsブランディングス	-	tokai-seagulls	brandings	4
+3Q 東海シーガルズvsブランディングス	-	tokai-seagulls	brandings	3
+2Q 東海シーガルズvsブランディングス	-	tokai-seagulls	brandings	2
+1Q 東海シーガルズvsブランディングス	-	tokai-seagulls	brandings	1
+4Ｑ ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　	-	wild-geese	tochigi-gunma	4
+１Ｑ　ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　	-	wild-geese	tochigi-gunma	1
+３Ｑ　ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　	-	wild-geese	tochigi-gunma	3
+２Ｑ　ワイルドギースvs栃木マダガスカルズ＆群馬スタリオンズ　	-	wild-geese	tochigi-gunma	2

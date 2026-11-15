@@ -11,9 +11,10 @@ const TEAMS = [LAZARO, SEAGULLS];
 const teamIds = (title: string, teams: readonly Team[] = TEAMS) =>
   parseTitle(title, teams).sides?.map((side) => side.teamId);
 
-// Each line of the fixture is a title as written on the channel, then the date and the two team
-// IDs the rules must read from it, separated by tabs. "-" stands for what the rules leave unread:
-// a date the title does not carry, or a team that is not in data/teams.yaml yet.
+// Each line of the fixture is a title as written on the channel, then the date, the two team IDs
+// and the part the rules must read from it, separated by tabs. "-" stands for what the rules
+// leave unread: a date or a part the title does not carry, or a side that names no team in
+// data/teams.yaml as it is written.
 const FIXTURE = await readFile(new URL("./fixtures/titles.txt", import.meta.url), "utf8");
 const { teams: REGISTERED_TEAMS } = await loadData(new URL("../data/", import.meta.url));
 
@@ -24,7 +25,7 @@ describe("parseTitle on the titles seen on the channel", () => {
       const title = line.split("\t")[0] ?? "";
       const parsed = parseTitle(title, REGISTERED_TEAMS);
       const sides = parsed.sides?.map((side) => side.teamId ?? "-") ?? ["-", "-"];
-      return [title, parsed.date ?? "-", ...sides].join("\t");
+      return [title, parsed.date ?? "-", ...sides, parsed.part ?? "-"].join("\t");
     });
 
     expect(lines.length).toBeGreaterThan(0);
@@ -119,6 +120,46 @@ describe("parseTitle", () => {
     expect(teamIds(title)).toEqual(["kamakura-lazaro", "tokai-seagulls"]);
   });
 
+  it.each([
+    ["20221009-1 鎌倉ラザロvs東海シーガルズ", "2022-10-09", "the game's number after a hyphen"],
+    ["20220904 1 鎌倉ラザロvs東海シーガルズ", "2022-09-04", "the number after a space"],
+    ["20211114 2鎌倉ラザロvs東海シーガルズ", "2021-11-14", "the number with no space after it"],
+    ["20231029 ① 鎌倉ラザロ VS 東海シーガルズ", "2023-10-29", "a circled number"],
+    ["20230827 2HD 鎌倉ラザロvs東海シーガルズ", "2023-08-27", "the number and HD"],
+    [
+      "2022 10 23 第１試合 鎌倉ラザロVS東海シーガルズ",
+      "2022-10-23",
+      "the game of the day in words",
+    ],
+    ["20240825第1節鎌倉ラザロvs東海シーガルズ", "2024-08-25", "the round, with no space around it"],
+    ["20231203 第13節第2試合 鎌倉ラザロvs東海シーガルズ", "2023-12-03", "the round and the game"],
+    ["20240908-鎌倉ラザロvs東海シーガルズ", "2024-09-08", "a hyphen alone"],
+    ["20241110_鎌倉ラザロvs東海シーガルズ", "2024-11-10", "an underscore alone"],
+    ["20220130JPFF決勝戦 鎌倉ラザロvs東海シーガルズ", "2022-01-30", "the occasion after the date"],
+  ])("reads %s as a game of %s (%s between the date and the first team)", (title, date) => {
+    const parsed = parseTitle(title, TEAMS);
+
+    expect(parsed.date).toBe(date);
+    expect(parsed.sides?.map((side) => side.teamId)).toEqual(["kamakura-lazaro", "tokai-seagulls"]);
+    expect(parsed.part).toBeNull();
+  });
+
+  it("does not take the start of a number that is not a date for the game's number", () => {
+    const parsed = parseTitle("2022016 第2試合 鎌倉ラザロvs東海シーガルズ", TEAMS);
+
+    expect(parsed.date).toBeNull();
+    expect(parsed.sides?.[0]).toEqual({ spelling: "2022016 第2試合 鎌倉ラザロ", teamId: null });
+  });
+
+  it("keeps a digit that starts a registered team's name", () => {
+    const second: Team = { id: "lazaro-2", name: "2鎌倉ラザロ", aliases: [] };
+
+    expect(teamIds("20211114 2鎌倉ラザロvs東海シーガルズ", [...TEAMS, second])).toEqual([
+      "lazaro-2",
+      "tokai-seagulls",
+    ]);
+  });
+
   it("reads a year and a round as no date, which leaves the date to the caller", () => {
     const parsed = parseTitle("2025準決勝　鎌倉ラザロvs東海シーガルズ", TEAMS);
 
@@ -182,6 +223,20 @@ describe("parseTitle", () => {
 
     expect(parsed.part).toBe(part);
     expect(parsed.sides?.[1].teamId).toBe("tokai-seagulls");
+  });
+
+  it.each([
+    ["1Q 鎌倉ラザロvs東海シーガルズ", 1, "a quarter before everything else"],
+    ["４Ｑ　鎌倉ラザロvs東海シーガルズ", 4, "a quarter in full-width letters"],
+    ["2021 12 19鎌倉ラザロvs東海シーガルズ 3Q", 3, "a quarter at the end"],
+    ["20211114 1鎌倉ラザロvs東海シーガルズ前半2Q", 2, "a quarter named with its half"],
+    ["20231029 ②【後半】鎌倉ラザロ VS 東海シーガルズ", 2, "the half in brackets before the teams"],
+    ["20221009-1前半 鎌倉ラザロvs東海シーガルズ 前半", 1, "the half before and after the teams"],
+  ])("reads %s as part %i (%s)", (title, part) => {
+    const parsed = parseTitle(title, TEAMS);
+
+    expect(parsed.part).toBe(part);
+    expect(parsed.sides?.map((side) => side.teamId)).toEqual(["kamakura-lazaro", "tokai-seagulls"]);
   });
 
   it.each([
