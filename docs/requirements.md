@@ -489,7 +489,7 @@ Each has a working assumption so that the work does not stop.
 | Item | Working assumption | Decided |
 | --- | --- | --- |
 | Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
-| Whether all-star and select teams get a team page | They do, like any other team | At the first import |
+| Whether all-star and select teams get a team page | They do, like any other team: the two sides of the 2018 all-star game are registered as teams | Decided with that game |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | At the first import |
 | What a second upload of a game is | One version on the game page, the others on the exclusion list. Whether a visitor should be able to reach the other versions is not decided | In the review of the first import |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
