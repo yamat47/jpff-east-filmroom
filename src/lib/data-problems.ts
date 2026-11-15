@@ -61,6 +61,9 @@ function gameProblems({ teams, seasons }: SiteData): string[] {
       const parts = game.videos.map((video) => video.part);
       if (new Set(parts).size !== parts.length) {
         problems.push(`game ${game.id}: two videos have the same part number`);
+      } else if (parts.some((part, index) => part < (parts[index - 1] ?? 0))) {
+        // The pages show the videos in the order of the file and take the first for the card.
+        problems.push(`game ${game.id}: its videos are not in the order of their part numbers`);
       }
     }
   }

@@ -1,10 +1,7 @@
 import { z } from "zod";
+import { GAME_TYPES, LIVE_STATUSES } from "./game-types.ts";
 
-export const GAME_TYPES = ["league", "playoff", "allstar", "other"] as const;
-export type GameType = (typeof GAME_TYPES)[number];
-
-export const LIVE_STATUSES = ["upcoming", "live", "archived"] as const;
-export type LiveStatus = (typeof LIVE_STATUSES)[number];
+export { GAME_TYPES, type GameType, LIVE_STATUSES, type LiveStatus } from "./game-types.ts";
 
 // A team ID is part of a URL (/teams/{id}/) and of every game ID.
 const TeamId = z
