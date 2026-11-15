@@ -25,7 +25,16 @@ if (apiKey === undefined || apiKey === "") {
 
 const youtube = createYoutubeClient({ apiKey });
 const data = await loadData(DATA_DIR);
-const videos = await youtube.getVideos(await youtube.listUploadIds(SITE.channelId));
+
+// Details are asked only for the videos the data does not have yet.
+const known = new Set(
+  [
+    ...data.seasons.flatMap((season) => season.games.flatMap((game) => game.videos)),
+    ...data.excluded,
+  ].map((video) => video.videoId),
+);
+const uploads = await youtube.listUploadIds(SITE.channelId);
+const videos = await youtube.getVideos(uploads.filter((videoId) => !known.has(videoId)));
 
 const draft = draftGames(videos, data);
 const written = draft.games.filter((game) => onlySeasons === null || onlySeasons.has(game.season));

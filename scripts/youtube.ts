@@ -5,6 +5,10 @@ const API = "https://www.googleapis.com/youtube/v3/";
 // The largest page and the largest number of IDs one call takes.
 const PAGE_SIZE = 50;
 
+// A call that has not answered by then is given up, so that a stalled connection fails the
+// import instead of hanging it.
+const TIMEOUT_MS = 30_000;
+
 // The parts of the responses the import reads, named as in the API reference:
 // https://developers.google.com/youtube/v3/docs/channels#resource
 // https://developers.google.com/youtube/v3/docs/playlistItems#resource
@@ -72,7 +76,7 @@ export function createYoutubeClient(options: {
     const url = new URL(resource, API);
     url.search = new URLSearchParams({ ...params, key: options.apiKey }).toString();
 
-    const response = await request(url);
+    const response = await request(url, { signal: AbortSignal.timeout(TIMEOUT_MS) });
     // The URL carries the key, so neither it nor the response body, which can quote it, goes
     // into the message.
     if (!response.ok) throw new Error(`YouTube Data API: ${resource} answered ${response.status}`);
