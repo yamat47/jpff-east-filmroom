@@ -2,6 +2,7 @@
 import { formatDuration } from "../lib/labels.ts";
 import type { Video } from "../lib/schema.ts";
 import { embedUrl, posterUrl, watchUrl } from "../lib/youtube-urls.ts";
+import ExternalMark from "./ExternalMark.astro";
 
 interface Props {
   video: Video;
@@ -10,7 +11,9 @@ interface Props {
 }
 
 const { video, partLabel } = Astro.props;
+// The title is shown nowhere; it names the player for a screen reader once the video is started.
 const title = video.title.trim();
+const startLabel = partLabel === null ? "再生する" : `${partLabel} を再生する`;
 ---
 
 <figure class="player">
@@ -20,19 +23,19 @@ const title = video.title.trim();
     <a
       class="player__start"
       href={watchUrl(video.videoId)}
+      aria-label={startLabel}
       data-embed={embedUrl(video.videoId)}
       data-title={title}
     >
       <img src={posterUrl(video.videoId)} alt="" width="480" height="360" decoding="async" />
-      <span class="player__play">再生する</span>
+      <span class="player__play"></span>
       {video.durationSec !== null && (
         <span class="player__duration">{formatDuration(video.durationSec)}</span>
       )}
     </a>
   </div>
   <figcaption class="player__caption">
-    <span class="player__title">{title}</span>
-    <a class="player__open" href={watchUrl(video.videoId)}>YouTubeで開く</a>
+    <a class="player__open" href={watchUrl(video.videoId)}>YouTubeで開く<ExternalMark /></a>
   </figcaption>
 </figure>
 

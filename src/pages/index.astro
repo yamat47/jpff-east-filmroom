@@ -10,8 +10,16 @@ const teams = teamsWithGames(catalog).map(({ team }) => ({ id: team.id, name: te
 ---
 
 <Base>
-  <h1 class="page-title">試合動画</h1>
-  <p class="lead">J.P.F.F East の公式チャンネルにある試合動画を、シーズン・チーム・種別で探せます。</p>
+  <div class="page-head">
+    <h1 class="page-title">試合</h1>
+    <p class="lead">J.P.F.F East の試合動画を探せます。</p>
+  </div>
   {/* Every game goes to the browser with the component, which filters them in place. */}
-  <FilteredGames client:load games={games} teams={teams} filters={["season", "team", "type"]} />
+  <FilteredGames
+    client:load
+    games={games}
+    teams={teams}
+    filters={["team", "season", "type"]}
+    groupBySeason
+  />
 </Base>

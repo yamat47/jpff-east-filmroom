@@ -5,38 +5,46 @@
 :root {
   color-scheme: light;
 
-  /* White first; the thumbnails bring the only pictures and most of the colour. */
+  /* White, black and grey. Two colours carry meaning: the blue of a link, and the red of a
+     stream that is live. The thumbnails bring the rest. */
   --color-paper: #ffffff;
-  --color-ink: #16191d;
-  --color-muted: #59626c;
-  --color-line: #d7dce1;
-  --color-surface: #f3f5f7;
-  /* The orange of a pylon: where to go next (links, the current page, focus). */
-  --color-pylon: #c2410c;
-  /* The yellow of a penalty flag: a playoff game. */
-  --color-flag: #ffd43b;
+  --color-ink: #17181a;
+  --color-muted: #5f6470;
+  /* Between the rows of a list. */
+  --color-line: #efeff2;
+  /* Under the header and above the footer. */
+  --color-line-strong: #e8e8ec;
+  /* Around a select. */
+  --color-control: #d9d9df;
+  /* Where a thumbnail has not loaded yet. */
+  --color-surface: #f1f1f4;
+  --color-link: #1a5fd0;
+  --color-link-hover: #1349a6;
+  /* Waits for the live state of a stream, which comes with step 6 of the requirements. */
+  --color-live: #c81e1e;
 
   /* System faces only, so that no font is requested from another site. */
   --font-sans:
     "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Noto Sans JP",
     "Noto Sans CJK JP", Meiryo, system-ui, sans-serif;
 
-  --size-xs: 0.75rem;
+  --size-xs: 0.8125rem;
   --size-sm: 0.875rem;
+  /* Also the size of a select: below 16px, iOS zooms the page when one is opened. */
   --size-base: 1rem;
-  --size-lg: 1.25rem;
-  --size-xl: 1.625rem;
-  /* The matchup on a game page: as large as a phone allows, capped on a desk. */
-  --size-matchup: clamp(1.625rem, 6.4vw, 2.75rem);
+  --size-lg: 1.125rem;
+  /* A page title, the matchup of a game page included: 22px on a phone, 28px on a desk. */
+  --size-xl: clamp(1.375rem, 0.875rem + 1.1vw, 1.75rem);
 
   --weight-regular: 400;
   --weight-bold: 700;
-  --weight-heavy: 800;
 
+  /* Running text. */
   --leading-body: 1.75;
-  --leading-tight: 1.3;
-  /* A mark, a badge, a button: one line in a box. */
-  --leading-label: 1.55;
+  /* Headings and the names of teams. */
+  --leading-tight: 1.375;
+  /* Everything else: one line in a row, a tab or a button. */
+  --leading-label: 1.5;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -44,17 +52,36 @@
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2.5rem;
-  --space-12: 4rem;
+  /* Left and right of the page. */
+  --space-gutter: clamp(1rem, 4vw, 1.5rem);
+  /* Above and below the content of a page. */
+  --space-page-top: clamp(1.5rem, 3.2vw, 2.5rem);
+  --space-page-bottom: clamp(2.5rem, 5vw, 4rem);
 
   --width-page: 68rem;
   --width-text: 40rem;
   --width-thumb: 7.5rem;
   /* The narrowest a row of a game list may get before the list takes fewer columns. */
   --width-card-min: 19rem;
+  /* The selects of a filter: the season and the type, and the team, whose names are longer. */
   --width-field-min: 9.5rem;
-  --width-players: 60rem;
+  --width-field-wide: 17.5rem;
+  --width-filter: 45rem;
+  /* A player may not grow taller than a laptop screen leaves room for. */
+  --height-player-max: 33.75rem;
 
-  --radius: 3px;
+  /* The least height of anything a finger presses. */
+  --size-touch: 2.75rem;
+  /* A row that is nothing but a link, in the lists of teams and seasons. */
+  --size-row: 3rem;
+  --size-play: clamp(4rem, 5.6vw, 4.5rem);
+  /* The small arrowhead after a link that leads on, and in a select. */
+  --size-chevron: 0.45em;
+  --stroke-chevron: 1.5px;
+
+  --radius: 6px;
+  --radius-control: 8px;
   --radius-pill: 999px;
-  --focus-ring: 3px solid var(--color-pylon);
+  --shadow-raised: 0 2px 12px rgb(0 0 0 / 0.25);
+  --focus-ring: 3px solid var(--color-link);
 }

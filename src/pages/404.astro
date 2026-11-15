@@ -3,8 +3,11 @@ import Base from "../layouts/Base.astro";
 ---
 
 <Base title="ページが見つかりません" canonical={false}>
-  <h1 class="page-title">ページが見つかりません</h1>
-  <p class="lead">
-    このアドレスのページはありません。<a href="/">試合の一覧</a>から探してください。
-  </p>
+  <div class="prose">
+    <div class="page-head">
+      <h1 class="page-title">ページが見つかりません</h1>
+      <p>URL が違うか、公式チャンネルで動画が削除・非公開になった可能性があります。</p>
+      <p><a class="more" href="/">試合の一覧へ</a></p>
+    </div>
+  </div>
 </Base>
