@@ -1,0 +1,35 @@
+{
+  "name": "jpff-east-filmroom",
+  "private": true,
+  "description": "Unofficial fan site that arranges the game videos of the J.P.F.F East YouTube channel by season, team and game type",
+  "homepage": "https://jpff-east-filmroom.yamat47.me/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yamat47/jpff-east-filmroom.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host",
+    "build": "astro build --force",
+    "preview": "astro preview --host",
+    "typecheck": "astro check",
+    "lint": "biome check --error-on-warnings .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "validate": "node scripts/validate.ts",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run validate && pnpm run build"
+  },
+  "packageManager": "pnpm@11.8.0",
+  "dependencies": {
+    "astro": "^7.4.12",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@biomejs/biome": "^2.6.7",
+    "@types/node": "^26.6.6",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

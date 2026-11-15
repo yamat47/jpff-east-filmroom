@@ -1,0 +1,10 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    // TypeScript 6 loads no @types package unless it is named here. The data loader and the
+    // scripts use Node's own modules (node:fs).
+    "types": ["node"]
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}

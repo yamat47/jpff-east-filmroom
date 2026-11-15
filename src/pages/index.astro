@@ -1,0 +1,25 @@
+---
+import { SITE } from "../site.ts";
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{SITE.name}(非公式)</title>
+  </head>
+  <body>
+    <main>
+      <h1>{SITE.name}</h1>
+      <p>
+        <a href={SITE.channelUrl}>J.P.F.F East の YouTube チャンネル</a>にある試合動画を、シーズン・チーム・試合種別で整理する非公式のファンサイトです。現在準備中です。
+      </p>
+    </main>
+    <footer>
+      <p>
+        このサイトは非公式のファンサイトで、JPFF とは関係がありません。動画は<a href={SITE.channelUrl}>公式チャンネル</a>のものです。
+      </p>
+    </footer>
+  </body>
+</html>
