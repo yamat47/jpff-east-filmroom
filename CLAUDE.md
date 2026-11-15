@@ -66,9 +66,10 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   goes into the schema, a rule that spans files or entries into `src/lib/data-problems.ts`.
 - **A URL ends with a slash.** `astro.config.ts` builds every page as a directory, so internal
   links are written `/games/{gameId}/`, never without the slash.
-- Scripts and tests run on Node's own TypeScript support, so a module imports its neighbours
-  with the `.ts` extension and uses no syntax that needs compiling (`enum`, `namespace`,
-  parameter properties).
+- Scripts run on Node's type stripping (tests go through Vitest), so a module imports its
+  neighbours with the `.ts` extension and uses no syntax that needs compiling (`enum`,
+  `namespace`, parameter properties). `erasableSyntaxOnly` in `tsconfig.json` makes the typecheck
+  refuse it.
 
 ## Where the conventions live
 

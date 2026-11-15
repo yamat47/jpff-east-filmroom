@@ -1,3 +1,6 @@
+# One project for every checkout of the repository, so a second worktree shares node_modules and
+# needs no install. The cost: installing from a different lockfile in one changes them all, and
+# only one dev server runs at a time.
 name: jpff-east-filmroom
 
 x-base: &base
