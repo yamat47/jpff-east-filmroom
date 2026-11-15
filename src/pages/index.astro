@@ -1,25 +1,17 @@
 ---
-import { SITE } from "../site.ts";
+import { FilteredGames } from "../components/FilteredGames.tsx";
+import Base from "../layouts/Base.astro";
+import { teamsWithGames } from "../lib/catalog.ts";
+import { summarize } from "../lib/game-summary.ts";
+import { catalog } from "../lib/site-data.ts";
+
+const games = catalog.games.map((game) => summarize(catalog, game));
+const teams = teamsWithGames(catalog).map(({ team }) => ({ id: team.id, name: team.name }));
 ---
 
-<!doctype html>
-<html lang={SITE.lang}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{SITE.nameWithMark}</title>
-  </head>
-  <body>
-    <main>
-      <h1>{SITE.nameWithMark}</h1>
-      <p>
-        <a href={SITE.channelUrl}>J.P.F.F East の YouTube チャンネル</a>にある試合動画を、シーズン・チーム・試合種別で整理する非公式のファンサイトです。現在準備中です。
-      </p>
-    </main>
-    <footer>
-      <p>
-        このサイトは非公式のファンサイトで、JPFF とは関係がありません。動画は<a href={SITE.channelUrl}>公式チャンネル</a>のものです。JPFF 東日本支部については<a href={SITE.officialSiteUrl}>公式サイト</a>をご覧ください。
-      </p>
-    </footer>
-  </body>
-</html>
+<Base>
+  <h1 class="page-title">試合動画</h1>
+  <p class="lead">J.P.F.F East の公式チャンネルにある試合動画を、シーズン・チーム・種別で探せます。</p>
+  {/* Every game goes to the browser with the component, which filters them in place. */}
+  <FilteredGames client:load games={games} teams={teams} filters={["season", "team", "type"]} />
+</Base>

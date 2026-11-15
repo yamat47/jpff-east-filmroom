@@ -1,0 +1,35 @@
+---
+import { GameList } from "../../components/GameList.tsx";
+import Base from "../../layouts/Base.astro";
+import { gamesOfTeam, teamsWithGames } from "../../lib/catalog.ts";
+import { summarize } from "../../lib/game-summary.ts";
+import type { Team } from "../../lib/schema.ts";
+import { catalog } from "../../lib/site-data.ts";
+
+export function getStaticPaths() {
+  return teamsWithGames(catalog).map(({ team }) => ({ params: { id: team.id }, props: { team } }));
+}
+
+interface Props {
+  team: Team;
+}
+
+const { team } = Astro.props;
+const games = gamesOfTeam(catalog, team.id);
+const seasons = catalog.seasons
+  .map((season) => ({ season, games: games.filter((game) => game.season === season) }))
+  .filter((group) => group.games.length > 0);
+---
+
+<Base title={team.name} description={`${team.name}の試合動画の一覧です。`}>
+  <h1 class="page-title">{team.name}</h1>
+  <p class="lead">{games.length}試合</p>
+  {seasons.map((group) => (
+    <section class="season-group">
+      <h2 class="section-title">
+        <a href={`/seasons/${group.season}/`}>{group.season}シーズン</a>
+      </h2>
+      <GameList games={group.games.map((game) => summarize(catalog, game))} />
+    </section>
+  ))}
+</Base>

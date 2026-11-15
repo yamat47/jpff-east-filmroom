@@ -1,0 +1,83 @@
+---
+import { GameList } from "../../components/GameList.tsx";
+import Player from "../../components/Player.astro";
+import Base from "../../layouts/Base.astro";
+import { relatedGames } from "../../lib/catalog.ts";
+import { summarize } from "../../lib/game-summary.ts";
+import type { Game } from "../../lib/schema.ts";
+import { catalog } from "../../lib/site-data.ts";
+
+export function getStaticPaths() {
+  return catalog.games.map((game) => ({ params: { id: game.id }, props: { game } }));
+}
+
+interface Props {
+  game: Game;
+}
+
+const { game } = Astro.props;
+const summary = summarize(catalog, game);
+const [first, second] = summary.teams;
+const related = relatedGames(catalog, game);
+
+const sections = [
+  {
+    heading: `${first.name}のほかの試合`,
+    list: related.teams[0],
+    more: { href: `/teams/${first.id}/`, label: `${first.name}の試合をすべて見る` },
+  },
+  {
+    heading: `${second.name}のほかの試合`,
+    list: related.teams[1],
+    more: { href: `/teams/${second.id}/`, label: `${second.name}の試合をすべて見る` },
+  },
+  {
+    heading: `${game.season}シーズンのほかの試合`,
+    list: related.season,
+    more: { href: `/seasons/${game.season}/`, label: `${game.season}シーズンの試合をすべて見る` },
+  },
+];
+---
+
+<Base
+  title={`${first.name} vs ${second.name} (${summary.dateLabel})`}
+  description={`${summary.dateLabel}の${first.name} vs ${second.name}（${summary.typeLabel}）の試合動画です。`}
+>
+  <article class="game-page">
+    <header class="game-head">
+      <time class="game-head__date" datetime={game.date}>{summary.dateLabel}</time>
+      <h1 class="matchup">
+        <a href={`/teams/${first.id}/`}>{first.name}</a>
+        <span class="matchup__vs">vs</span>
+        <a href={`/teams/${second.id}/`}>{second.name}</a>
+      </h1>
+      <p class="game-head__meta">
+        <span class={`badge badge--${game.type}`}>{summary.typeLabel}</span>
+        <a href={`/seasons/${game.season}/`}>{game.season}シーズン</a>
+      </p>
+    </header>
+
+    <div class="players">
+      {game.videos.map((video) => (
+        <Player video={video} partLabel={game.videos.length > 1 ? `Part ${video.part}` : null} />
+      ))}
+    </div>
+  </article>
+
+  {sections.map(({ heading, list, more }) => (
+    <section class="related">
+      <h2 class="section-title">{heading}</h2>
+      {list.games.length > 0 ? (
+        <GameList games={list.games.map((other) => summarize(catalog, other))} />
+      ) : (
+        <p class="related__empty">ほかの試合はまだありません。</p>
+      )}
+      {/* The page it leads to lists this game too, hence one more than the others. */}
+      {list.total > 0 && (
+        <p class="related__more">
+          <a href={more.href}>{more.label}（{list.total + 1}試合）</a>
+        </p>
+      )}
+    </section>
+  ))}
+</Base>

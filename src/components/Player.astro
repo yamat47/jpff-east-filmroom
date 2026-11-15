@@ -1,0 +1,58 @@
+---
+import { formatDuration } from "../lib/labels.ts";
+import type { Video } from "../lib/schema.ts";
+import { embedUrl, posterUrl, watchUrl } from "../lib/youtube-urls.ts";
+
+interface Props {
+  video: Video;
+  /** "Part 1", "Part 2" for a game split over several videos; nothing for a single video. */
+  partLabel: string | null;
+}
+
+const { video, partLabel } = Astro.props;
+const title = video.title.trim();
+---
+
+<figure class="player">
+  {partLabel !== null && <h2 class="player__part">{partLabel}</h2>}
+  <div class="player__frame">
+    {/* A link to YouTube until the script below takes it over, so that it works without one. */}
+    <a
+      class="player__start"
+      href={watchUrl(video.videoId)}
+      data-embed={embedUrl(video.videoId)}
+      data-title={title}
+    >
+      <img src={posterUrl(video.videoId)} alt="" width="480" height="360" decoding="async" />
+      <span class="player__play">再生する</span>
+      {video.durationSec !== null && (
+        <span class="player__duration">{formatDuration(video.durationSec)}</span>
+      )}
+    </a>
+  </div>
+  <figcaption class="player__caption">
+    <span class="player__title">{title}</span>
+    <a class="player__open" href={watchUrl(video.videoId)}>YouTubeで開く</a>
+  </figcaption>
+</figure>
+
+<script>
+  // The iframe, and with it YouTube's own scripts, is loaded only when the visitor starts a
+  // video: the page stays light, and nothing is requested from YouTube's player before that.
+  for (const start of document.querySelectorAll<HTMLAnchorElement>(".player__start")) {
+    start.addEventListener("click", (event) => {
+      // A click that asks for a new tab or window keeps doing that.
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const embed = start.dataset.embed;
+      if (embed === undefined) return;
+      event.preventDefault();
+
+      const iframe = document.createElement("iframe");
+      iframe.src = embed;
+      iframe.title = start.dataset.title ?? "";
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      start.replaceWith(iframe);
+    });
+  }
+</script>
