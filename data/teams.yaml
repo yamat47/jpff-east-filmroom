@@ -1,0 +1,43 @@
+# The teams and the spellings their names take in video titles.
+#
+#   id       part of the team's URL and of every game ID. Never changed once published.
+#   name     shown on the site. A title that spells the team this way matches too.
+#   aliases  other spellings found in titles, compared after normalization (full-width
+#            letters, digits and symbols become half-width, runs of spaces become one).
+#
+# A merged or joint team is a team of its own, not an alias of the teams it came from.
+
+- id: tachikawa-falcons
+  name: 立川ファルコンズ
+
+- id: kamakura-lazaro
+  name: 鎌倉ラザロ
+
+- id: gunma-stallions
+  name: 群馬スタリオンズ
+
+- id: urawa-urawaz
+  name: 浦和ウラワーズ
+
+- id: kawasaki-grizzlies
+  name: 川崎グリズリーズ
+
+- id: tokai-seagulls
+  name: 東海シーガルズ
+
+# ワイルドギース and 東京ブロンコス, playing as one team.
+- id: geese-broncos
+  name: ギースブロンコス合同チーム
+  aliases:
+    - WG&ブロンコス合同
+    - ワイルドギース&東京ブロンコス
+
+- id: brandings
+  name: ブランディングス
+
+# 横浜タイタンズ and 甲府ユリシーズ, merged.
+- id: kofu-atsugi-titans
+  name: 甲府厚木タイタンズ
+
+- id: tokorozawa-outlaws
+  name: 所沢アウトローズ

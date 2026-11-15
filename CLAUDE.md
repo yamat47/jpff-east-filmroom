@@ -8,6 +8,39 @@ What the site does and does not do, the data model and the order of work are in
 [docs/requirements.md](docs/requirements.md). Read it before changing anything. A change of
 scope changes that file in the same pull request.
 
+## Layout
+
+| Path | Contents |
+|---|---|
+| `data/teams.yaml` | The teams and the spellings their names take in video titles |
+| `data/games/{seasonId}.json` | The games of one season and their videos |
+| `data/excluded.json` | Videos judged not to be games, so that they do not come back |
+| `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
+| `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, spelling normalization |
+| `src/pages/`, `src/site.ts` | The routes, and the site's name, address and official links |
+| `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
+| `tests/` | Vitest tests of the functions under `src/lib/` |
+| `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
+
+`docs/requirements.md` lists the files that are still to come (the import scripts, the pages).
+
+## Always run commands through make
+
+Node and pnpm are not used on the host. The toolchain exists only inside the Docker container, and
+the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
+**Do not run `pnpm` `npm` `npx` `node` `tsc` `biome` `astro` `vitest` directly on the host**
+(`permissions.deny` in `.claude/settings.json` rejects them).
+
+| Goal | Command |
+|---|---|
+| Typecheck, lint, test, validate and build in one go | `make check` (CI runs the same, plus zizmor on the workflows) |
+| Type check / lint / auto-fix / test | `make typecheck` / `make lint` / `make fix` / `make test` |
+| Check the data | `make validate` (always after editing a file under `data/`) |
+| Build the site | `make build` (`dist/`) |
+| Dev server | `make up` (http://localhost:4321) / `make logs` / `make down` |
+| Add or update dependencies | `make pnpm ARGS="add -D <pkg>"` (the lockfile is also updated on the host) |
+| First run, or after changing the Dockerfile | `make setup` |
+
 ## Rules that are easy to break
 
 - **Videos are embedded, never copied.** No video file and no thumbnail enters the repository
@@ -28,10 +61,20 @@ scope changes that file in the same pull request.
   `ANTHROPIC_API_KEY` come from the environment (`.env` locally, which git ignores; Actions
   secrets in CI). The Claude API model is named by an environment variable as well.
 - Scores, venues, standings, view counts and video descriptions are not stored.
+- **The schema is written once.** `src/lib/schema.ts` is the only description of the data
+  files; the site, the scripts and the tests derive their types from it. A rule about one file
+  goes into the schema, a rule that spans files or entries into `src/lib/data-problems.ts`.
+- **A URL ends with a slash.** `astro.config.ts` builds every page as a directory, so internal
+  links are written `/games/{gameId}/`, never without the slash.
+- Scripts run on Node's type stripping (tests go through Vitest), so a module imports its
+  neighbours with the `.ts` extension and uses no syntax that needs compiling (`enum`,
+  `namespace`, parameter properties). `erasableSyntaxOnly` in `tsconfig.json` makes the typecheck
+  refuse it.
 
 ## Where the conventions live
 
-- Follow the `writing-conventions` skill for comments, commits and pull requests. Everything
+- Follow the `writing-conventions` skill for comments, commits and pull requests, the
+  `typescript-idioms` skill for TypeScript and the `react-patterns` skill for React. Everything
   written around the code (documents, comments, commits, pull requests) is in English. What a
   visitor reads on the site is Japanese, and so are team names and video titles in the data.
 - Skills under `.claude/skills/` whose frontmatter `metadata.github-repo` is github-toolkit are
