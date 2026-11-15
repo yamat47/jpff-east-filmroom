@@ -354,8 +354,8 @@ to live and archived. Bowl games and a few others are expected.
 
 | State | On the top page | On the game page |
 | --- | --- | --- |
-| `upcoming` | At the top, 「配信予定」 with the scheduled start | The embed (YouTube's waiting screen) and the scheduled start |
-| `live` | At the top, with a 「配信中」 badge | The embed plays the stream |
+| `upcoming` | At the top, under 「ライブ配信」, with the scheduled start as 「13:00 配信予定」 | The embed (YouTube's waiting screen), and the scheduled start under the game date |
+| `live` | At the top, under 「ライブ配信」, with 「配信中」 in red | The embed plays the stream, and 「配信中」 stands under the game date |
 | `archived` | In line with ordinary games | Like an ordinary game |
 
 - State and scheduled start come from the video resource of the YouTube Data API
@@ -367,12 +367,22 @@ to live and archived. Bowl games and a few others are expected.
 - A deleted stream is caught by the removal check.
 
 The state is that of the last build, so with one import a day it lags. On the day of a stream
-the page may still say "scheduled". Two things make up for it:
+the data may still say "scheduled". The browser makes up for it by the clock alone, and shows
+the first of these that holds:
 
-- The browser compares the current time with the scheduled start and shows a scheduled stream
-  whose start has passed as 「配信中かも」.
-- The player is YouTube's embed, so the stream itself plays correctly even when the page is
-  stale.
+1. The data says `archived`: an ordinary game.
+2. Four hours or more have passed since the scheduled start: an ordinary game.
+3. The data says `live`, or the scheduled start has passed: 「配信中」.
+4. Otherwise: 「配信予定」 with the scheduled start.
+
+A stream that starts late, or is put off on the day, is shown as live from the start the data
+has, and one that runs longer than four hours as an ordinary game before it ends. All of these
+are accepted, because the rule reads nothing but the clock. Without JavaScript a page shows the
+state of the last build. The API also reports a scheduled end
+(`liveStreamingDetails.scheduledEndTime`), which the site neither stores nor uses.
+
+The player is YouTube's embed, so the stream itself plays correctly even when the page is
+stale.
 
 ## 9. Stack and layout
 
