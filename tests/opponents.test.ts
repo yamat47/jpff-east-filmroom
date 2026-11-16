@@ -23,6 +23,7 @@ function game(date: string, first: TeamSummary, second: TeamSummary): GameSummar
     teams: [first, second],
     videoId: "aaaaaaaaaaa",
     videoCount: 1,
+    live: null,
   };
 }
 

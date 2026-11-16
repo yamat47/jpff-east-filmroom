@@ -1,6 +1,7 @@
 import type { Catalog } from "./catalog.ts";
 import type { GameType } from "./game-types.ts";
 import { formatDate, TYPE_LABELS } from "./labels.ts";
+import { japanTimeOf, type PendingStream, pendingStreamOf } from "./live.ts";
 import type { Game, Team } from "./schema.ts";
 
 /**
@@ -18,7 +19,12 @@ export type GameSummary = {
   /** The first video, whose thumbnail stands for the game. */
   readonly videoId: string;
   readonly videoCount: number;
+  /** The stream of the game that has not ended, as far as the data knows. */
+  readonly live: LiveSummary | null;
 };
+
+/** A stream that has not ended, with its scheduled start as a visitor reads it: "13:00". */
+export type LiveSummary = PendingStream & { readonly startLabel: string };
 
 export type TeamSummary = {
   readonly id: string;
@@ -40,6 +46,7 @@ export function summarize(catalog: Catalog, game: Game): GameSummary {
   };
   const first = game.videos[0];
   if (first === undefined) throw new Error(`game ${game.id} has no video`);
+  const stream = pendingStreamOf(game);
 
   return {
     id: game.id,
@@ -51,5 +58,7 @@ export function summarize(catalog: Catalog, game: Game): GameSummary {
     teams: [team(game.teams[0]), team(game.teams[1])],
     videoId: first.videoId,
     videoCount: game.videos.length,
+    live:
+      stream === null ? null : { ...stream, startLabel: japanTimeOf(stream.scheduledStartTime) },
   };
 }

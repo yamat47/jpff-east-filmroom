@@ -20,7 +20,7 @@
   --color-surface: #f1f1f4;
   --color-link: #1a5fd0;
   --color-link-hover: #1349a6;
-  /* Waits for the live state of a stream, which comes with step 6 of the requirements. */
+  /* 「配信中」, the state of a stream that is on air. */
   --color-live: #c81e1e;
   /* Around a team's mark, so that a white or a pale team colour still has an edge on the page.
      The colours inside the mark are data: they come from data/teams.yaml. */

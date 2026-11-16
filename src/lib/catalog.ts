@@ -1,3 +1,4 @@
+import { pendingStreamOf } from "./live.ts";
 import type { Game, SiteData, Team } from "./schema.ts";
 
 /** How many games the top page shows as the newest. */
@@ -35,6 +36,18 @@ export function gamesOfTeam(catalog: Catalog, teamId: string): Game[] {
 
 export function gamesOfSeason(catalog: Catalog, season: string): Game[] {
   return catalog.games.filter((game) => game.season === season);
+}
+
+/**
+ * The games the top page chooses from, newest first: every game with a stream that has not
+ * ended, and as many of the other games as the page shows as the newest. Which of them stand
+ * under 「ライブ配信」 is for the clock to say (`splitByLive`), because a stream ends between two
+ * builds.
+ */
+export function topPageGames(catalog: Catalog): Game[] {
+  const isPending = (game: Game) => pendingStreamOf(game) !== null;
+  const others = catalog.games.filter((game) => !isPending(game)).slice(0, LATEST_LIMIT);
+  return catalog.games.filter((game) => isPending(game) || others.includes(game));
 }
 
 /** Every season that has a game, newest first, with the number of its games. */

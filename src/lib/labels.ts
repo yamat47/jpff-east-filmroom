@@ -1,5 +1,6 @@
 import type { TeamEntry } from "./catalog.ts";
 import type { GameType } from "./game-types.ts";
+import type { LiveState } from "./live.ts";
 
 /** What a visitor reads for each game type. */
 export const TYPE_LABELS: Record<GameType, string> = {
@@ -8,6 +9,11 @@ export const TYPE_LABELS: Record<GameType, string> = {
   allstar: "オールスター",
   other: "その他",
 };
+
+/** What a visitor reads of a stream that has not ended: "13:00 配信予定", "配信中". */
+export function liveLabel(state: LiveState, startLabel: string): string {
+  return state === "live" ? "配信中" : `${startLabel} 配信予定`;
+}
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 

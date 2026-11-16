@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { TeamEntry } from "../src/lib/catalog.ts";
-import { formatDate, formatDuration, teamCountLabel, teamSpanLabel } from "../src/lib/labels.ts";
+import {
+  formatDate,
+  formatDuration,
+  liveLabel,
+  teamCountLabel,
+  teamSpanLabel,
+} from "../src/lib/labels.ts";
 
 describe("formatDate", () => {
   it.each([
@@ -46,6 +52,13 @@ describe("the labels of a team", () => {
   ])("say for %s how many games it has and when", (_case, change, count, span) => {
     expect(teamCountLabel(entry(change))).toBe(count);
     expect(teamSpanLabel(entry(change))).toBe(span);
+  });
+});
+
+describe("liveLabel", () => {
+  it("gives a scheduled stream its start, and a stream on air no time", () => {
+    expect(liveLabel("upcoming", "13:00")).toBe("13:00 配信予定");
+    expect(liveLabel("live", "13:00")).toBe("配信中");
   });
 });
 

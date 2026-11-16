@@ -28,6 +28,7 @@ function summary(overrides: Partial<GameSummary> = {}): GameSummary {
     ],
     videoId: "aaaaaaaaaaa",
     videoCount: 1,
+    live: null,
     ...overrides,
   };
 }

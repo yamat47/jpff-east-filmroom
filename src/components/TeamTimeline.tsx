@@ -1,6 +1,7 @@
 import type { GameSummary, TeamSummary } from "../lib/game-summary.ts";
 import { opponentIn } from "../lib/opponents.ts";
 import type { SeasonGroup } from "../lib/season-groups.ts";
+import { LiveState } from "./LiveState.tsx";
 import { TeamLabel } from "./TeamLabel.tsx";
 
 type Props = {
@@ -63,6 +64,7 @@ function TimelineGame({ game, team }: { game: GameSummary; team: TeamSummary }) 
       <span className="meta">
         <time dateTime={game.date}>{game.dateLabel}</time>・{game.typeLabel}
       </span>
+      {game.live !== null && <LiveState live={game.live} />}
     </span>
   );
 }
