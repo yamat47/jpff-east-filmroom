@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The site's own mark: a football, in the ink and the paper of src/styles/tokens.css.
+       A file served on its own cannot read those variables, so the two colours are repeated.
+
+       favicon.ico and apple-touch-icon.png are pictures of this drawing, and are drawn again
+       when it changes: `sips -s format png` on a copy that has a width and a height (32 for
+       the first, which is then wrapped as an .ico, and 180). The touch icon differs on
+       purpose: its corners are square, because a phone cuts them itself, and its ball is at
+       nine tenths, away from that cut. -->
+  <rect width="32" height="32" rx="7" fill="#17181a"/>
+  <path d="M7 25A15 15 0 0 1 25 7 15 15 0 0 1 7 25Z" fill="#ffffff"/>
+  <path d="M12 20l8-8M12.1 17.1l2.8 2.8M14.6 14.6l2.8 2.8M17.1 12.1l2.8 2.8" fill="none" stroke="#17181a" stroke-width="1.6" stroke-linecap="round"/>
+</svg>
