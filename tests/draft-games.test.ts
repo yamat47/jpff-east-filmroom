@@ -24,7 +24,7 @@ function upload(title: string, overrides: Partial<ChannelVideo> = {}): ChannelVi
     title,
     publishedAt: `2026-10-06T03:00:${String(nextId % 60).padStart(2, "0")}Z`,
     durationSec: 1538,
-    isLiveStream: false,
+    live: null,
     ...overrides,
   };
 }
@@ -219,12 +219,41 @@ describe("draftGames", () => {
     expect(draftGames([video], data())).toEqual({ games: [], unread: [{ video, reason }] });
   });
 
-  it("leaves a live stream unread, whatever its title says", () => {
-    const video = upload("2026/12/20 鎌倉ラザロvs東海シーガルズ", { isLiveStream: true });
+  it("makes a game of a scheduled stream, with its state and without a length", () => {
+    const live = { status: "upcoming", scheduledStartTime: "2026-12-20T04:00:00Z" } as const;
+    const stream = upload("2026/12/20 プレーオフ 鎌倉ラザロvs東海シーガルズ", {
+      durationSec: null,
+      live,
+    });
 
-    expect(draftGames([video], data()).unread).toEqual([
-      { video, reason: "a live stream, which the import does not handle yet" },
+    const { games, unread } = draftGames([stream], data());
+
+    expect(unread).toEqual([]);
+    expect(games).toMatchObject([
+      {
+        id: "2026-12-20-kamakura-lazaro-vs-tokai-seagulls",
+        type: "playoff",
+        needsReview: false,
+        videos: [{ videoId: stream.videoId, part: 1, durationSec: null, live }],
+      },
     ]);
+  });
+
+  it("dates a stream whose title names no day by its scheduled start in Japan, and asks for a review", () => {
+    // 00:30 on December 21 in Japan.
+    const live = { status: "upcoming", scheduledStartTime: "2026-12-20T15:30:00Z" } as const;
+    const stream = upload("ハーバーボウル 鎌倉ラザロvs東海シーガルズ", { durationSec: null, live });
+
+    expect(draftGames([stream], data()).games).toMatchObject([
+      { id: "2026-12-21-kamakura-lazaro-vs-tokai-seagulls", needsReview: true },
+    ]);
+  });
+
+  it("dates a stream by its title where the title names a day", () => {
+    const live = { status: "archived", scheduledStartTime: "2026-12-21T04:00:00Z" } as const;
+    const stream = upload("2026/12/20 鎌倉ラザロvs東海シーガルズ", { live });
+
+    expect(draftGames([stream], data()).games.map((game) => game.date)).toEqual(["2026-12-20"]);
   });
 });
 
@@ -325,6 +354,18 @@ describe("renderDraft", () => {
         "- `ccccccccccc` 2026/10/4 開会式 (no matchup in the title)",
         "",
       ].join("\n"),
+    );
+  });
+
+  it("says of a video that it is a stream, and where it stands", () => {
+    const live = { status: "upcoming", scheduledStartTime: "2026-12-20T04:00:00Z" } as const;
+    const draft = draftGames(
+      [upload("2026/12/20 鎌倉ラザロvs東海シーガルズ", { durationSec: null, live })],
+      data(),
+    );
+
+    expect(renderDraft(draft, TEAMS)).toContain(
+      "| 1: 2026/12/20 鎌倉ラザロvs東海シーガルズ (live stream, upcoming, 2026-12-20T04:00:00Z) |",
     );
   });
 });

@@ -32,6 +32,12 @@ describe("Game", () => {
     expect(Game.safeParse(scheduled).success).toBe(true);
   });
 
+  it("rejects a video without a length that is not a live stream", () => {
+    const unknown = { ...GAME, videos: [{ ...GAME.videos[0], durationSec: null }] };
+
+    expect(Game.safeParse(unknown).success).toBe(false);
+  });
+
   it.each([
     ["a game type outside the four", { type: "friendly" }],
     ["a date that is not on the calendar", { date: "2026-02-30" }],

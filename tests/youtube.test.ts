@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createYoutubeClient, secondsOf } from "../scripts/youtube.ts";
+import { createYoutubeClient, requireApiKey, secondsOf } from "../scripts/youtube.ts";
 
 type Call = { resource: string; params: Record<string, string> };
 
@@ -72,7 +72,7 @@ describe("getVideos", () => {
         title: "2026 10 4 鎌倉ラザロvs東海シーガルズ",
         publishedAt: "2026-10-06T03:00:00Z",
         durationSec: 1538,
-        isLiveStream: false,
+        live: null,
       },
     ]);
   });
@@ -101,24 +101,62 @@ describe("getVideos", () => {
     expect(videos.map((item) => item.videoId)).toEqual(["aaaaaaaaaaa"]);
   });
 
+  const upcoming = { ...video("x").snippet, liveBroadcastContent: "upcoming" };
+  const onAir = { ...video("x").snippet, liveBroadcastContent: "live" };
+  const zero = { duration: "P0D" };
+  const scheduledStartTime = "2026-12-20T04:00:00Z";
+  const actualStartTime = "2026-12-20T04:03:10Z";
+
   it.each([
     [
       "a stream that is scheduled",
-      { snippet: { ...video("x").snippet, liveBroadcastContent: "upcoming" } },
+      { snippet: upcoming, contentDetails: zero, liveStreamingDetails: { scheduledStartTime } },
+      { durationSec: null, live: { status: "upcoming", scheduledStartTime } },
     ],
     [
       "a stream that is on air",
-      { snippet: { ...video("x").snippet, liveBroadcastContent: "live" } },
+      {
+        snippet: onAir,
+        contentDetails: zero,
+        liveStreamingDetails: { scheduledStartTime, actualStartTime },
+      },
+      { durationSec: null, live: { status: "live", scheduledStartTime } },
     ],
     [
       "a stream that has ended",
-      { liveStreamingDetails: { actualEndTime: "2026-12-20T06:00:00Z" } },
+      {
+        contentDetails: { duration: "PT1H30M" },
+        liveStreamingDetails: {
+          scheduledStartTime,
+          actualStartTime,
+          actualEndTime: "2026-12-20T05:33:10Z",
+        },
+      },
+      { durationSec: 5400, live: { status: "archived", scheduledStartTime } },
     ],
-  ])("marks %s as a live stream", async (_case, overrides) => {
+    [
+      "a stream that has ended and has no length yet",
+      { contentDetails: zero, liveStreamingDetails: { scheduledStartTime, actualStartTime } },
+      { durationSec: null, live: { status: "archived", scheduledStartTime } },
+    ],
+    [
+      "a stream that was started without a schedule, by the time it began at",
+      { contentDetails: { duration: "PT1H30M" }, liveStreamingDetails: { actualStartTime } },
+      { durationSec: 5400, live: { status: "archived", scheduledStartTime: actualStartTime } },
+    ],
+    [
+      "a stream YouTube gives no start of, by the time it was published at",
+      { contentDetails: { duration: "PT1H30M" }, liveStreamingDetails: {} },
+      {
+        durationSec: 5400,
+        live: { status: "archived", scheduledStartTime: "2026-10-06T03:00:00Z" },
+      },
+    ],
+  ])("reads %s", async (_case, overrides, expected) => {
     const api = fakeApi(() => ({ items: [video("aaaaaaaaaaa", overrides)] }));
     const youtube = createYoutubeClient({ apiKey: "key", fetch: api.fetch });
 
-    expect((await youtube.getVideos(["aaaaaaaaaaa"]))[0]?.isLiveStream).toBe(true);
+    expect((await youtube.getVideos(["aaaaaaaaaaa"]))[0]).toMatchObject(expected);
   });
 
   it("reports a refused call without the key or the response body", async () => {
@@ -128,6 +166,16 @@ describe("getVideos", () => {
     const error = await youtube.getVideos(["aaaaaaaaaaa"]).catch((caught: unknown) => caught);
 
     expect(error).toHaveProperty("message", "YouTube Data API: videos answered 400");
+  });
+});
+
+describe("requireApiKey", () => {
+  it("gives the key of the environment", () => {
+    expect(requireApiKey({ YOUTUBE_API_KEY: "key" })).toBe("key");
+  });
+
+  it.each([{}, { YOUTUBE_API_KEY: "" }])("fails without one", (env) => {
+    expect(() => requireApiKey(env)).toThrow("YOUTUBE_API_KEY is not set");
   });
 });
 
