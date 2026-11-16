@@ -16,9 +16,12 @@ against the schema in [`src/lib/schema.ts`](src/lib/schema.ts) and against each 
 
 ## Pages
 
-The top page lists every game, newest first under a heading per season, with a filter by team,
-season and game type whose state is in the URL. A game page shows the video and links on to the
-other games of both teams and of the season; a team page and a season page list their games.
+The top page is the way in: every team, every season and the newest games. The page of every
+game lists them newest first under a heading per season, with a filter by team, season and game
+type whose state is in the URL. A game page shows the video and links on to the other games
+between its two teams, the other games of the day and each team's games around it. A team page
+lists the team's games and narrows them to one opponent; a season page lists the games of the
+season.
 The player is a link to YouTube until a visitor starts it, and nothing but YouTube's thumbnails
 is loaded from another site before that.
 
