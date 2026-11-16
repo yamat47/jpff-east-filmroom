@@ -186,6 +186,11 @@ one row to swipe.
 - `gameId` has the form `{date}-{teamA}-vs-{teamB}`, for example
   `2026-10-04-kamakura-lazaro-vs-tokai-seagulls`. It names the game, not a video, so a split
   game still has one URL.
+- A correction does not break a published URL. The ID follows the game's date and teams, so
+  correcting either changes the ID and with it the URL of the game page; the old URL then
+  stays as a page that leads to the new one. That forwarding is not built: the pull request
+  that first corrects the date or the teams of a published game builds it. A game whose videos
+  are all gone is removed (section 6), and its URL goes with it.
 - The footer of every page says in one sentence that the site is an unofficial fan site and
   that the videos are those of the official channel. It links to the official channel, the
   official site and the about page.
@@ -240,7 +245,7 @@ A game and its videos:
 
 | Field | Meaning |
 | --- | --- |
-| `id` | `{date}-{teams[0]}-vs-{teams[1]}`. Never changed once published |
+| `id` | `{date}-{teams[0]}-vs-{teams[1]}`. It is the URL of the game page, which a correction does not break (section 4) |
 | `date` | Game date in Japan time. The date in the title wins, unless the league's or a team's own record shows the title is wrong; such a date is set by hand |
 | `season` | By default the value derived from `date`. Rewritten by hand only for an exception |
 | `type` | `league` / `playoff` / `allstar` / `other` |
@@ -438,7 +443,7 @@ and no database.
 | Import scripts | Node.js and TypeScript | Same language and types as the site |
 | Tests | Vitest | Title parsing and season derivation, verified on real titles |
 | Automation | GitHub Actions | Import, removal check, validation, deployment |
-| Hosting | GitHub Pages with a custom domain | The existing way of publishing |
+| Hosting | GitHub Pages with a custom domain | The author's other sites are published the same way |
 | External APIs | YouTube Data API v3, Claude API | Video information, tag estimation |
 
 ```
@@ -470,6 +475,9 @@ and no database.
     └── update-skills.yml once a month: the agent skills under .claude/skills/
 ```
 
+- `deploy.yml` checks the types and the data again before it builds the site and hands it to
+  GitHub Pages. The Pages site and its custom domain are declared in yamat47/infra-github and
+  the DNS record in yamat47/infra-yamat47, not in this repository.
 - Title parsing and season derivation are pure functions with no external API, fixed by tests.
 - A few hundred games are expected, so the page of every game receives them all and filters in
   the browser. No search server.
@@ -557,6 +565,10 @@ Order of work:
 
 Step 3 can change the parsing rules, which is why real data comes before the pages.
 
+Step 7 was done before steps 5 and 6, because the site is of use as soon as its pages are.
+Until those steps are built, new videos are imported by hand with `make sync`, and a video
+that is deleted or made private is removed by hand.
+
 ## 12. Open
 
 Each has a working assumption so that the work does not stop.
@@ -565,10 +577,8 @@ Each has a working assumption so that the work does not stop.
 | --- | --- | --- |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | When a renamed team first appears; the first import met none |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
-| Connection to the existing GitHub Pages setup | Not worked out | Before publication |
 | Which identity the import workflows act as | Not decided. With `github.token` a push to `main` is refused by the repository's ruleset, and a pull request it opens starts neither CI nor a deployment. A GitHub App token for the pull requests is the likely answer; how the live state reaches `main` is decided with it | Before step 5 |
-| What a correction does to a published game ID | Not decided. The ID never changes once published, yet it must equal its date and teams, so correcting either breaks one of the two rules. Until publication every ID follows its date and teams | Before publication |
-| Whether a game with `needsReview: true` may be merged | Not decided. CI does not look at the flag yet, and the pages show a flagged game like any other; every flag is cleared before publication | Before step 5 |
+| Whether a game with `needsReview: true` may be merged | Not decided. CI does not look at the flag yet, and the pages show a flagged game like any other. No game carried the flag at publication, and until this is decided a flag is cleared before its pull request is merged | Before step 5 |
 | Claude API model | Named by an environment variable, chosen by accuracy and cost | When the LLM judgement is built |
 
 ## Sources

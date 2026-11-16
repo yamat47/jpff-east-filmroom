@@ -32,9 +32,10 @@ scope changes that file in the same pull request.
 | `tests/` | Vitest tests of the functions under `src/lib/` and `scripts/` |
 | `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date, the two team IDs and the part the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
+| `.github/workflows/` | `ci.yml` (the checks of a pull request), `deploy.yml` (a merge into `main` builds the site and publishes it on GitHub Pages), `update-skills.yml` (the agent skills, once a month) |
 
 `docs/requirements.md` lists the files that are still to come (the Claude API judgement, the
-removal check, the workflows).
+removal check, their workflows).
 
 ## Always run commands through make
 
@@ -66,8 +67,9 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   The only exception is what YouTube itself reports about a game that is already merged: the
   state of a live stream, its scheduled start and the length of the video (requirements,
   section 6).
-- **A published game ID never changes.** It is the URL of the game page
-  (`/games/{date}-{teamA}-vs-{teamB}/`).
+- **A correction does not break a published game URL.** The ID of a game is the URL of its
+  page (`/games/{date}-{teamA}-vs-{teamB}/`) and follows its date and teams, so a correction of
+  either needs the old URL to lead to the new one (requirements, section 4).
 - **No analytics, no advertising, no contact form, no login.** Do not add a script from another
   site other than YouTube's player.
 - **The site says it is unofficial on every page.** The footer and the about page carry the
