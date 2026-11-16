@@ -18,7 +18,8 @@ against the schema in [`src/lib/schema.ts`](src/lib/schema.ts) and against each 
 
 ## Pages
 
-The top page is the way in: every team, every season and the newest games. The page of every
+The top page is the way in: every team, every season and the newest games, and above them the
+live streams that are scheduled or on air. The page of every
 game lists them newest first under a heading per season, with a filter by team, season and game
 type whose state is in the URL. A game page shows the video and links on to the other games
 between its two teams, the other games of the day and each team's games around it. A team page
@@ -34,6 +35,11 @@ not know yet into games by the rules in [`scripts/parse-title.ts`](scripts/parse
 writes the season files and prints a draft for the pull request body. A video the rules cannot
 read is listed as unread and placed by hand. It needs `YOUTUBE_API_KEY` in `.env`
 ([`.env.example`](.env.example) says where the key comes from).
+
+Two more commands ask YouTube about the videos the data already has, with the same key.
+`make check-removed` takes the videos that were deleted or made private out of the season files
+and prints the removal for a pull request body. `make refresh-live` brings the live streams up
+to date: scheduled, on air or ended, and the length once a stream is over.
 
 ## Development
 
