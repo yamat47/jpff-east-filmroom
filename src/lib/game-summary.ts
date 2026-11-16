@@ -1,16 +1,18 @@
 import type { Catalog } from "./catalog.ts";
 import type { GameType } from "./game-types.ts";
-import { formatDate, TYPE_LABELS } from "./labels.ts";
-import type { Game } from "./schema.ts";
+import { formatDate, formatDay, TYPE_LABELS } from "./labels.ts";
+import type { Game, Team } from "./schema.ts";
 
 /**
- * What a card shows of a game, and what the filter on the top page compares. It is plain data,
- * because the top page hands every game to the browser in this form.
+ * What a list shows of a game, and what the filter beside a list compares. It is plain data,
+ * because a page with a filter hands every game of its list to the browser in this form.
  */
 export type GameSummary = {
   readonly id: string;
   readonly date: string;
   readonly dateLabel: string;
+  /** The date without its year, for a list that stands under its season. */
+  readonly dayLabel: string;
   readonly season: string;
   readonly type: GameType;
   readonly typeLabel: string;
@@ -20,15 +22,23 @@ export type GameSummary = {
   readonly videoCount: number;
 };
 
-export type TeamSummary = { readonly id: string; readonly name: string };
+export type TeamSummary = {
+  readonly id: string;
+  readonly name: string;
+  readonly colors: Team["colors"];
+};
+
+export function summarizeTeam({ id, name, colors }: Team): TeamSummary {
+  return { id, name, colors };
+}
 
 export function summarize(catalog: Catalog, game: Game): GameSummary {
   const team = (id: string): TeamSummary => {
-    const name = catalog.teams.get(id)?.name;
-    // `make validate` rules this out, but a build alone does not run it, and a card that showed
+    const found = catalog.teams.get(id);
+    // `make validate` rules this out, but a build alone does not run it, and a row that showed
     // the ID would link to a team page that is not built.
-    if (name === undefined) throw new Error(`game ${game.id}: team ${id} is not in teams.yaml`);
-    return { id, name };
+    if (found === undefined) throw new Error(`game ${game.id}: team ${id} is not in teams.yaml`);
+    return summarizeTeam(found);
   };
   const first = game.videos[0];
   if (first === undefined) throw new Error(`game ${game.id} has no video`);
@@ -37,6 +47,7 @@ export function summarize(catalog: Catalog, game: Game): GameSummary {
     id: game.id,
     date: game.date,
     dateLabel: formatDate(game.date),
+    dayLabel: formatDay(game.date),
     season: game.season,
     type: game.type,
     typeLabel: TYPE_LABELS[game.type],

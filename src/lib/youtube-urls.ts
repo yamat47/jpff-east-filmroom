@@ -1,6 +1,6 @@
 // The site copies no image and no video: everything is addressed on YouTube.
 
-/** A 16:9 thumbnail, 320 pixels wide, for a card. */
+/** A 16:9 thumbnail, 320 pixels wide, for a row of a list. */
 export function thumbnailUrl(videoId: string): string {
   return `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 }

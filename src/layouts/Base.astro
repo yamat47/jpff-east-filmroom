@@ -14,18 +14,17 @@ interface Props {
 const { title, description, canonical = true } = Astro.props;
 const fullTitle = title === undefined ? SITE.name : `${title} | ${SITE.name}`;
 const NAV = [
-  { href: "/", label: "試合" },
+  { href: "/games/", label: "すべての試合" },
   { href: "/teams/", label: "チーム" },
   { href: "/seasons/", label: "シーズン" },
 ];
 const ABOUT = "/about/";
 const path = Astro.url.pathname;
-// "page" on the entry that is this page, "true" on the entry this page belongs under. A game
-// page belongs under the list of games, which is the top page.
+// "page" on the entry that is this page, "true" on the entry this page belongs under. The top
+// page is no entry: the name of the site leads to it.
 const currentOf = (href: string) => {
   if (path === href) return "page";
-  const under = href === "/" ? path.startsWith("/games/") : path.startsWith(href);
-  return under ? "true" : undefined;
+  return path.startsWith(href) ? "true" : undefined;
 };
 ---
 
@@ -37,8 +36,8 @@ const currentOf = (href: string) => {
     <title>{fullTitle}</title>
     <meta name="description" content={description ?? SITE.description} />
     {canonical && <link rel="canonical" href={new URL(path, SITE.url)} />}
-    {/* The filter above a list works only with JavaScript; without it the full list stands. */}
-    <noscript><style>.filter { display: none; }</style></noscript>
+    {/* A filter works only with JavaScript; without it the full list stands. */}
+    <noscript><style>.filter, .rail--filter { display: none; }</style></noscript>
   </head>
   <body>
     <header class="site-header">

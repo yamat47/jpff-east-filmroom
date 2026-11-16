@@ -1,6 +1,8 @@
 ---
+import { TeamLabel } from "../../components/TeamLabel.tsx";
 import Base from "../../layouts/Base.astro";
 import { teamsWithGames } from "../../lib/catalog.ts";
+import { teamCountLabel } from "../../lib/labels.ts";
 import { catalog } from "../../lib/site-data.ts";
 
 const teams = teamsWithGames(catalog);
@@ -8,12 +10,12 @@ const teams = teamsWithGames(catalog);
 
 <Base title="チーム" description="J.P.F.F East の試合動画があるチームの一覧です。">
   <h1 class="page-title">チーム</h1>
-  <ul class="index-list">
-    {teams.map(({ team, games }) => (
+  <ul class="index-list index-list--wide">
+    {teams.map((entry) => (
       <li>
-        <a href={`/teams/${team.id}/`}>
-          <span>{team.name}</span>
-          <span class="index-list__count">{games}試合</span>
+        <a href={`/teams/${entry.team.id}/`}>
+          <TeamLabel team={entry.team} />
+          <span class="index-list__count">{teamCountLabel(entry)}</span>
         </a>
       </li>
     ))}

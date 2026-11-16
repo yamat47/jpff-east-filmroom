@@ -1,12 +1,9 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { gamesOfSeason } from "../../lib/catalog.ts";
+import { seasonsWithGames } from "../../lib/catalog.ts";
 import { catalog } from "../../lib/site-data.ts";
 
-const seasons = catalog.seasons.map((season) => ({
-  season,
-  games: gamesOfSeason(catalog, season).length,
-}));
+const seasons = seasonsWithGames(catalog);
 ---
 
 <Base title="シーズン" description="J.P.F.F East の試合動画があるシーズンの一覧です。">

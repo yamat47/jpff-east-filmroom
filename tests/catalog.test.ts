@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCatalog,
+  gamesAround,
   gamesOfSeason,
   gamesOfTeam,
-  relatedGames,
+  otherMeetings,
+  sameDayGames,
+  seasonsWithGames,
   teamsWithGames,
 } from "../src/lib/catalog.ts";
 import type { Game, SiteData, Team } from "../src/lib/schema.ts";
@@ -98,7 +101,24 @@ describe("gamesOfTeam and gamesOfSeason", () => {
   it("finds the games of one season only", () => {
     expect(ids(gamesOfSeason(catalog, "2025-2026"))).toEqual(["2025-10-05-seagulls-vs-lazaro"]);
   });
+});
 
+describe("seasonsWithGames", () => {
+  it("counts the games of each season, the newest season first", () => {
+    const catalog = catalogOf([
+      game("2025-10-05", "lazaro", "seagulls"),
+      game("2026-10-04", "lazaro", "seagulls"),
+      game("2026-09-13", "ulowers", "lazaro"),
+    ]);
+
+    expect(seasonsWithGames(catalog)).toEqual([
+      { season: "2026-2027", games: 2 },
+      { season: "2025-2026", games: 1 },
+    ]);
+  });
+});
+
+describe("teamsWithGames", () => {
   it("counts the games of each team and leaves out a team without one", () => {
     const counted = teamsWithGames(catalogOf([game("2026-10-04", "lazaro", "seagulls")]));
 
@@ -107,50 +127,101 @@ describe("gamesOfTeam and gamesOfSeason", () => {
       ["seagulls", 1],
     ]);
   });
+
+  it("says in which seasons a team has games", () => {
+    const [lazaro] = teamsWithGames(
+      catalogOf([
+        game("2026-10-04", "lazaro", "seagulls"),
+        game("2024-10-06", "lazaro", "seagulls"),
+        game("2022-01-16", "lazaro", "seagulls"),
+      ]),
+    );
+
+    expect(lazaro).toMatchObject({ firstSeason: "2021-2022", lastSeason: "2026-2027" });
+  });
+
+  it("puts the teams of the newest season before the teams that play no more", () => {
+    const entries = teamsWithGames(
+      catalogOf([
+        game("2026-10-04", "ulowers", "titans"),
+        game("2025-10-05", "lazaro", "seagulls"),
+      ]),
+    );
+
+    expect(entries.map((entry) => [entry.team.id, entry.current])).toEqual([
+      ["ulowers", true],
+      ["titans", true],
+      ["lazaro", false],
+      ["seagulls", false],
+    ]);
+  });
 });
 
-describe("relatedGames", () => {
-  it("offers the other games of each team and of the season, without the game itself", () => {
+describe("otherMeetings", () => {
+  it("finds the other games of the same two teams, whichever side each is on", () => {
     const shown = game("2026-10-04", "lazaro", "seagulls");
     const catalog = catalogOf([
       shown,
-      game("2026-11-01", "ulowers", "lazaro"),
-      game("2026-09-13", "seagulls", "titans"),
       game("2025-10-05", "seagulls", "lazaro"),
+      game("2024-12-15", "lazaro", "seagulls"),
+      game("2026-09-13", "ulowers", "lazaro"),
+      game("2026-09-13", "seagulls", "titans"),
     ]);
 
-    const related = relatedGames(catalog, shown);
-
-    expect(ids(related.teams[0].games)).toEqual([
-      "2026-11-01-ulowers-vs-lazaro",
+    expect(ids(otherMeetings(catalog, shown))).toEqual([
       "2025-10-05-seagulls-vs-lazaro",
-    ]);
-    expect(ids(related.teams[1].games)).toEqual([
-      "2026-09-13-seagulls-vs-titans",
-      "2025-10-05-seagulls-vs-lazaro",
-    ]);
-    expect(ids(related.season.games)).toEqual([
-      "2026-11-01-ulowers-vs-lazaro",
-      "2026-09-13-seagulls-vs-titans",
+      "2024-12-15-lazaro-vs-seagulls",
     ]);
   });
+});
 
-  it("shows ten games of a longer list and says how many there are", () => {
-    const shown = game("2026-12-20", "lazaro", "seagulls");
-    const earlier = Array.from({ length: 13 }, (_, index) =>
-      game(`2026-09-${String(index + 1).padStart(2, "0")}`, "lazaro", "ulowers"),
+describe("sameDayGames", () => {
+  it("finds the other games of the day and not the game itself", () => {
+    const shown = game("2026-10-04", "lazaro", "seagulls");
+    const catalog = catalogOf([
+      shown,
+      game("2026-10-04", "ulowers", "titans"),
+      game("2026-10-11", "ulowers", "titans"),
+    ]);
+
+    expect(ids(sameDayGames(catalog, shown))).toEqual(["2026-10-04-ulowers-vs-titans"]);
+  });
+});
+
+describe("gamesAround", () => {
+  const day = (index: number) => `2026-09-${String(index).padStart(2, "0")}`;
+  const season = Array.from({ length: 12 }, (_, index) =>
+    game(day(index + 1), "lazaro", "ulowers"),
+  );
+  const catalog = catalogOf([...season, game("2026-09-06", "seagulls", "titans")]);
+
+  it("shows the game with the two games after it and the five before it, newest first", () => {
+    const shown = season[7];
+    if (shown === undefined) throw new Error("the season has twelve games");
+
+    expect(gamesAround(catalog, shown, "lazaro").map((item) => item.date)).toEqual(
+      [10, 9, 8, 7, 6, 5, 4, 3].map(day),
     );
-
-    const { teams } = relatedGames(catalogOf([shown, ...earlier]), shown);
-
-    expect(teams[0].games).toHaveLength(10);
-    expect(teams[0].games[0]?.id).toBe("2026-09-13-lazaro-vs-ulowers");
-    expect(teams[0].total).toBe(13);
   });
 
-  it("offers nothing for a team whose only game is the one shown", () => {
+  it("starts at the newest game when nothing follows the one shown", () => {
+    const shown = season[11];
+    if (shown === undefined) throw new Error("the season has twelve games");
+
+    expect(gamesAround(catalog, shown, "lazaro").map((item) => item.date)).toEqual(
+      [12, 11, 10, 9, 8, 7].map(day),
+    );
+  });
+
+  it("shows a team's only game alone", () => {
     const shown = game("2026-10-04", "lazaro", "seagulls");
 
-    expect(relatedGames(catalogOf([shown]), shown).teams[0]).toEqual({ games: [], total: 0 });
+    expect(ids(gamesAround(catalogOf([shown]), shown, "seagulls"))).toEqual([shown.id]);
+  });
+
+  it("refuses a team that did not play the game", () => {
+    const shown = game("2026-10-04", "lazaro", "seagulls");
+
+    expect(() => gamesAround(catalogOf([shown]), shown, "ulowers")).toThrow("not a game of team");
   });
 });

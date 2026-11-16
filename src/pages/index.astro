@@ -1,25 +1,76 @@
 ---
-import { FilteredGames } from "../components/FilteredGames.tsx";
+import { GameList } from "../components/GameList.tsx";
+import { TeamMark } from "../components/TeamLabel.tsx";
 import Base from "../layouts/Base.astro";
-import { teamsWithGames } from "../lib/catalog.ts";
+import { LATEST_LIMIT, seasonsWithGames, teamsWithGames } from "../lib/catalog.ts";
 import { summarize } from "../lib/game-summary.ts";
+import { teamCountLabel } from "../lib/labels.ts";
 import { catalog } from "../lib/site-data.ts";
 
-const games = catalog.games.map((game) => summarize(catalog, game));
-const teams = teamsWithGames(catalog).map(({ team }) => ({ id: team.id, name: team.name }));
+const teams = teamsWithGames(catalog);
+const seasons = seasonsWithGames(catalog);
+const newest = seasons[0];
+const latest = catalog.games.slice(0, LATEST_LIMIT).map((game) => summarize(catalog, game));
 ---
 
 <Base>
   <div class="page-head">
-    <h1 class="page-title">試合</h1>
-    <p class="lead">J.P.F.F East の試合動画を探せます。</p>
+    <h1 class="page-title">試合を探す</h1>
+    <p class="lead">
+      J.P.F.F East 公式 YouTube チャンネルの試合動画 <span class="phrase">{catalog.games.length}試合</span
+      >を、チームとシーズンごとに並べています。
+    </p>
   </div>
-  {/* Every game goes to the browser with the component, which filters them in place. */}
-  <FilteredGames
-    client:load
-    games={games}
-    teams={teams}
-    filters={["team", "season", "type"]}
-    groupBySeason
-  />
+
+  <div class="sections">
+    <section>
+      <div class="group__head">
+        <h2 class="section-title">チームから探す</h2>
+        <a class="more" href="/teams/">{teams.length}チームの一覧</a>
+      </div>
+      {/* A row of chips to swipe on a phone, a grid of tiles on a desk. */}
+      <ul class="chip-row team-picker">
+        {teams.map((entry) => (
+          <li>
+            <a class="chip" href={`/teams/${entry.team.id}/`}>
+              <TeamMark team={entry.team} />
+              <span class="team-picker__body">
+                <span class="team__name">{entry.team.name}</span>
+                <span class="chip__count meta">{teamCountLabel(entry)}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section>
+      <div class="group__head">
+        <h2 class="section-title">シーズンから探す</h2>
+      </div>
+      <ul class="season-links">
+        {seasons.map(({ season, games }) => (
+          <li>
+            <a href={`/seasons/${season}/`}>
+              <span>{season}</span>
+              <span class="meta">{games}試合</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {newest !== undefined && (
+      <section>
+        <div class="group__head">
+          <h2 class="section-title">最新の試合</h2>
+          <a class="more" href={`/seasons/${newest.season}/`}>
+            {newest.season}シーズンの全{newest.games}試合
+          </a>
+        </div>
+        {/* The full date: at the start of a season the newest games are of two seasons. */}
+        <GameList games={latest} view={{ kind: "matchup", date: "full" }} layout="cards" />
+      </section>
+    )}
+  </div>
 </Base>
