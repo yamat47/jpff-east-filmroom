@@ -10,13 +10,17 @@ const seasons = catalog.seasons.map((season) => ({
 ---
 
 <Base title="シーズン" description="J.P.F.F East の試合動画があるシーズンの一覧です。">
-  <h1 class="page-title">シーズン</h1>
-  <p class="lead">シーズンは3月1日から翌年2月末日までです。</p>
+  <div class="page-head">
+    <h1 class="page-title">シーズン</h1>
+    <p class="lead">シーズンは3月1日から翌年2月末日までです。</p>
+  </div>
   <ul class="index-list">
     {seasons.map(({ season, games }) => (
       <li>
-        <a href={`/seasons/${season}/`}>{season}シーズン</a>
-        <span class="index-list__count">{games}試合</span>
+        <a href={`/seasons/${season}/`}>
+          <span>{season}シーズン</span>
+          <span class="index-list__count">{games}試合</span>
+        </a>
       </li>
     ))}
   </ul>

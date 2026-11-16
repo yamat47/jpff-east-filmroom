@@ -20,64 +20,53 @@ const summary = summarize(catalog, game);
 const [first, second] = summary.teams;
 const related = relatedGames(catalog, game);
 
+// A list with no other game in it is left out, heading and all.
 const sections = [
-  {
-    heading: `${first.name}のほかの試合`,
-    list: related.teams[0],
-    more: { href: `/teams/${first.id}/`, label: `${first.name}の試合をすべて見る` },
-  },
-  {
-    heading: `${second.name}のほかの試合`,
-    list: related.teams[1],
-    more: { href: `/teams/${second.id}/`, label: `${second.name}の試合をすべて見る` },
-  },
-  {
-    heading: `${game.season}シーズンのほかの試合`,
-    list: related.season,
-    more: { href: `/seasons/${game.season}/`, label: `${game.season}シーズンの試合をすべて見る` },
-  },
-];
+  { heading: `${first.name}の試合`, list: related.teams[0], href: `/teams/${first.id}/` },
+  { heading: `${second.name}の試合`, list: related.teams[1], href: `/teams/${second.id}/` },
+  { heading: `${game.season}シーズンの試合`, list: related.season, href: `/seasons/${game.season}/` },
+].filter(({ list }) => list.total > 0);
 ---
 
 <Base
   title={`${first.name} vs ${second.name} (${summary.dateLabel})`}
   description={`${summary.dateLabel}の${first.name} vs ${second.name}（${summary.typeLabel}）の試合動画です。`}
 >
-  <article class="game-page">
-    <header class="game-head">
-      <time class="game-head__date" datetime={game.date}>{summary.dateLabel}</time>
-      <h1 class="matchup">
-        <a href={`/teams/${first.id}/`}>{first.name}</a>
-        <span class="matchup__vs">vs</span>
-        <a href={`/teams/${second.id}/`}>{second.name}</a>
-      </h1>
-      <p class="game-head__meta">
-        <span class={`badge badge--${game.type}`}>{summary.typeLabel}</span>
-        <a href={`/seasons/${game.season}/`}>{game.season}シーズン</a>
-      </p>
-    </header>
+  <header class="page-head">
+    <h1 class="page-title">
+      <span class="page-title__team">{first.name}</span>{" "}
+      <span class="page-title__team"><span class="page-title__vs">vs</span> {second.name}</span>
+    </h1>
+    <p class="meta">
+      <time datetime={game.date}>{summary.dateLabel}</time>・{summary.typeLabel}・{game.season}シーズン
+    </p>
+  </header>
 
-    <div class="players">
-      {game.videos.map((video) => (
-        <Player video={video} partLabel={game.videos.length > 1 ? `Part ${video.part}` : null} />
+  <div class="players">
+    {game.videos.map((video) => (
+      <Player video={video} partLabel={game.videos.length > 1 ? `Part ${video.part}` : null} />
+    ))}
+  </div>
+
+  {sections.length > 0 ? (
+    <div class="related">
+      {sections.map(({ heading, list, href }) => (
+        <section>
+          <div class="group__head">
+            <h2 class="section-title">{heading}</h2>
+            {/* The page it leads to lists this game too, hence one more than the others. */}
+            <a class="more" href={href}>
+              <span class="visually-hidden">{heading}</span>全{list.total + 1}試合
+            </a>
+          </div>
+          <GameList games={list.games.map((other) => summarize(catalog, other))} />
+        </section>
       ))}
     </div>
-  </article>
-
-  {sections.map(({ heading, list, more }) => (
-    <section class="related">
-      <h2 class="section-title">{heading}</h2>
-      {list.games.length > 0 ? (
-        <GameList games={list.games.map((other) => summarize(catalog, other))} />
-      ) : (
-        <p class="related__empty">ほかの試合はまだありません。</p>
-      )}
-      {/* The page it leads to lists this game too, hence one more than the others. */}
-      {list.total > 0 && (
-        <p class="related__more">
-          <a href={more.href}>{more.label}（{list.total + 1}試合）</a>
-        </p>
-      )}
-    </section>
-  ))}
+  ) : (
+    <div class="empty">
+      <p class="empty__hint">このチームとシーズンには、ほかの試合がありません。</p>
+      <a class="more" href="/">試合の一覧へ</a>
+    </div>
+  )}
 </Base>

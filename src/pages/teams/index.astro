@@ -11,8 +11,10 @@ const teams = teamsWithGames(catalog);
   <ul class="index-list">
     {teams.map(({ team, games }) => (
       <li>
-        <a href={`/teams/${team.id}/`}>{team.name}</a>
-        <span class="index-list__count">{games}試合</span>
+        <a href={`/teams/${team.id}/`}>
+          <span>{team.name}</span>
+          <span class="index-list__count">{games}試合</span>
+        </a>
       </li>
     ))}
   </ul>

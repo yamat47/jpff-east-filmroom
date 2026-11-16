@@ -19,10 +19,10 @@ scope changes that file in the same pull request.
 | `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
 | `src/lib/catalog.ts`, `src/lib/site-data.ts` | The data as the pages read it: every game newest first, the games of a team or a season, the lists a game page links on to. `site-data.ts` reads `data/` once per build |
 | `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a card shows of a game, the Japanese words for dates and types, and the YouTube addresses of thumbnails, videos and the player |
-| `src/lib/game-filter.ts`, `src/lib/game-types.ts` | The rules of the filter above a list (what a URL query selects, which games it leaves), and the closed sets of the model without the schema library |
+| `src/lib/game-filter.ts`, `src/lib/season-groups.ts`, `src/lib/game-types.ts` | The rules of the filter above a list (what a URL query selects, which games it leaves), the cut of a list into one list per season, and the closed sets of the model without the schema library |
 | `src/pages/`, `src/site.ts` | The routes (top, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
 | `src/layouts/Base.astro` | The shell of every page: header, navigation, and the footer with the unofficial notice |
-| `src/components/` | `GameCard` and `GameList` (React, rendered to HTML at build time), `FilteredGames` (React, the only component sent to the browser), `Player.astro` (the click-to-load YouTube player) |
+| `src/components/` | `GameCard` and `GameList` (React, rendered to HTML at build time), `FilteredGames` (React, the only component sent to the browser), `Player.astro` (the click-to-load YouTube player), `ExternalMark.astro` (the arrow after a link that leaves the site) |
 | `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
@@ -71,7 +71,8 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 - **No analytics, no advertising, no contact form, no login.** Do not add a script from another
   site other than YouTube's player.
 - **The site says it is unofficial on every page.** The footer and the about page carry the
-  notice and the link to the official channel.
+  notice and the link to the official channel. The name of the site does not say it, so the
+  footer is the only place a page other than the about page does.
 - **No secret in code, data or logs.** The repository is public. `YOUTUBE_API_KEY` and
   `ANTHROPIC_API_KEY` come from the environment (`.env` locally, which git ignores; Actions
   secrets in CI). The Claude API model is named by an environment variable as well.

@@ -1,6 +1,6 @@
 # jpff-east-filmroom
 
-The source of JPFF East Film Room, an unofficial fan site that arranges the game videos of the
+The source of JPFF East 試合検索, an unofficial fan site that arranges the game videos of the
 [J.P.F.F East](https://youtube.com/@jpffeast) YouTube channel by season, team and game type. The
 videos are embedded from YouTube; the site hosts none of them and is not affiliated with JPFF.
 
@@ -16,11 +16,11 @@ against the schema in [`src/lib/schema.ts`](src/lib/schema.ts) and against each 
 
 ## Pages
 
-The top page lists every game, newest first, with a filter by season, team and game type whose
-state is in the URL. A game page shows the video and links on to the other games of both teams
-and of the season; a team page and a season page list their games. The player is a link to
-YouTube until a visitor starts it, and nothing but YouTube's thumbnails is loaded from another
-site before that.
+The top page lists every game, newest first under a heading per season, with a filter by team,
+season and game type whose state is in the URL. A game page shows the video and links on to the
+other games of both teams and of the season; a team page and a season page list their games.
+The player is a link to YouTube until a visitor starts it, and nothing but YouTube's thumbnails
+is loaded from another site before that.
 
 ## Importing videos
 

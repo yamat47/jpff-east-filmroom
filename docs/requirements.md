@@ -19,7 +19,7 @@ a game is hard to find by opponent or by season.
 | Language | Japanese only |
 | Reference | Holodex, but only for "games are linked to each other and easy to follow" |
 | Address | `jpff-east-filmroom` under the existing custom domain |
-| Name | JPFF East Film Room (working name), always shown with 「非公式」 |
+| Name | JPFF East 試合検索. The name does not carry 「非公式」: the footer of every page and the about page say that the site is unofficial |
 
 The channel carries official games, filmed for scouting, with no commentary or captions. The
 site adds no commentary or editing either: it arranges the videos and links them.
@@ -100,8 +100,8 @@ The design is for a phone first.
 
 | Page | URL | Content |
 | --- | --- | --- |
-| Top | `/` | Live and scheduled games at the top, only when there are any. Then every game, newest first, filtered by season, team and type |
-| Game | `/games/{gameId}/` | Player, game date, season, type, links to both teams, three lists of related games |
+| Top | `/` | Live and scheduled games at the top, only when there are any. Then every game, newest first, under a heading per season, filtered by team, season and type |
+| Game | `/games/{gameId}/` | The two teams, game date, type, season, player, three lists of related games |
 | Team | `/teams/{teamId}/` | Every game of the team, grouped by season, newest first |
 | Season | `/seasons/{seasonId}/` | Every game of the season, newest first, filtered by type |
 | Teams | `/teams/` | Every team with its number of games |
@@ -112,31 +112,43 @@ The design is for a phone first.
 
 The centre of the site. After a video, the visitor goes straight on to the next game.
 
-1. Heading: "A vs B" in the order of the title, game date, season, type.
-2. Player: the YouTube embed. Split videos are stacked as Part 1, Part 2.
-3. The original title of each video and a link "YouTubeで開く".
+1. Heading: "A vs B" in the order of the title. Under it, in one line of text, the game date,
+   the type and the season. The heading links nowhere: the team pages and the season page are
+   reached through the lists below.
+2. Player: the YouTube embed. Split videos are stacked, each under a heading "Part 1", "Part 2".
+3. Under each player, a link "YouTubeで開く". The original title of a video is not shown.
 4. The other games of team A, newest first.
 5. The other games of team B, newest first.
 6. The other games of the same season, newest first.
 
-Lists 4 to 6 leave out the game on the page and show at most ten games each. The rest is
-reached through "すべて見る" links to the team page and the season page.
+Lists 4 to 6 leave out the game on the page and show at most ten games each. Each stands under
+a heading, 「{team}の試合」 or 「{season}シーズンの試合」, with a link 「全N試合」 beside it to the
+team page or the season page. N counts the game on the page too. A list with no game in it is
+left out, heading and all. When all three are empty, one line says so and links to the top page.
 
 ### Rules for every page
 
-- A game card shows the thumbnail, the game date, "A vs B", the type badge and the season. A
-  split game shows the number of videos, a live stream its state.
+- A game card shows the thumbnail, the two teams one above the other, and under them the game
+  date and the type as text. No type has a colour or a badge of its own. A split game adds the
+  number of videos, and a live stream its state on a line of its own. The season is not on the
+  card: the top page and a team page put the games of each season under a heading.
+- The navigation has three entries: games, teams and seasons. The about page is linked from the
+  footer.
 - Thumbnails point at YouTube's thumbnail URLs. No image is copied.
 - The player loads its iframe only after the thumbnail is pressed, to keep the first paint light.
   Until then it is a link to the video on YouTube, so it works without JavaScript. The iframe
   comes from `youtube-nocookie.com`.
 - The filter state of the top page is in the URL query, for example
   `/?season=2026-2027&team=kamakura-lazaro&type=league`.
+- A select of a filter has no label beside it. Until a value is chosen it shows its own name
+  (「チーム」「シーズン」「種別」), and choosing that entry again opens the filter. A select that
+  narrows the list has a heavier border.
 - `gameId` has the form `{date}-{teamA}-vs-{teamB}`, for example
   `2026-10-04-kamakura-lazaro-vs-tokai-seagulls`. It names the game, not a video, so a split
   game still has one URL.
-- The footer of every page says the site is an unofficial fan site and links to the official
-  channel.
+- The footer of every page says in one sentence that the site is an unofficial fan site and
+  that the videos are those of the official channel. It links to the official channel, the
+  official site and the about page.
 
 ## 5. Data model
 
@@ -195,7 +207,7 @@ A game and its videos:
 | `needsReview` | `true` when the automatic judgement is unsure, or a person placing a game by hand leaves a decision open. A type of `league` by default does not set it (section 7). Set to `false` by the person who checks it in the pull request |
 | `videos[].part` | Order of split videos. `1` for a single video |
 | `videos[].durationSec` | Length in seconds. `null` for a live stream that has not ended |
-| `videos[].title` | The title on YouTube as written. Used to verify the parsing and shown on the page |
+| `videos[].title` | The title on YouTube as written. Used to verify the parsing, and as the name a screen reader gives the player. Not shown on the page |
 | `videos[].live` | `null` for an ordinary video. For a live stream `{ "status": "upcoming" \| "live" \| "archived", "scheduledStartTime": "..." }` |
 
 Checked by CI on every change:
@@ -342,8 +354,8 @@ to live and archived. Bowl games and a few others are expected.
 
 | State | On the top page | On the game page |
 | --- | --- | --- |
-| `upcoming` | At the top, 「配信予定」 with the scheduled start | The embed (YouTube's waiting screen) and the scheduled start |
-| `live` | At the top, with a 「配信中」 badge | The embed plays the stream |
+| `upcoming` | At the top, under 「ライブ配信」, with the scheduled start as 「13:00 配信予定」 | The embed (YouTube's waiting screen), and the scheduled start under the game date |
+| `live` | At the top, under 「ライブ配信」, with 「配信中」 in red | The embed plays the stream, and 「配信中」 stands under the game date |
 | `archived` | In line with ordinary games | Like an ordinary game |
 
 - State and scheduled start come from the video resource of the YouTube Data API
@@ -355,12 +367,22 @@ to live and archived. Bowl games and a few others are expected.
 - A deleted stream is caught by the removal check.
 
 The state is that of the last build, so with one import a day it lags. On the day of a stream
-the page may still say "scheduled". Two things make up for it:
+the data may still say "scheduled". The browser makes up for it by the clock alone, and shows
+the first of these that holds:
 
-- The browser compares the current time with the scheduled start and shows a scheduled stream
-  whose start has passed as 「配信中かも」.
-- The player is YouTube's embed, so the stream itself plays correctly even when the page is
-  stale.
+1. The data says `archived`: an ordinary game.
+2. Four hours or more have passed since the scheduled start: an ordinary game.
+3. The data says `live`, or the scheduled start has passed: 「配信中」.
+4. Otherwise: 「配信予定」 with the scheduled start.
+
+A stream that starts late, or is put off on the day, is shown as live from the start the data
+has, and one that runs longer than four hours as an ordinary game before it ends. All of these
+are accepted, because the rule reads nothing but the clock. Without JavaScript a page shows the
+state of the last build. The API also reports a scheduled end
+(`liveStreamingDetails.scheduledEndTime`), which the site neither stores nor uses.
+
+The player is YouTube's embed, so the stream itself plays correctly even when the page is
+stale.
 
 ## 9. Stack and layout
 
@@ -387,7 +409,7 @@ and no database.
 │       └── 2026-2027.json
 ├── src/
 │   ├── pages/            index, games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
-│   ├── components/       GameCard, GameList, FilteredGames, Player
+│   ├── components/       GameCard, GameList, FilteredGames, Player, ExternalMark
 │   └── lib/              schema (Zod), season derivation, data loading
 ├── scripts/
 │   ├── sync.ts           import of new videos (--season writes one season only)
@@ -412,9 +434,11 @@ and no database.
   browser. No search server.
 - With JavaScript off, the lists and the links to game pages still work.
 - No team logos or photographs. Text and YouTube thumbnails only.
-- The look: white, text first, phone first. System fonts only, so that no font is requested from
-  another site. A list of games is rows with a small thumbnail; the matchup on a game page is the
-  largest thing on the site. Every design value is in `src/styles/tokens.css`.
+- The look: white, black and grey, text first, phone first. Two colours carry meaning, the blue
+  of a link and the red of a live stream, and nothing is decoration. System fonts only, so that
+  no font is requested from another site. A list of games is rows with a small thumbnail, side
+  by side in columns on a wide screen; the matchup on a game page is the largest text on the
+  site. Every design value is in `src/styles/tokens.css`.
 
 ## 10. Operations
 
@@ -448,10 +472,11 @@ When something fails:
 
 On the site:
 
-- The footer and the about page say it is an unofficial fan site with no relation to JPFF.
-- They say the videos are embedded from the official channel and the rights belong to their
-  holders.
-- They link to the official channel and the official site.
+- The footer of every page and the about page say it is an unofficial fan site. The name of
+  the site does not say it.
+- The about page says that the site has no relation to JPFF, that the videos are embedded from
+  the official channel and that the rights belong to their holders.
+- Both link to the official channel and the official site.
 - There is no contact form.
 
 ## 11. Acceptance and order of work
@@ -494,7 +519,6 @@ Each has a working assumption so that the work does not stop.
 
 | Item | Working assumption | Decided |
 | --- | --- | --- |
-| Spelling of the site name | "JPFF East Film Room", after the subdomain | Before publication |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | When a renamed team first appears; the first import met none |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
 | Connection to the existing GitHub Pages setup | Not worked out | Before publication |

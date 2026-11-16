@@ -4,6 +4,7 @@ import Base from "../../layouts/Base.astro";
 import { gamesOfTeam, teamsWithGames } from "../../lib/catalog.ts";
 import { summarize } from "../../lib/game-summary.ts";
 import type { Team } from "../../lib/schema.ts";
+import { groupBySeason } from "../../lib/season-groups.ts";
 import { catalog } from "../../lib/site-data.ts";
 
 export function getStaticPaths() {
@@ -16,20 +17,22 @@ interface Props {
 
 const { team } = Astro.props;
 const games = gamesOfTeam(catalog, team.id);
-const seasons = catalog.seasons
-  .map((season) => ({ season, games: games.filter((game) => game.season === season) }))
-  .filter((group) => group.games.length > 0);
+const seasons = groupBySeason(games);
 ---
 
 <Base title={team.name} description={`${team.name}の試合動画の一覧です。`}>
-  <h1 class="page-title">{team.name}</h1>
-  <p class="lead">{games.length}試合</p>
-  {seasons.map((group) => (
-    <section class="season-group">
-      <h2 class="section-title">
-        <a href={`/seasons/${group.season}/`}>{group.season}シーズン</a>
-      </h2>
-      <GameList games={group.games.map((game) => summarize(catalog, game))} />
-    </section>
-  ))}
+  <div class="page-head">
+    <h1 class="page-title">{team.name}</h1>
+    <p class="meta">{games.length}試合</p>
+  </div>
+  <div class="groups">
+    {seasons.map((group) => (
+      <section>
+        <div class="group__head">
+          <h2 class="section-title">{group.season}シーズン</h2>
+        </div>
+        <GameList games={group.games.map((game) => summarize(catalog, game))} />
+      </section>
+    ))}
+  </div>
 </Base>

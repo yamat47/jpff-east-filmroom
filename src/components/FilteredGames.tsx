@@ -1,8 +1,9 @@
-import { useId, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { isFiltered, matchesSelection, selectionFrom } from "../lib/game-filter.ts";
 import type { GameSummary, TeamSummary } from "../lib/game-summary.ts";
 import { GAME_TYPES } from "../lib/game-types.ts";
 import { TYPE_LABELS } from "../lib/labels.ts";
+import { groupBySeason as seasonGroups } from "../lib/season-groups.ts";
 import { GameList } from "./GameList.tsx";
 
 type Filter = "season" | "team" | "type";
@@ -13,6 +14,15 @@ type Props = {
   readonly filters: readonly Filter[];
   /** The teams to choose from, for the pages that offer the team filter. */
   readonly teams?: readonly TeamSummary[];
+  /** Whether the list is cut into one list per season, each under its heading. */
+  readonly groupBySeason?: boolean;
+};
+
+// What a select is called, and what it shows while it narrows nothing.
+const FILTER_NAMES: Record<Filter, string> = {
+  season: "シーズン",
+  team: "チーム",
+  type: "種別",
 };
 
 // The selection lives in the URL query (/?season=2026-2027&team=kamakura-lazaro&type=league), so
@@ -38,14 +48,13 @@ function writeQuery(change: Partial<Record<Filter, string>>): void {
  * A list of games with the filters the page offers. Built to HTML with every game in it, so the
  * list and its links work without JavaScript; with it, the selects narrow the list in place.
  */
-export function FilteredGames({ games, filters, teams = [] }: Props) {
+export function FilteredGames({ games, filters, teams = [], groupBySeason = false }: Props) {
   // Empty on the server and during hydration: the built page shows every game.
   const search = useSyncExternalStore(
     subscribe,
     () => window.location.search,
     () => "",
   );
-  const formId = useId();
 
   const offers = (filter: Filter) => filters.includes(filter);
   const seasons = offers("season") ? [...new Set(games.map((game) => game.season))] : [];
@@ -61,60 +70,69 @@ export function FilteredGames({ games, filters, teams = [] }: Props) {
   });
   const shown = games.filter((game) => matchesSelection(game, selection));
 
-  const select = (filter: Filter, label: string, options: readonly (readonly [string, string])[]) =>
-    offers(filter) && (
-      <label className="filter__field" htmlFor={`${formId}-${filter}`}>
-        <span className="filter__label">{label}</span>
-        <select
-          id={`${formId}-${filter}`}
-          value={selection[filter] ?? ""}
-          onChange={(event) => writeQuery({ [filter]: event.target.value })}
-        >
-          <option value="">すべて</option>
-          {options.map(([value, text]) => (
-            <option key={value} value={value}>
-              {text}
-            </option>
-          ))}
-        </select>
-      </label>
-    );
+  const options: Record<Filter, readonly (readonly [value: string, text: string])[]> = {
+    season: seasons.map((season) => [season, season]),
+    team: offeredTeams.map((team) => [team.id, team.name]),
+    type: types.map((type) => [type, TYPE_LABELS[type]]),
+  };
 
   return (
     <div className="filtered">
-      <form className="filter" onSubmit={(event) => event.preventDefault()}>
-        {select(
-          "season",
-          "シーズン",
-          seasons.map((season) => [season, season] as const),
-        )}
-        {select(
-          "team",
-          "チーム",
-          offeredTeams.map((team) => [team.id, team.name] as const),
-        )}
-        {select(
-          "type",
-          "種別",
-          types.map((type) => [type, TYPE_LABELS[type]] as const),
-        )}
-        {isFiltered(selection) && (
-          <button
-            className="filter__reset"
-            type="button"
-            onClick={() => writeQuery({ season: "", team: "", type: "" })}
-          >
-            絞り込みを解除
-          </button>
-        )}
-      </form>
-      <p className="filtered__count" aria-live="polite">
-        {shown.length}試合
-      </p>
-      {shown.length > 0 ? (
-        <GameList games={shown} />
+      <div className="filtered__controls">
+        <form className="filter" onSubmit={(event) => event.preventDefault()}>
+          {filters.map((filter) => (
+            <span
+              key={filter}
+              // Team names are the longest values, so their select gets the most room.
+              className={filter === "team" ? "filter__field filter__field--wide" : "filter__field"}
+            >
+              <select
+                aria-label={FILTER_NAMES[filter]}
+                value={selection[filter] ?? ""}
+                data-selected={selection[filter] === null ? undefined : ""}
+                onChange={(event) => writeQuery({ [filter]: event.target.value })}
+              >
+                <option value="">{FILTER_NAMES[filter]}</option>
+                {options[filter].map(([value, text]) => (
+                  <option key={value} value={value}>
+                    {text}
+                  </option>
+                ))}
+              </select>
+            </span>
+          ))}
+        </form>
+        <div className="filtered__status">
+          <p aria-live="polite">{shown.length}試合</p>
+          {isFiltered(selection) && (
+            <button
+              className="filter__reset"
+              type="button"
+              onClick={() => writeQuery({ season: "", team: "", type: "" })}
+            >
+              絞り込みを解除
+            </button>
+          )}
+        </div>
+      </div>
+      {shown.length === 0 ? (
+        <div className="empty">
+          <p className="empty__title">条件に合う試合がありません</p>
+          <p className="empty__hint">絞り込みを変えるか、解除してください。</p>
+        </div>
+      ) : groupBySeason ? (
+        <div className="groups">
+          {seasonGroups(shown).map((group) => (
+            <section key={group.season}>
+              <div className="group__head">
+                <h2 className="section-title">{group.season}シーズン</h2>
+              </div>
+              <GameList games={group.games} />
+            </section>
+          ))}
+        </div>
       ) : (
-        <p className="filtered__empty">条件に合う試合がありません。絞り込みを解除してください。</p>
+        <GameList games={shown} />
       )}
     </div>
   );

@@ -12,13 +12,13 @@ interface Props {
 }
 
 const { title, description, canonical = true } = Astro.props;
-const fullTitle = title === undefined ? SITE.nameWithMark : `${title} | ${SITE.nameWithMark}`;
+const fullTitle = title === undefined ? SITE.name : `${title} | ${SITE.name}`;
 const NAV = [
   { href: "/", label: "試合" },
   { href: "/teams/", label: "チーム" },
   { href: "/seasons/", label: "シーズン" },
-  { href: "/about/", label: "このサイトについて" },
 ];
+const ABOUT = "/about/";
 const path = Astro.url.pathname;
 // "page" on the entry that is this page, "true" on the entry this page belongs under. A game
 // page belongs under the list of games, which is the top page.
@@ -43,10 +43,7 @@ const currentOf = (href: string) => {
   <body>
     <header class="site-header">
       <div class="wrap site-header__inner">
-        <a class="site-name" href="/">
-          <span class="site-name__text">{SITE.name}</span>
-          <span class="site-name__mark">非公式</span>
-        </a>
+        <a class="site-name" href="/">{SITE.name}</a>
         <nav class="site-nav" aria-label="サイト内">
           <ul>
             {NAV.map(({ href, label }) => (
@@ -64,15 +61,13 @@ const currentOf = (href: string) => {
     </main>
 
     <footer class="site-footer">
-      <div class="wrap">
-        <p>
-          このサイトは非公式のファンサイトで、JPFF とは関係がありません。動画は
-          <a href={SITE.channelUrl}>J.P.F.F East の公式 YouTube チャンネル</a>
-          のものを埋め込み表示しており、権利は各権利者にあります。
-        </p>
-        <p class="site-footer__official">
-          <a href={SITE.officialSiteUrl}>JPFF 東日本支部 公式サイト</a>
-        </p>
+      <div class="wrap site-footer__inner">
+        <p>非公式のファンサイトです。動画は J.P.F.F East 公式 YouTube チャンネルのものです。</p>
+        <ul class="site-footer__links">
+          <li><a href={SITE.channelUrl}>公式 YouTube</a></li>
+          <li><a href={SITE.officialSiteUrl}>公式サイト</a></li>
+          <li><a href={ABOUT} aria-current={currentOf(ABOUT)}>このサイトについて</a></li>
+        </ul>
       </div>
     </footer>
   </body>

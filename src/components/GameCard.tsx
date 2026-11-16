@@ -1,7 +1,7 @@
 import type { GameSummary } from "../lib/game-summary.ts";
 import { thumbnailUrl } from "../lib/youtube-urls.ts";
 
-/** One game in a list: its thumbnail, date, matchup, type and season, linked to its page. */
+/** One game in a list: its thumbnail, the two teams, the date and the type, linked to its page. */
 export function GameCard({ game }: { game: GameSummary }) {
   const [first, second] = game.teams;
   return (
@@ -18,18 +18,15 @@ export function GameCard({ game }: { game: GameSummary }) {
           decoding="async"
         />
         <span className="game__body">
-          <time className="game__date" dateTime={game.date}>
-            {game.dateLabel}
-          </time>
-          <span className="game__matchup">
-            <span className="game__team">{first.name}</span>
-            <span className="game__vs">vs</span>
-            <span className="game__team">{second.name}</span>
+          <span className="game__teams">
+            <span>{first.name}</span>
+            {/* The two lines show that these teams met; a screen reader needs the word. */}
+            <span className="visually-hidden">vs</span>
+            <span>{second.name}</span>
           </span>
           <span className="game__meta">
-            <span className={`badge badge--${game.type}`}>{game.typeLabel}</span>
-            <span className="game__season">{game.season}</span>
-            {game.videoCount > 1 && <span className="game__parts">動画{game.videoCount}本</span>}
+            <time dateTime={game.date}>{game.dateLabel}</time>・{game.typeLabel}
+            {game.videoCount > 1 && `・動画${game.videoCount}本`}
           </span>
         </span>
       </a>
