@@ -36,6 +36,12 @@ const currentOf = (href: string) => {
     <title>{fullTitle}</title>
     <meta name="description" content={description ?? SITE.description} />
     {canonical && <link rel="canonical" href={new URL(path, SITE.url)} />}
+    {/* The drawing for a browser that takes one, a picture of it for the others, and a larger
+        picture for the home screen of a phone. All three are in public/. The size on the
+        picture keeps a browser that takes both from choosing it over the drawing. */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {/* A filter works only with JavaScript; without it the full list stands. */}
     <noscript><style>.filter, .rail--filter { display: none; }</style></noscript>
   </head>

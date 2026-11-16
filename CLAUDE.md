@@ -25,6 +25,7 @@ scope changes that file in the same pull request.
 | `src/layouts/Base.astro` | The shell of every page: header, navigation, and the footer with the unofficial notice |
 | `src/components/` | `GameRow` and `GameList` (a game as a row of a list), `TeamLabel` (a team's mark and name) and `TeamTimeline` (a team's games around one, beside the video), all React and rendered to HTML at build time; `FilteredGames` and `TeamGames` (React, in one file, sent to the browser: a list with selects above it, and a team's games with its opponents beside them); `LiveState` (the state of a live stream, by the clock) and `TopGames` (`LiveGames` and `NewestGames`, the two lists of the top page a stream moves between), sent to the browser only while the data has a stream that has not ended; `Player.astro` (the click-to-load YouTube player); `ExternalMark.astro` (the arrow after a link that leaves the site) |
 | `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
+| `public/` | The site's mark as its favicon: `favicon.svg` is the drawing, `favicon.ico` (32 px) and `apple-touch-icon.png` (180 px, with no rounded corners, which a phone cuts itself) are pictures of it. Nothing else is served as it is |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
 | `scripts/youtube.ts` | The YouTube Data API calls the import makes: the channel's uploads and the details of videos |
@@ -91,6 +92,8 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 - **Design values live in `src/styles/tokens.css` only.** Colours, sizes, weights and fonts are
   read through its variables everywhere else. The two colours of a team are data, not design
   values: they are in `data/teams.yaml` and reach the stylesheet as properties of the mark.
+  The favicon repeats the ink and the paper, because a file served on its own cannot read a
+  variable: when either colour changes, the three files under `public/` are drawn again.
   Fonts are the system's: no font, script or image is requested from another site, except
   YouTube's thumbnails and, once a visitor starts a video, its player.
 - **The pages work without JavaScript.** Every list and every link is in the built HTML. React
