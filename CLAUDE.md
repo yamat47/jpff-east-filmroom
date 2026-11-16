@@ -18,24 +18,28 @@ scope changes that file in the same pull request.
 | `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
 | `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
 | `src/lib/catalog.ts`, `src/lib/site-data.ts` | The data as the pages read it: every game newest first, the games of a team or a season, the teams with what their games say of them, the lists a game page links on to. `site-data.ts` reads `data/` once per build |
-| `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a row shows of a game and of a team, the Japanese words for dates, types and a team's seasons, and the YouTube addresses of thumbnails, videos and the player |
+| `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a row shows of a game and of a team, the form of a date (`2026/10/04`), the Japanese words for types and a team's seasons, and the YouTube addresses of thumbnails, videos and the player |
 | `src/lib/game-filter.ts`, `src/lib/opponents.ts`, `src/lib/season-groups.ts`, `src/lib/game-types.ts` | The rules of the filter of a list (what a URL query selects, which games it leaves), the opponents a team page offers as its filter, the cut of a list into one list per season, and the closed sets of the model without the schema library |
+| `src/lib/live.ts` | What a page says of a live stream at a given time (scheduled, on air, or over and a game like any other), the cut of the top page's games by it, and the date and time of day in Japan |
 | `src/pages/`, `src/site.ts` | The routes (top, `games/`, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
 | `src/layouts/Base.astro` | The shell of every page: header, navigation, and the footer with the unofficial notice |
-| `src/components/` | `GameRow` and `GameList` (a game as a row of a list), `TeamLabel` (a team's mark and name) and `TeamTimeline` (a team's games around one, beside the video), all React and rendered to HTML at build time; `FilteredGames` and `TeamGames` (React, in one file, the only components sent to the browser: a list with selects above it, and a team's games with its opponents beside them); `Player.astro` (the click-to-load YouTube player); `ExternalMark.astro` (the arrow after a link that leaves the site) |
+| `src/components/` | `GameRow` and `GameList` (a game as a row of a list), `TeamLabel` (a team's mark and name) and `TeamTimeline` (a team's games around one, beside the video), all React and rendered to HTML at build time; `FilteredGames` and `TeamGames` (React, in one file, sent to the browser: a list with selects above it, and a team's games with its opponents beside them); `LiveState` (the state of a live stream, by the clock) and `TopGames` (`LiveGames` and `NewestGames`, the two lists of the top page a stream moves between), sent to the browser only while the data has a stream that has not ended; `Player.astro` (the click-to-load YouTube player); `ExternalMark.astro` (the arrow after a link that leaves the site) |
 | `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
 | `scripts/youtube.ts` | The YouTube Data API calls the import makes: the channel's uploads and the details of videos |
 | `scripts/draft-games.ts` | Places videos the data does not know yet into games, by the rules alone, and renders the draft for a pull request body |
 | `scripts/sync.ts` | The import: fetches, drafts, writes the season files, prints the draft. `make sync` |
+| `scripts/removed-videos.ts`, `scripts/check-removed.ts` | The removal check: takes the videos YouTube no longer returns out of their games, and renders the removal for a pull request body. `make check-removed` |
+| `scripts/live-state.ts`, `scripts/refresh-live.ts` | The refresh of the live streams: their state, scheduled start and length as YouTube reports them now. `make refresh-live` |
+| `scripts/season-files.ts` | Writes the season files, for the three scripts above |
 | `tests/` | Vitest tests of the functions under `src/lib/` and `scripts/` |
 | `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date, the two team IDs and the part the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
 | `.github/workflows/` | `ci.yml` (the checks of a pull request), `deploy.yml` (a merge into `main` builds the site and publishes it on GitHub Pages), `update-skills.yml` (the agent skills, once a month) |
 
-`docs/requirements.md` lists the files that are still to come (the Claude API judgement, the
-removal check, their workflows).
+`docs/requirements.md` lists the files that are still to come (the Claude API judgement, and
+the workflows that run the import, the removal check and the refresh once a day).
 
 ## Always run commands through make
 
@@ -50,6 +54,8 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 | Type check / lint / auto-fix / test | `make typecheck` / `make lint` / `make fix` / `make test` |
 | Check the data | `make validate` (always after editing a file under `data/`) |
 | Import new videos | `make sync` (needs `YOUTUBE_API_KEY` in `.env`; `ARGS="--season=2026-2027"` writes one season only) |
+| Draft the removal of videos that are gone from YouTube | `make check-removed` (needs the key too) |
+| Bring the live streams up to date | `make refresh-live` (needs the key too) |
 | Build the site | `make build` (`dist/`) |
 | Dev server | `make up` (http://localhost:4321) / `make logs` / `make down`. The pages themselves have no tests: after changing one, look at it there at phone width |
 | Add or update dependencies | `make pnpm ARGS="add -D <pkg>"` (the lockfile is also updated on the host) |
@@ -88,22 +94,30 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   Fonts are the system's: no font, script or image is requested from another site, except
   YouTube's thumbnails and, once a visitor starts a video, its player.
 - **The pages work without JavaScript.** Every list and every link is in the built HTML. React
-  runs in the browser for one thing, the filter of a list (`FilteredGames`, and `TeamGames` in
-  the same file for a team's opponents), which keeps its state in the URL query; the live state
-  switch of step 6 will be the second. Without JavaScript the filter is hidden and the full
-  list stands. Do not add an island for anything a link can do.
+  runs in the browser for two things. One is the filter of a list (`FilteredGames`, and
+  `TeamGames` in the same file for a team's opponents), which keeps its state in the URL query;
+  without JavaScript the filter is hidden and the full list stands. The other is the state of
+  a live stream (`LiveState`, and `LiveGames` and `NewestGames` of the top page), which follows
+  the clock; without JavaScript a page shows the state of the last build. A page gets that
+  script only while the data has a stream that has not ended. Do not add an island for
+  anything a link can do.
 - **Code that runs in the browser does not import `src/lib/schema.ts`.** That module builds the
   Zod schemas when it loads, and one import put the whole library into the page. The closed sets
   a component needs are in `src/lib/game-types.ts`; a type-only import of the schema is fine.
 - **A URL ends with a slash.** `astro.config.ts` builds every page as a directory, so internal
   links are written `/games/{gameId}/`, never without the slash.
-- **Title parsing and season derivation stay pure.** They take what they need as arguments and
-  call no API, read no file and no clock, so that tests can fix their behaviour on real titles.
-  A title the rules cannot read is reported as unread (`null`), never guessed.
+- **Title parsing, season derivation and the state of a live stream stay pure.** They take what
+  they need as arguments and call no API, read no file and no clock, so that tests can fix
+  their behaviour on real titles and at chosen times. A title the rules cannot read is reported
+  as unread (`null`), never guessed. The one place that reads the clock is `useNow` in
+  `src/components/LiveState.tsx`.
 - **The import only adds.** `make sync` places videos that are in no game and not on the
   exclusion list, and never rewrites a video the data already has. So a game corrected by hand
   stays corrected, and a video the rules cannot read is placed by hand: into a game, or onto the
   exclusion list with the reason.
+- **The refresh touches three values.** `make refresh-live` writes the state, the scheduled
+  start and the length of a live stream, and nothing else of a game or a video: not the date,
+  not the title. `make check-removed` only takes videos out.
 - **A bare 「合同」 is not an alias.** Which joint team it means depends on the year, so a title
   that says only 「合同」 is placed by hand.
 - Scripts run on Node's type stripping (tests go through Vitest), so a module imports its

@@ -118,7 +118,8 @@ The design is for a phone first.
 ### Top page
 
 The page a visitor opens first shows what the site can be searched by, and not a list of every
-game. Its sections stand one under the other, each as wide as the page.
+game. Its sections stand one under the other, each as wide as the page. While a stream is
+scheduled or on air, 「ライブ配信」 stands above them (section 8).
 
 1. Teams (「チームから探す」): every team that has a game, the teams of the newest season first,
    then the teams that play no more, each group in the order of `data/teams.yaml`. A team is of
@@ -128,16 +129,18 @@ game. Its sections stand one under the other, each as wide as the page.
    its last season (「22試合・2025-2026まで」, or 「のみ」 for a team of one season). On a phone they
    are one row of chips to swipe, with the names alone. The heading links to the page of teams.
 2. Seasons (「シーズンから探す」): every season with its number of games, as links.
-3. The newest games (「最新の試合」): the four newest, with a link to the page of the newest
-   season. They show the full date, because at the start of a season they are of two seasons.
-   On a desk they are cards on the columns of the team tiles; on a phone they are rows.
+3. The newest games (「最新の試合」): the four newest that are not under 「ライブ配信」, with a
+   link to the page of the newest season. On a desk they are cards on the columns of the team
+   tiles; on a phone they are rows.
 
 ### Game page
 
 The centre of the site. After a video, the visitor goes straight on to the next game.
 
-1. Heading: "A vs B" in the order of the title, each name a link to that team's page. Under it,
-   in one line of text, the game date, the type and the season, which links to the season page.
+1. Heading: "A vs B" in the order of the title, each name a link to that team's page. The
+   names read as the title they are: no blue and no line under them, and a line under the
+   name only where a pointer is over it. Under the heading, in one line of text, the game
+   date, the type and the season, which links to the season page.
 2. Player: the YouTube embed. Split videos are stacked, each under a heading "Part 1", "Part 2".
 3. Under each player, a link "YouTubeで開く". The original title of a video is not shown.
 4. The other games between the same two teams (「この対戦のほかの試合」), newest first. A row
@@ -162,12 +165,15 @@ one row to swipe.
 
 ### Rules for every page
 
-- A game is a row of a list: the thumbnail, the day, the two teams as 「A vs B」 and the type as
-  text. On a desk that is one line; on a phone the two teams stand one above the other beside
-  the thumbnail. A row leaves out what its page has already said: the year where the list
-  stands under its season, one of the two teams on that team's page. No type has a colour or a
-  badge of its own. A split game adds the number of videos, and a live stream its state on a
-  line of its own.
+- A game is a row of a list: the thumbnail, the date, the two teams as 「A vs B」 and the type
+  as text. On a desk that is one line; on a phone the two teams stand one above the other
+  beside the thumbnail. A row leaves out what its page has already said: the date among the
+  other games of a day, one of the two teams on that team's page. No type has a colour or a
+  badge of its own. A split game adds the number of videos, and a live stream that has not
+  ended its state on a line of its own, under the teams.
+- A date is written `2026/10/04` wherever it stands: with its year, without a weekday and
+  without the words for year, month and day, so that the line under a game's title fits a
+  phone. A season spans two years, so a row under a season heading keeps the year too.
 - A team's name is written in full and is not broken in the middle. Where it does not fit in a
   line it breaks at the sign that joins two names (「&」「・」).
 - Bold type is for headings and for what is selected. A name in a list is not bold.
@@ -252,9 +258,9 @@ A game and its videos:
 | `teams` | Two team IDs, in the order of the title |
 | `needsReview` | `true` when the automatic judgement is unsure, or a person placing a game by hand leaves a decision open. A type of `league` by default does not set it (section 7). Set to `false` by the person who checks it in the pull request |
 | `videos[].part` | Order of split videos. `1` for a single video |
-| `videos[].durationSec` | Length in seconds. `null` for a live stream that has not ended |
+| `videos[].durationSec` | Length in seconds. `null` for a live stream that has not ended, or whose length YouTube does not give yet. Only a live stream is without a length |
 | `videos[].title` | The title on YouTube as written. Used to verify the parsing, and as the name a screen reader gives the player. Not shown on the page |
-| `videos[].live` | `null` for an ordinary video. For a live stream `{ "status": "upcoming" \| "live" \| "archived", "scheduledStartTime": "..." }` |
+| `videos[].live` | `null` for an ordinary video. For a live stream `{ "status": "upcoming" \| "live" \| "archived", "scheduledStartTime": "..." }`. A stream that was started without a schedule has the time it began at |
 
 Checked by CI on every change:
 
@@ -291,10 +297,17 @@ in the same pull request as an addition to the exclusion list.
 
 ### Detecting removed videos (GitHub Actions, once a day)
 
-1. Ask the YouTube Data API for every registered video ID.
-2. Find the ones that are not returned or have become private.
-3. Open a pull request that removes them. A game with no video left is removed whole.
+1. Ask the YouTube Data API for every video of every game. The exclusion list is not asked: a
+   video that is gone is not offered by the import either way.
+2. Find the ones that are not returned. A video that was deleted and one that was made private
+   look the same: an API key gets neither.
+3. Open a pull request that removes them. A game with no video left is removed whole. A video
+   that stays keeps its part number, so that a part uploaded again takes the place of the one
+   that went.
 4. When a person merges it, they disappear from the site.
+
+An answer without a single video fails the check: that is a fault of the key or of the API, and
+a draft that removes every game helps nobody.
 
 ### Changes that do not go through a pull request
 
@@ -303,6 +316,12 @@ directly:
 
 - The state of a live stream (scheduled, live, archived) and a change of its scheduled start.
 - The length of the video, known once the stream has ended.
+
+The refresh asks YouTube only for the streams the data does not have both the end and the
+length of, and writes these values and nothing else. A stream that is put off to another day
+keeps its game date, which is not YouTube's to decide: every run of the refresh names the
+stream and its day until a person has corrected the game. A stream YouTube no longer returns is
+left to the removal check.
 
 ### The first full import
 
@@ -316,6 +335,9 @@ directly:
 
 - A data file can be edited and committed at any time.
 - Both the import and the removal check can also be started from the Actions page.
+- `make sync`, `make check-removed` and `make refresh-live` run the import, the removal check
+  and the refresh of the live streams from a local machine. Each writes the season files and
+  prints what it did; the first two print it as the body of a pull request.
 
 ## 7. Title parsing and LLM judgement
 
@@ -408,9 +430,13 @@ to live and archived. Bowl games and a few others are expected.
   (`snippet.liveBroadcastContent` and `liveStreamingDetails`). Check the field names against the
   API reference when implementing.
 - The game date is the date in the title, or else the date of the scheduled start in Japan time.
+  A game dated by its stream is drafted with `needsReview`: YouTube reports a video released
+  as a premiere like a stream, and the day of a release is not the day of a game.
 - A new stream goes through a pull request like any other video. After the merge its state
   changes are applied automatically (section 6).
 - A deleted stream is caught by the removal check.
+- YouTube gives the length of a stream some time after its end. Until then the length is
+  unknown, and the stream is still asked for.
 
 The state is that of the last build, so with one import a day it lags. On the day of a stream
 the data may still say "scheduled". The browser makes up for it by the clock alone, and shows
@@ -426,6 +452,13 @@ has, and one that runs longer than four hours as an ordinary game before it ends
 are accepted, because the rule reads nothing but the clock. Without JavaScript a page shows the
 state of the last build. The API also reports a scheduled end
 (`liveStreamingDetails.scheduledEndTime`), which the site neither stores nor uses.
+
+The clock is read where the state matters: under 「ライブ配信」 and 「最新の試合」 of the top page,
+which a stream moves between, under the date of its game page, and in the lists that have a
+filter. The other lists of a game page, the games around it included, show the state of the
+last build. A page is sent the
+script for this only while the data has a stream that has not ended: on every other day the top
+page and the game pages are plain HTML.
 
 The player is YouTube's embed, so the stream itself plays correctly even when the page is
 stale.
@@ -455,14 +488,18 @@ and no database.
 │       └── 2026-2027.json
 ├── src/
 │   ├── pages/            index, games/ and games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
-│   ├── components/       GameRow, GameList, TeamLabel, TeamTimeline, FilteredGames, Player, ExternalMark
-│   └── lib/              schema (Zod), season derivation, data loading
+│   ├── components/       GameRow, GameList, TeamLabel, TeamTimeline, FilteredGames, LiveState, TopGames, Player, ExternalMark
+│   └── lib/              schema (Zod), season derivation, the state of a live stream, data loading
 ├── scripts/
 │   ├── sync.ts           import of new videos (--season writes one season only)
 │   ├── check-removed.ts  removal check
+│   ├── refresh-live.ts   state and length of the live streams
 │   ├── parse-title.ts    title parsing
 │   ├── youtube.ts        YouTube Data API calls
 │   ├── draft-games.ts    placing new videos into games by rule
+│   ├── removed-videos.ts taking the videos YouTube no longer returns out of the games
+│   ├── live-state.ts     what the refresh changes of a stream
+│   ├── season-files.ts   writing the season files
 │   ├── classify.ts       Claude API calls
 │   └── validate.ts       data validation
 ├── tests/
@@ -472,6 +509,7 @@ and no database.
     ├── deploy.yml        on push to main: build and publish
     ├── sync.yml          once a day, and by hand
     ├── check-removed.yml once a day, and by hand
+    ├── refresh-live.yml  the live streams; how often is decided with the workflow
     └── update-skills.yml once a month: the agent skills under .claude/skills/
 ```
 
@@ -566,8 +604,12 @@ Order of work:
 Step 3 can change the parsing rules, which is why real data comes before the pages.
 
 Step 7 was done before steps 5 and 6, because the site is of use as soon as its pages are.
-Until those steps are built, new videos are imported by hand with `make sync`, and a video
-that is deleted or made private is removed by hand.
+
+Step 6 is built except for its schedules. The pages show a live stream, the import places one
+in a game, and `make check-removed` and `make refresh-live` do what the two daily runs will do.
+The workflows that run them, and the import, once a day wait for the identity they act as
+(section 12). Until then the three commands are run by hand, and what they write reaches
+`main` through a pull request like any other change.
 
 ## 12. Open
 
@@ -577,7 +619,7 @@ Each has a working assumption so that the work does not stop.
 | --- | --- | --- |
 | Renamed teams | One team with aliases. Only merged and joint teams are separate teams | When a renamed team first appears; the first import met none |
 | Short aliases whose team depends on the year | Accepted, and left to pull request review. 「WG」「ギース」「東京」「ブロンコス」 name ワイルドギース and 東京ブロンコス, which play as one joint team from 2026-2027, and 「群馬」 names 群馬スタリオンズ, which played as a joint team in 2021-2022. The dictionary has no season, so a new title with such a name is drafted as the old team without a flag | When a title does it |
-| Which identity the import workflows act as | Not decided. With `github.token` a push to `main` is refused by the repository's ruleset, and a pull request it opens starts neither CI nor a deployment. A GitHub App token for the pull requests is the likely answer; how the live state reaches `main` is decided with it | Before step 5 |
+| Which identity the scheduled workflows act as | Not decided. With `github.token` a push to `main` is refused by the repository's ruleset, which also asks for signed commits, and a pull request it opens starts neither CI nor a deployment. A GitHub App token for the pull requests is the likely answer; how the live state reaches `main` is decided with it | Before the first scheduled workflow: the import, the removal check or the refresh of the live streams |
 | Whether a game with `needsReview: true` may be merged | Not decided. CI does not look at the flag yet, and the pages show a flagged game like any other. No game carried the flag at publication, and until this is decided a flag is cleared before its pull request is merged | Before step 5 |
 | Claude API model | Named by an environment variable, chosen by accuracy and cost | When the LLM judgement is built |
 

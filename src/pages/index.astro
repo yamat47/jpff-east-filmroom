@@ -1,8 +1,8 @@
 ---
-import { GameList } from "../components/GameList.tsx";
 import { TeamMark } from "../components/TeamLabel.tsx";
+import { LiveGames, NewestGames } from "../components/TopGames.tsx";
 import Base from "../layouts/Base.astro";
-import { LATEST_LIMIT, seasonsWithGames, teamsWithGames } from "../lib/catalog.ts";
+import { seasonsWithGames, teamsWithGames, topPageGames } from "../lib/catalog.ts";
 import { summarize } from "../lib/game-summary.ts";
 import { teamCountLabel } from "../lib/labels.ts";
 import { catalog } from "../lib/site-data.ts";
@@ -10,7 +10,10 @@ import { catalog } from "../lib/site-data.ts";
 const teams = teamsWithGames(catalog);
 const seasons = seasonsWithGames(catalog);
 const newest = seasons[0];
-const latest = catalog.games.slice(0, LATEST_LIMIT).map((game) => summarize(catalog, game));
+const games = topPageGames(catalog).map((game) => summarize(catalog, game));
+// While the data has a stream that has not ended, the two lists it moves between follow the
+// clock in the browser. On every other day they are plain HTML and no script is sent.
+const hasStream = games.some((game) => game.live !== null);
 ---
 
 <Base>
@@ -23,6 +26,8 @@ const latest = catalog.games.slice(0, LATEST_LIMIT).map((game) => summarize(cata
   </div>
 
   <div class="sections">
+    {hasStream && <LiveGames client:load games={games.filter((game) => game.live !== null)} />}
+
     <section>
       <div class="group__head">
         <h2 class="section-title">チームから探す</h2>
@@ -60,17 +65,11 @@ const latest = catalog.games.slice(0, LATEST_LIMIT).map((game) => summarize(cata
       </ul>
     </section>
 
-    {newest !== undefined && (
-      <section>
-        <div class="group__head">
-          <h2 class="section-title">最新の試合</h2>
-          <a class="more" href={`/seasons/${newest.season}/`}>
-            {newest.season}シーズンの全{newest.games}試合
-          </a>
-        </div>
-        {/* The full date: at the start of a season the newest games are of two seasons. */}
-        <GameList games={latest} view={{ kind: "matchup", date: "full" }} layout="cards" />
-      </section>
-    )}
+    {newest !== undefined &&
+      (hasStream ? (
+        <NewestGames client:load games={games} season={newest} />
+      ) : (
+        <NewestGames games={games} season={newest} />
+      ))}
   </div>
 </Base>

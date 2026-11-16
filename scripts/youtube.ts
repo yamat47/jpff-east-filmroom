@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { LiveStream } from "../src/lib/live.ts";
 
 const API = "https://www.googleapis.com/youtube/v3/";
 
@@ -39,8 +40,14 @@ const VideosResponse = z.object({
         liveBroadcastContent: z.enum(["none", "upcoming", "live"]),
       }),
       contentDetails: z.object({ duration: z.string() }),
-      // Present only for a video that is or was a live stream.
-      liveStreamingDetails: z.object({}).optional(),
+      // Present only for a video that is or was a live stream. A stream that was started
+      // without a schedule has no scheduled start.
+      liveStreamingDetails: z
+        .object({
+          scheduledStartTime: z.iso.datetime().optional(),
+          actualStartTime: z.iso.datetime().optional(),
+        })
+        .optional(),
     }),
   ),
 });
@@ -50,9 +57,10 @@ export type ChannelVideo = {
   readonly videoId: string;
   readonly title: string;
   readonly publishedAt: string;
-  readonly durationSec: number;
-  /** Whether the video is, or once was, a live stream. */
-  readonly isLiveStream: boolean;
+  /** `null` for a live stream whose length YouTube does not give yet. */
+  readonly durationSec: number | null;
+  /** The state of a video that is, or once was, a live stream; `null` for any other video. */
+  readonly live: LiveStream | null;
 };
 
 export type YoutubeClient = {
@@ -61,6 +69,15 @@ export type YoutubeClient = {
   /** The videos with these IDs. One that was deleted or made private is left out. */
   getVideos(videoIds: readonly string[]): Promise<ChannelVideo[]>;
 };
+
+/** The API key of the environment. The scripts that ask YouTube fail at once without it. */
+export function requireApiKey(env: Record<string, string | undefined>): string {
+  const apiKey = env.YOUTUBE_API_KEY;
+  if (apiKey === undefined || apiKey === "") {
+    throw new Error("YOUTUBE_API_KEY is not set (see .env.example)");
+  }
+  return apiKey;
+}
 
 export function createYoutubeClient(options: {
   apiKey: string;
@@ -115,19 +132,38 @@ export function createYoutubeClient(options: {
           id: videoIds.slice(start, start + PAGE_SIZE).join(","),
         });
         videos.push(
-          ...page.items.map((item) => ({
-            videoId: item.id,
-            title: item.snippet.title,
-            publishedAt: item.snippet.publishedAt,
-            durationSec: secondsOf(item.contentDetails.duration),
-            isLiveStream:
-              item.snippet.liveBroadcastContent !== "none" ||
-              item.liveStreamingDetails !== undefined,
-          })),
+          ...page.items.map((item) => {
+            const live = liveOf(item);
+            const seconds = secondsOf(item.contentDetails.duration);
+            return {
+              videoId: item.id,
+              title: item.snippet.title,
+              publishedAt: item.snippet.publishedAt,
+              // A stream has a length of zero until it has ended and YouTube has processed it.
+              durationSec: live !== null && seconds === 0 ? null : seconds,
+              live,
+            };
+          }),
         );
       }
       return videos;
     },
+  };
+}
+
+type VideoResource = z.output<typeof VideosResponse>["items"][number];
+
+function liveOf({ snippet, liveStreamingDetails }: VideoResource): LiveStream | null {
+  // An ended stream reads "none" like any upload, and only the details say what it was.
+  if (liveStreamingDetails === undefined && snippet.liveBroadcastContent === "none") return null;
+  return {
+    status: snippet.liveBroadcastContent === "none" ? "archived" : snippet.liveBroadcastContent,
+    // The data keeps one time for a stream. One that was started without a schedule has only
+    // the time it began at.
+    scheduledStartTime:
+      liveStreamingDetails?.scheduledStartTime ??
+      liveStreamingDetails?.actualStartTime ??
+      snippet.publishedAt,
   };
 }
 

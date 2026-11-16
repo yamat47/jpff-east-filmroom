@@ -9,7 +9,8 @@ export default defineConfig({
   // a directory at that URL without a redirect, and links are written the same way.
   trailingSlash: "always",
 
-  // React draws the game lists. Only the list with a filter is sent to the browser as a
-  // component; everywhere else it is rendered to HTML at build time.
+  // React draws the game lists. Two things are sent to the browser as components: the list with
+  // a filter, and the state of a live stream while the data has one that has not ended.
+  // Everywhere else React is rendered to HTML at build time.
   integrations: [react()],
 });

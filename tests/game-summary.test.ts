@@ -39,8 +39,7 @@ describe("summarize", () => {
     expect(summarize(catalog, GAME)).toEqual({
       id: "2021-12-19-brandings-vs-wild-geese",
       date: "2021-12-19",
-      dateLabel: "2021年12月19日(日)",
-      dayLabel: "12月19日(日)",
+      dateLabel: "2021/12/19",
       season: "2021-2022",
       type: "playoff",
       typeLabel: "プレーオフ",
@@ -50,6 +49,24 @@ describe("summarize", () => {
       ],
       videoId: "aaaaaaaaaaa",
       videoCount: 2,
+      live: null,
     });
+  });
+
+  it("gives a stream that has not ended with its start as Japan reads it", () => {
+    const live = { status: "upcoming", scheduledStartTime: "2026-12-20T04:00:00Z" } as const;
+    const scheduled = {
+      ...GAME,
+      videos: [{ ...video("aaaaaaaaaaa", 1), durationSec: null, live }],
+    };
+
+    expect(summarize(catalog, scheduled).live).toEqual({ ...live, startLabel: "13:00" });
+  });
+
+  it("gives no stream for one that has ended", () => {
+    const live = { status: "archived", scheduledStartTime: "2026-12-20T04:00:00Z" } as const;
+    const ended = { ...GAME, videos: [{ ...video("aaaaaaaaaaa", 1), live }] };
+
+    expect(summarize(catalog, ended).live).toBeNull();
   });
 });

@@ -1,5 +1,6 @@
 ---
 import { GameList } from "../../components/GameList.tsx";
+import { LiveState } from "../../components/LiveState.tsx";
 import Player from "../../components/Player.astro";
 import { TeamLabel } from "../../components/TeamLabel.tsx";
 import { TeamTimeline } from "../../components/TeamTimeline.tsx";
@@ -50,6 +51,8 @@ const timelines = summary.teams.map((team) => ({
         href={`/seasons/${game.season}/`}>{game.season}シーズン</a
       >
     </p>
+    {/* Follows the clock in the browser; sent there only for a stream that has not ended. */}
+    {summary.live !== null && <LiveState client:load live={summary.live} as="p" />}
   </header>
 
   <div class="with-rail">
@@ -75,7 +78,7 @@ const timelines = summary.teams.map((team) => ({
           <div class="group__head">
             <h2 class="section-title">同じ日の試合</h2>
           </div>
-          <GameList games={sameDay} view={{ kind: "matchup", date: "none" }} />
+          <GameList games={sameDay} view={{ kind: "matchup", withDate: false }} />
         </section>
       )}
     </div>

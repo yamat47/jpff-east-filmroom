@@ -18,8 +18,7 @@ function summary(overrides: Partial<GameSummary> = {}): GameSummary {
   return {
     id: "2026-10-04-kamakura-lazaro-vs-tokai-seagulls",
     date: "2026-10-04",
-    dateLabel: "2026年10月4日(日)",
-    dayLabel: "10月4日(日)",
+    dateLabel: "2026/10/04",
     season: "2026-2027",
     type: "league",
     typeLabel: "リーグ戦",
@@ -29,6 +28,7 @@ function summary(overrides: Partial<GameSummary> = {}): GameSummary {
     ],
     videoId: "aaaaaaaaaaa",
     videoCount: 1,
+    live: null,
     ...overrides,
   };
 }

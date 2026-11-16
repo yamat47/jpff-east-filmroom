@@ -8,6 +8,7 @@ import {
   sameDayGames,
   seasonsWithGames,
   teamsWithGames,
+  topPageGames,
 } from "../src/lib/catalog.ts";
 import type { Game, SiteData, Team } from "../src/lib/schema.ts";
 import { seasonOf } from "../src/lib/season.ts";
@@ -100,6 +101,49 @@ describe("gamesOfTeam and gamesOfSeason", () => {
 
   it("finds the games of one season only", () => {
     expect(ids(gamesOfSeason(catalog, "2025-2026"))).toEqual(["2025-10-05-seagulls-vs-lazaro"]);
+  });
+});
+
+describe("topPageGames", () => {
+  const stream = (date: string, status: "upcoming" | "archived"): Game => ({
+    ...game(date, "lazaro", "seagulls"),
+    videos: [
+      {
+        videoId: "aaaaaaaaaaa",
+        part: 1,
+        title: "ハーバーボウル",
+        publishedAt: `${date}T00:00:00Z`,
+        durationSec: status === "archived" ? 5400 : null,
+        live: { status, scheduledStartTime: `${date}T04:00:00Z` },
+      },
+    ],
+  });
+  const played = ["10-04", "10-11", "10-18", "10-25", "11-01"].map((day) =>
+    game(`2026-${day}`, "ulowers", "titans"),
+  );
+
+  it("gives the four newest games", () => {
+    expect(ids(topPageGames(catalogOf(played)))).toEqual(ids(played.slice(1).reverse()));
+  });
+
+  it("adds every stream that has not ended to them, in its place by date", () => {
+    const old = stream("2026-09-27", "upcoming");
+    const bowl = stream("2026-12-20", "upcoming");
+
+    expect(ids(topPageGames(catalogOf([...played, old, bowl])))).toEqual([
+      bowl.id,
+      ...ids(played.slice(1).reverse()),
+      old.id,
+    ]);
+  });
+
+  it("counts a stream that has ended as a game like any other", () => {
+    const bowl = stream("2026-12-20", "archived");
+
+    expect(ids(topPageGames(catalogOf([...played, bowl])))).toEqual([
+      bowl.id,
+      ...ids(played.slice(2).reverse()),
+    ]);
   });
 });
 

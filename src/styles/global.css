@@ -293,7 +293,7 @@ main {
   text-underline-offset: 0.2em;
 }
 
-/* A list of games, one game to a row: the thumbnail, and beside it the day and the type over
+/* A list of games, one game to a row: the thumbnail, and beside it the date and the type over
    the teams. On a desk a row is one line, or a card (below). */
 
 .game-list {
@@ -366,7 +366,23 @@ main {
   text-underline-offset: 0.2em;
 }
 
-/* The day and the type share a line on a phone. */
+/* The state of a stream that has not ended: a line of its own under the teams of a row, and
+   under the date of a game page. As wide as its line, so that it wraps under the names where
+   they stand side by side. Red is for a stream that is on air, and for nothing else. */
+.live-state {
+  width: 100%;
+  color: var(--color-muted);
+  font-size: var(--size-xs);
+  font-weight: var(--weight-regular);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--leading-label);
+}
+
+.live-state[data-state="live"] {
+  color: var(--color-live);
+}
+
+/* The date and the type share a line on a phone. */
 @media (max-width: 47.99rem) {
   .game-row:not(.game-row--date) .game-row__date + .game-row__type::before {
     content: "・";
@@ -374,7 +390,7 @@ main {
 }
 
 @media (min-width: 48rem) {
-  /* One line: thumbnail, day, teams, type. The day and the type leave their line and stand
+  /* One line: thumbnail, date, teams, type. The date and the type leave their line and stand
      left and right of the teams. */
   .game-list--rows .game-row__link {
     display: flex;
@@ -421,6 +437,14 @@ main {
     flex: 1;
     width: auto;
     font-size: var(--size-base);
+  }
+
+  /* In a list of meetings the row is one line with no teams to stand under, so the state of
+     a stream stands before the type. */
+  .game-list--rows .game-row--date .live-state {
+    flex: none;
+    order: 2;
+    width: auto;
   }
 
   /* Cards side by side on the columns of the team tiles, the thumbnail on top. */
@@ -899,16 +923,11 @@ main {
   text-decoration: none;
 }
 
-/* The line under a name says that it is a link, without the blue that would outweigh the title. */
-.matchup .team .team__name {
-  text-decoration: underline;
-  text-decoration-color: var(--color-control);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
-}
-
+/* The names read as the title they are: no blue and no line at rest. Under the pointer the
+   name alone gets the line, not the mark beside it. */
 .matchup a:hover .team__name {
-  text-decoration-color: currentcolor;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .game-main {

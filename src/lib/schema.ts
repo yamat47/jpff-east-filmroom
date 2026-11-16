@@ -37,15 +37,20 @@ const Live = z.strictObject({
   scheduledStartTime: z.iso.datetime(),
 });
 
-export const Video = z.strictObject({
-  videoId: VideoId,
-  part: z.int().positive(),
-  title: z.string().min(1),
-  publishedAt: z.iso.datetime(),
-  // Unknown until a live stream has ended.
-  durationSec: z.int().nonnegative().nullable(),
-  live: Live.nullable(),
-});
+export const Video = z
+  .strictObject({
+    videoId: VideoId,
+    part: z.int().positive(),
+    title: z.string().min(1),
+    publishedAt: z.iso.datetime(),
+    // Unknown until a live stream has ended and YouTube gives its length.
+    durationSec: z.int().nonnegative().nullable(),
+    live: Live.nullable(),
+  })
+  .refine((video) => video.durationSec !== null || video.live !== null, {
+    path: ["durationSec"],
+    message: "only a live stream is without a length",
+  });
 export type Video = z.infer<typeof Video>;
 
 export const Game = z.strictObject({

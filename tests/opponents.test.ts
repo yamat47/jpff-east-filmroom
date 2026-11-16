@@ -17,13 +17,13 @@ function game(date: string, first: TeamSummary, second: TeamSummary): GameSummar
     id: `${date}-${first.id}-vs-${second.id}`,
     date,
     dateLabel: date,
-    dayLabel: date,
     season: "2026-2027",
     type: "league",
     typeLabel: "リーグ戦",
     teams: [first, second],
     videoId: "aaaaaaaaaaa",
     videoCount: 1,
+    live: null,
   };
 }
 
