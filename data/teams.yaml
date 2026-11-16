@@ -2,6 +2,8 @@
 #
 #   id       part of the team's URL and of every game ID. Never changed once published.
 #   name     shown on the site. A title that spells the team this way matches too.
+#   colors   the two colours of the mark beside the name, main colour first. A joint team has the
+#            main colour of each of its two teams. One colour twice draws a plain mark.
 #   aliases  other spellings found in titles, compared after normalization (full-width
 #            letters, digits and symbols become half-width, runs of spaces become one).
 #
@@ -10,21 +12,25 @@
 
 - id: tachikawa-falcons
   name: 立川ファルコンズ
+  colors: ["#17181a", "#2bb24c"]
   aliases:
     - 立川
 
 - id: kamakura-lazaro
   name: 鎌倉ラザロ
+  colors: ["#d8232a", "#17181a"]
   aliases:
     - 鎌倉
 
 - id: gunma-stallions
   name: 群馬スタリオンズ
+  colors: ["#1f6f43", "#ffffff"]
   aliases:
     - 群馬
 
 - id: urawa-ulowers
   name: 浦和ウラワーズ
+  colors: ["#8f1d2c", "#f2b632"]
   aliases:
     - 浦和
     # Written with a horizontal bar (―) where the long vowel mark (ー) belongs.
@@ -32,22 +38,26 @@
 
 - id: kawasaki-grizzlies
   name: 川崎グリズリーズ
+  colors: ["#14233f", "#e8731c"]
   aliases:
     - 川崎
 
 - id: tokai-seagulls
   name: 東海シーガルズ
+  colors: ["#1b2a4a", "#ffffff"]
   aliases:
     - 東海
 
 - id: wild-geese
   name: ワイルドギース
+  colors: ["#2459c9", "#2459c9"]
   aliases:
     - WG
     - ギース
 
 - id: tokyo-broncos
   name: 東京ブロンコス
+  colors: ["#d4232b", "#1c2a6b"]
   aliases:
     - 東京
     - ブロンコス
@@ -55,12 +65,14 @@
 # ワイルドギース and 東京ブロンコス, playing as one team from the 2026-2027 season.
 - id: geese-broncos
   name: ギースブロンコス合同チーム
+  colors: ["#2459c9", "#d4232b"]
   aliases:
     - WG&ブロンコス合同
     - ワイルドギース&東京ブロンコス
 
 - id: brandings
   name: ブランディングス
+  colors: ["#17181a", "#d0202e"]
   aliases:
     - ブラ
 
@@ -68,6 +80,7 @@
 # that the channel has videos of.
 - id: yokohama-kofu
   name: 横浜・甲府合同チーム
+  colors: ["#15155e", "#d0202e"]
   aliases:
     - 横浜甲府
     - 横浜甲府合同
@@ -76,9 +89,11 @@
 # 横浜タイタンズ and 甲府ユリシーズ, merged from the 2026-2027 season.
 - id: kofu-atsugi-titans
   name: 甲府厚木タイタンズ
+  colors: ["#15155e", "#5aa9dc"]
 
 - id: tokorozawa-outlaws
   name: 所沢アウトローズ
+  colors: ["#17181a", "#b3262d"]
   aliases:
     - 所沢
     - アウトローズ
@@ -86,14 +101,17 @@
 # 栃木マダガスカルズ and 群馬スタリオンズ, playing as one team in the 2021-2022 season.
 - id: tochigi-gunma
   name: 栃木マダガスカルズ&群馬スタリオンズ
+  colors: ["#1b2a4a", "#1f6f43"]
   aliases:
     - 群馬栃木
 
 # The select teams of the all-star game between JPFF East and KCFF, the Kanto college league.
 - id: jpff-east-allstars
   name: JPFF東日本オールスター
+  colors: ["#ffffff", "#2459c9"]
   aliases:
     - JP東
 
 - id: kcff-allstars
   name: KCFFオールスター
+  colors: ["#17181a", "#c9a227"]

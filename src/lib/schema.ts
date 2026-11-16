@@ -18,9 +18,14 @@ export const SeasonId = z
 
 const VideoId = z.string().regex(/^[A-Za-z0-9_-]{11}$/, "a YouTube video ID");
 
+// Written one way only, so that one colour has one spelling in the data.
+const Color = z.string().regex(/^#[0-9a-f]{6}$/, "a colour as #rrggbb in lower case");
+
 export const Team = z.strictObject({
   id: TeamId,
   name: z.string().trim().min(1),
+  /** The two colours of the mark beside the name, the main colour first. */
+  colors: z.tuple([Color, Color]),
   aliases: z.array(z.string().trim().min(1)).default([]),
 });
 export type Team = z.infer<typeof Team>;

@@ -24,8 +24,13 @@ const GAME: Game = {
 
 const catalog = buildCatalog({
   teams: [
-    { id: "brandings", name: "ブランディングス", aliases: ["ブラ"] },
-    { id: "wild-geese", name: "ワイルドギース", aliases: ["WG"] },
+    {
+      id: "brandings",
+      name: "ブランディングス",
+      colors: ["#17181a", "#d0202e"],
+      aliases: ["ブラ"],
+    },
+    { id: "wild-geese", name: "ワイルドギース", colors: ["#2459c9", "#2459c9"], aliases: ["WG"] },
   ],
   seasons: [{ season: "2021-2022", games: [GAME] }],
   excluded: [],

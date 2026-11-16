@@ -8,8 +8,10 @@ import { DataFileError, loadData } from "../src/lib/load-data.ts";
 const TEAMS = `
 - id: kamakura-lazaro
   name: 鎌倉ラザロ
+  colors: ["#d8232a", "#17181a"]
 - id: tokai-seagulls
   name: 東海シーガルズ
+  colors: ["#1b2a4a", "#ffffff"]
 `;
 
 const GAME = {

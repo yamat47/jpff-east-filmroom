@@ -9,7 +9,9 @@ import {
 import type { Game, SiteData, Team } from "../src/lib/schema.ts";
 import { seasonOf } from "../src/lib/season.ts";
 
-const team = (id: string, name: string): Team => ({ id, name, aliases: [] });
+const COLORS: Team["colors"] = ["#17181a", "#ffffff"];
+
+const team = (id: string, name: string): Team => ({ id, name, colors: COLORS, aliases: [] });
 const TEAMS = [
   team("lazaro", "鎌倉ラザロ"),
   team("seagulls", "東海シーガルズ"),
