@@ -22,6 +22,9 @@
   --color-link-hover: #1349a6;
   /* Waits for the live state of a stream, which comes with step 6 of the requirements. */
   --color-live: #c81e1e;
+  /* Around a team's mark, so that a white or a pale team colour still has an edge on the page.
+     The colours inside the mark are data: they come from data/teams.yaml. */
+  --color-mark-edge: rgb(23 24 26 / 0.2);
 
   /* System faces only, so that no font is requested from another site. */
   --font-sans:
@@ -30,14 +33,18 @@
 
   --size-xs: 0.8125rem;
   --size-sm: 0.875rem;
+  /* A team's name where the room is counted: a tile of the top page, a row beside a video. */
+  --size-md: 0.9375rem;
   /* Also the size of a select: below 16px, iOS zooms the page when one is opened. */
   --size-base: 1rem;
-  --size-lg: 1.125rem;
   /* A page title, the matchup of a game page included: 22px on a phone, 28px on a desk. */
   --size-xl: clamp(1.375rem, 0.875rem + 1.1vw, 1.75rem);
 
   --weight-regular: 400;
-  --weight-bold: 700;
+  /* A name that is the subject of its row: a team in a tile, the opponent on a team page. */
+  --weight-medium: 500;
+  /* Headings and what is selected, nothing else. */
+  --weight-bold: 600;
 
   /* Running text. */
   --leading-body: 1.75;
@@ -46,6 +53,8 @@
   /* Everything else: one line in a row, a tab or a button. */
   --leading-label: 1.5;
 
+  /* Between a team's mark, its name and the "vs" before it: it grows with the text. */
+  --space-name: 0.5em;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -60,9 +69,22 @@
 
   --width-page: 68rem;
   --width-text: 40rem;
-  --width-thumb: 7.5rem;
-  /* The narrowest a row of a game list may get before the list takes fewer columns. */
+  /* The thumbnail of a row. */
+  --width-thumb: 6rem;
+  /* The date of a row on a desk, as wide as "12月21日(日)". */
+  --width-date: 6.5rem;
+  /* The narrowest a row of the lists of teams and seasons may get before the list takes fewer
+     columns. */
   --width-card-min: 19rem;
+  /* The same for the list of teams, where a row holds the longest name and, for a team that
+     plays no more, its last season. */
+  --width-card-wide-min: 26rem;
+  /* The same for a tile of the top page. The longest team name (13 letters) fits in one line. */
+  --width-tile-min: 15rem;
+  /* The column beside a list or a video on a desk: the opponents of a team, and the games of
+     the two teams of a game, whose rows are longer. */
+  --width-rail: 17rem;
+  --width-rail-wide: 21.25rem;
   /* The selects of a filter: the season and the type, and the team, whose names are longer. */
   --width-field-min: 9.5rem;
   --width-field-wide: 17.5rem;
@@ -74,6 +96,12 @@
   --size-touch: 2.75rem;
   /* A row that is nothing but a link, in the lists of teams and seasons. */
   --size-row: 3rem;
+  /* A row of two lines beside a video, and a tile of the top page. */
+  --size-row-tall: 3.5rem;
+  --size-tile: 4rem;
+  /* The dot of a team's colours, beside a name and beside a page title. */
+  --size-mark: 0.75rem;
+  --size-mark-large: 1rem;
   --size-play: clamp(4rem, 5.6vw, 4.5rem);
   /* The small arrowhead after a link that leads on, and in a select. */
   --size-chevron: 0.45em;

@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatDuration } from "../src/lib/labels.ts";
+import type { TeamEntry } from "../src/lib/catalog.ts";
+import {
+  formatDate,
+  formatDay,
+  formatDuration,
+  teamCountLabel,
+  teamSpanLabel,
+} from "../src/lib/labels.ts";
 
 describe("formatDate", () => {
   it.each([
@@ -15,6 +22,49 @@ describe("formatDate", () => {
 describe("formatDate on what is not a date", () => {
   it.each(["2026-10-xx", "2026/10/04", "2026-10-4", ""])("refuses %s", (date) => {
     expect(() => formatDate(date)).toThrow(TypeError);
+  });
+});
+
+describe("formatDay", () => {
+  it.each([
+    ["2026-10-04", "10月4日(日)"],
+    ["2022-01-16", "1月16日(日)"],
+  ])("writes %s without its year as %s", (date, label) => {
+    expect(formatDay(date)).toBe(label);
+  });
+
+  it("refuses what is not a date", () => {
+    expect(() => formatDay("2026/10/04")).toThrow(TypeError);
+  });
+});
+
+describe("the labels of a team", () => {
+  const entry = (change: Partial<TeamEntry>): TeamEntry => ({
+    team: { id: "wild-geese", name: "ワイルドギース", colors: ["#2459c9", "#2459c9"], aliases: [] },
+    games: 22,
+    firstSeason: "2021-2022",
+    lastSeason: "2025-2026",
+    current: false,
+    ...change,
+  });
+
+  it.each<[string, Partial<TeamEntry>, string, string]>([
+    [
+      "a team of the newest season",
+      { lastSeason: "2026-2027", current: true },
+      "22試合",
+      "2021-2022シーズンから",
+    ],
+    ["a team that plays no more", {}, "22試合・2025-2026まで", "2021-2022〜2025-2026シーズン"],
+    [
+      "a team of one past season",
+      { games: 1, firstSeason: "2018-2019", lastSeason: "2018-2019" },
+      "1試合・2018-2019のみ",
+      "2018-2019シーズン",
+    ],
+  ])("say for %s how many games it has and when", (_case, change, count, span) => {
+    expect(teamCountLabel(entry(change))).toBe(count);
+    expect(teamSpanLabel(entry(change))).toBe(span);
   });
 });
 

@@ -4,8 +4,15 @@ import { parseTitle } from "../scripts/parse-title.ts";
 import { loadData } from "../src/lib/load-data.ts";
 import type { Team } from "../src/lib/schema.ts";
 
-const LAZARO: Team = { id: "kamakura-lazaro", name: "鎌倉ラザロ", aliases: [] };
-const SEAGULLS: Team = { id: "tokai-seagulls", name: "東海シーガルズ", aliases: [] };
+const COLORS: Team["colors"] = ["#17181a", "#ffffff"];
+
+const LAZARO: Team = { id: "kamakura-lazaro", name: "鎌倉ラザロ", colors: COLORS, aliases: [] };
+const SEAGULLS: Team = {
+  id: "tokai-seagulls",
+  name: "東海シーガルズ",
+  colors: COLORS,
+  aliases: [],
+};
 const TEAMS = [LAZARO, SEAGULLS];
 
 const teamIds = (title: string, teams: readonly Team[] = TEAMS) =>
@@ -152,7 +159,7 @@ describe("parseTitle", () => {
   });
 
   it("keeps a digit that starts a registered team's name", () => {
-    const second: Team = { id: "lazaro-2", name: "2鎌倉ラザロ", aliases: [] };
+    const second: Team = { id: "lazaro-2", name: "2鎌倉ラザロ", colors: COLORS, aliases: [] };
 
     expect(teamIds("20211114 2鎌倉ラザロvs東海シーガルズ", [...TEAMS, second])).toEqual([
       "lazaro-2",
@@ -180,7 +187,12 @@ describe("parseTitle", () => {
   });
 
   it("does not read a joint team as the team its spelling ends with", () => {
-    const broncos: Team = { id: "tokyo-broncos", name: "東京ブロンコス", aliases: [] };
+    const broncos: Team = {
+      id: "tokyo-broncos",
+      name: "東京ブロンコス",
+      colors: COLORS,
+      aliases: [],
+    };
     const parsed = parseTitle("2026/10/11 ワイルドギース & 東京ブロンコス vs 鎌倉ラザロ", [
       ...TEAMS,
       broncos,
@@ -199,7 +211,12 @@ describe("parseTitle", () => {
   });
 
   it("keeps a keyword that is part of a registered team's name", () => {
-    const allStars: Team = { id: "east-allstars", name: "オールスター EAST", aliases: [] };
+    const allStars: Team = {
+      id: "east-allstars",
+      name: "オールスター EAST",
+      colors: COLORS,
+      aliases: [],
+    };
 
     expect(teamIds("2027/2/7 オールスター EAST vs 鎌倉ラザロ", [...TEAMS, allStars])).toEqual([
       "east-allstars",
@@ -250,7 +267,12 @@ describe("parseTitle", () => {
   });
 
   it("takes a trailing number for the team when a team is spelled that way", () => {
-    const second: Team = { id: "seagulls-2", name: "東海シーガルズ 2", aliases: [] };
+    const second: Team = {
+      id: "seagulls-2",
+      name: "東海シーガルズ 2",
+      colors: COLORS,
+      aliases: [],
+    };
     const parsed = parseTitle("2026/10/4 鎌倉ラザロ vs 東海シーガルズ 2", [...TEAMS, second]);
 
     expect(parsed.sides?.[1].teamId).toBe("seagulls-2");

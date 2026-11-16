@@ -129,20 +129,15 @@ main {
   text-wrap: balance;
 }
 
-/* A line breaks between the two teams of a matchup, not inside the name of one. */
-.page-title__team {
-  display: inline-block;
-}
-
-.page-title__vs {
-  color: var(--color-muted);
-  font-size: var(--size-base);
-  font-weight: var(--weight-regular);
-}
-
 .lead {
   color: var(--color-muted);
   font-size: var(--size-sm);
+  line-height: var(--leading-body);
+}
+
+/* A number and its unit, which a line does not break between. */
+.phrase {
+  white-space: nowrap;
 }
 
 /* The line under a title that says when, what kind and how many. */
@@ -160,6 +155,14 @@ main {
   gap: var(--space-6);
 }
 
+/* The sections of the top page, each a way into the games. */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-top: var(--space-4);
+}
+
 .group__head {
   display: flex;
   align-items: center;
@@ -169,7 +172,7 @@ main {
 }
 
 .section-title {
-  font-size: var(--size-lg);
+  font-size: var(--size-base);
   font-weight: var(--weight-bold);
   line-height: var(--leading-tight);
 }
@@ -223,37 +226,96 @@ main {
   font-weight: var(--weight-bold);
 }
 
-/* A list of games: rows on a phone, columns of rows on a wider screen. */
+/* A team: the mark of its two colours, then its name. */
 
-.games {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--width-card-min)), 1fr));
-  column-gap: var(--space-6);
+.team {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-name);
+  min-width: 0;
+}
+
+/* A name breaks where it is joined (「&」「・」) and nowhere else, unless nothing else fits. */
+.team__name {
+  min-width: 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* The colours come from the data, as two properties on the element. */
+.team-mark {
+  flex: none;
+  align-self: center;
+  width: var(--size-mark);
+  aspect-ratio: 1;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--mark-main) 0 58%, var(--mark-second) 58% 100%);
+  box-shadow: inset 0 0 0 1px var(--color-mark-edge);
+}
+
+.team-mark--large {
+  width: var(--size-mark-large);
+}
+
+/* Where "every team" stands among teams: a ring with no colour in it. */
+.team-mark--none {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--color-muted);
+}
+
+/* "vs" and the team after it. */
+.versus {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-name);
+  min-width: 0;
+}
+
+.versus__vs {
+  color: var(--color-muted);
+  font-size: var(--size-xs);
+  font-weight: var(--weight-regular);
+}
+
+/* A link that is a whole row or card. It keeps the colour of the text, and pointing at it
+   underlines the names in it. */
+.row-link {
+  color: inherit;
+}
+
+.row-link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.row-link:hover .team__name {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* A list of games, one game to a row: the thumbnail, and beside it the day and the type over
+   the teams. On a desk a row is one line, or a card (below). */
+
+.game-list {
   border-bottom: 1px solid var(--color-line);
   padding: 0;
   list-style: none;
 }
 
-.game {
+.game-row {
   border-top: 1px solid var(--color-line);
 }
 
-.game__link {
+.game-row__link {
   display: grid;
   grid-template-columns: var(--width-thumb) minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-3);
-  height: 100%;
-  padding-block: var(--space-3);
-  color: inherit;
+  column-gap: var(--space-3);
+  padding-block: var(--space-2);
 }
 
-.game__link:hover {
-  color: inherit;
-  text-decoration: none;
-}
-
-.game__thumb {
+.game-row__thumb {
+  grid-row: 1 / span 2;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
@@ -262,30 +324,261 @@ main {
   object-fit: cover;
 }
 
-.game__body {
+.game-row__meta {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
+  align-self: end;
+  color: var(--color-muted);
+  font-size: var(--size-xs);
+  font-variant-numeric: tabular-nums;
 }
 
-/* One team to a line: two names side by side wrap in the middle of the longer one. */
-.game__teams {
+.game-row__teams {
   display: flex;
   flex-direction: column;
-  font-weight: var(--weight-bold);
+  align-self: start;
   line-height: var(--leading-tight);
 }
 
-.game__link:hover .game__teams {
+/* The opponent is what a row of a team's page is about. */
+.game-row__teams--subject {
+  font-weight: var(--weight-medium);
+}
+
+/* Between two teams, drawn only where they stand in one line (a row on a desk). */
+.game-row__vs {
+  display: none;
+}
+
+/* A list of the meetings of two teams: the date stands where the teams would. */
+.game-row--date .game-row__meta {
+  grid-row: 1 / span 2;
+  flex-direction: column;
+  align-self: center;
+}
+
+.game-row--date .game-row__date {
+  color: var(--color-ink);
+  font-size: var(--size-base);
+}
+
+.game-row--date .row-link:hover .game-row__date {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
 
-.game__meta {
-  color: var(--color-muted);
-  font-size: var(--size-xs);
+/* The day and the type share a line on a phone. */
+@media (max-width: 47.99rem) {
+  .game-row:not(.game-row--date) .game-row__date + .game-row__type::before {
+    content: "・";
+  }
+}
+
+@media (min-width: 48rem) {
+  /* One line: thumbnail, day, teams, type. The day and the type leave their line and stand
+     left and right of the teams. */
+  .game-list--rows .game-row__link {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .game-list--rows .game-row__thumb {
+    flex: none;
+    width: var(--width-thumb);
+  }
+
+  .game-list--rows .game-row__meta {
+    display: contents;
+  }
+
+  .game-list--rows .game-row__date {
+    flex: none;
+    order: 1;
+    width: var(--width-date);
+    font-size: var(--size-sm);
+  }
+
+  .game-list--rows .game-row__teams {
+    flex: 1;
+    flex-flow: row wrap;
+    align-items: baseline;
+    align-self: center;
+    order: 2;
+    column-gap: var(--space-name);
+    min-width: 0;
+  }
+
+  .game-list--rows .game-row__vs {
+    display: inline;
+  }
+
+  .game-list--rows .game-row__type {
+    flex: none;
+    order: 3;
+    margin-left: auto;
+  }
+
+  .game-list--rows .game-row--date .game-row__date {
+    flex: 1;
+    width: auto;
+    font-size: var(--size-base);
+  }
+
+  /* Cards side by side on the columns of the team tiles, the thumbnail on top. */
+  .game-list--cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--width-tile-min), 1fr));
+    gap: var(--space-6) var(--space-3);
+    border-bottom: 0;
+  }
+
+  .game-list--cards .game-row {
+    border-top: 0;
+  }
+
+  .game-list--cards .game-row__link {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+    padding-block: 0;
+  }
+
+  .game-list--cards .game-row__thumb {
+    margin-bottom: var(--space-1);
+  }
+
+  .game-list--cards .game-row__meta,
+  .game-list--cards .game-row__teams {
+    align-self: auto;
+  }
+
+  .game-list--cards .game-row__date + .game-row__type::before {
+    content: "・";
+  }
+}
+
+/* A row of chips to swipe on a phone: the teams of the top page, the opponents of a team's
+   page. It runs to the edges of the screen, so that a chip cut off there shows that the row
+   goes on. On a desk each of the two becomes something else (below). */
+
+.chip-row {
+  display: flex;
+  gap: var(--space-2);
+  margin-inline: calc(-1 * var(--space-gutter));
+  overflow-x: auto;
+  /* Room for the focus ring, which the scrolling box would cut off. */
+  padding: var(--space-1) var(--space-gutter);
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.chip-row > li {
+  display: flex;
+  flex: none;
+}
+
+.chip {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-touch);
+  border: 1px solid var(--color-control);
+  border-radius: var(--radius-pill);
+  background: var(--color-paper);
+  padding-inline: var(--space-3);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--size-sm);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+/* The chip that narrows the list. The inset shadow thickens the border without moving the
+   text. */
+.chip[aria-pressed="true"] {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+  font-weight: var(--weight-bold);
+}
+
+.chip__count {
+  font-weight: var(--weight-regular);
+}
+
+/* The teams of the top page. A chip has no room for the number of games, which is on the page
+   of teams the heading links to. */
+
+.team-picker .chip__count {
+  display: none;
+}
+
+/* On a desk every team is on the page at once, as a grid of tiles. */
+@media (min-width: 48rem) {
+  .team-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--width-tile-min), 1fr));
+    gap: var(--space-3);
+    margin-inline: 0;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .team-picker .chip {
+    gap: var(--space-3);
+    min-height: var(--size-tile);
+    border-radius: var(--radius-control);
+    padding-block: var(--space-2);
+    font-size: var(--size-md);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-tight);
+    white-space: normal;
+  }
+
+  .team-picker__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .team-picker .chip__count {
+    display: block;
+  }
+}
+
+/* The seasons of the top page, two to a line on a phone and one line on a desk. */
+
+.season-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--space-3);
+  padding: 0;
+  list-style: none;
   font-variant-numeric: tabular-nums;
+}
+
+.season-links a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  /* As tall as a finger needs, with the two sizes of text on one baseline. */
+  padding-block: calc((var(--size-touch) - 1em * var(--leading-label)) / 2);
+}
+
+@media (min-width: 48rem) {
+  .season-links {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-4);
+  }
 }
 
 /* The filter above a list */
@@ -510,16 +803,178 @@ main {
   height: 0.85em;
 }
 
-/* The three lists a game page links on to: one under the other on a phone, side by side on a
-   desk. Each keeps its rows in one column. */
-.related {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--width-card-min)), 1fr));
+/* A column beside a list or a video. On a phone it stands above or below; on a desk the two
+   are side by side, and the main part takes the whole width where the column is hidden. */
+
+.with-rail {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-6);
 }
 
-.related .games {
-  grid-template-columns: minmax(0, 1fr);
+.with-rail__main,
+.rail {
+  min-width: 0;
+}
+
+.rail__title {
+  color: var(--color-muted);
+  font-size: var(--size-xs);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-label);
+}
+
+@media (min-width: 60rem) {
+  .with-rail {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-8);
+  }
+
+  .with-rail__main {
+    flex: 1;
+  }
+
+  .rail {
+    flex: none;
+    width: var(--width-rail);
+  }
+
+  .rail--wide {
+    width: var(--width-rail-wide);
+  }
+
+  /* The title starts where the text of the rows under it starts. */
+  .rail--filter .rail__title {
+    padding-inline: var(--space-3);
+  }
+
+  /* The opponents of a team: no longer chips to swipe, but a column of rows with the number
+     of games at the end of each. */
+  .opponents {
+    flex-direction: column;
+    gap: 0;
+    margin-inline: 0;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .opponents .chip {
+    border: 0;
+    border-radius: var(--radius);
+    background: none;
+    font-size: var(--size-md);
+    line-height: var(--leading-tight);
+    white-space: normal;
+  }
+
+  .opponents .chip[aria-pressed="true"] {
+    background: var(--color-surface);
+    box-shadow: none;
+  }
+
+  .opponents .chip__count {
+    margin-left: auto;
+  }
+}
+
+/* A game page: the matchup as the title, each team a link to its page. */
+
+.matchup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-name);
+}
+
+.matchup .versus__vs {
+  font-size: var(--size-base);
+}
+
+.matchup a {
+  color: inherit;
+}
+
+.matchup a:hover {
+  text-decoration: none;
+}
+
+/* The line under a name says that it is a link, without the blue that would outweigh the title. */
+.matchup .team .team__name {
+  text-decoration: underline;
+  text-decoration-color: var(--color-control);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.matchup a:hover .team__name {
+  text-decoration-color: currentcolor;
+}
+
+.game-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* A game page: the games of each of the two teams around this one, beside the video. */
+
+.timelines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.timeline__season {
+  margin: 0;
+  padding-block: var(--space-2) var(--space-1);
+  color: var(--color-muted);
+  font-size: var(--size-xs);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A row reaches a little past the text on both sides, so that the ground of the marked row
+   has room around its text while the text stays in line with the heading. */
+.timeline__list {
+  margin-inline: calc(-1 * var(--space-3));
+  padding: 0;
+  list-style: none;
+}
+
+.timeline__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--size-row-tall);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.timeline__row[aria-current] {
+  background: var(--color-surface);
+}
+
+.timeline__game {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.timeline__opponent {
+  font-size: var(--size-md);
+  line-height: var(--leading-tight);
+}
+
+.timeline__row[aria-current] .timeline__opponent,
+.timeline__here {
+  font-weight: var(--weight-bold);
+}
+
+.timeline__here {
+  flex: none;
+  font-size: var(--size-xs);
 }
 
 /* Teams and seasons as plain lists */
@@ -531,6 +986,10 @@ main {
   border-bottom: 1px solid var(--color-line);
   padding: 0;
   list-style: none;
+}
+
+.index-list--wide {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--width-card-wide-min)), 1fr));
 }
 
 .index-list li {

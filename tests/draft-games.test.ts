@@ -3,9 +3,11 @@ import { draftGames, renderDraft, seasonFilesOf } from "../scripts/draft-games.t
 import type { ChannelVideo } from "../scripts/youtube.ts";
 import type { Game, SiteData, Team } from "../src/lib/schema.ts";
 
+const COLORS: Team["colors"] = ["#17181a", "#ffffff"];
+
 const TEAMS: Team[] = [
-  { id: "kamakura-lazaro", name: "鎌倉ラザロ", aliases: ["鎌倉"] },
-  { id: "tokai-seagulls", name: "東海シーガルズ", aliases: ["東海"] },
+  { id: "kamakura-lazaro", name: "鎌倉ラザロ", colors: COLORS, aliases: ["鎌倉"] },
+  { id: "tokai-seagulls", name: "東海シーガルズ", colors: COLORS, aliases: ["東海"] },
 ];
 
 // Each test numbers its own uploads, so that their order of publication is the order they

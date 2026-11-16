@@ -1,38 +1,33 @@
 ---
-import { GameList } from "../../components/GameList.tsx";
+import { TeamGames } from "../../components/FilteredGames.tsx";
+import { TeamLabel } from "../../components/TeamLabel.tsx";
 import Base from "../../layouts/Base.astro";
-import { gamesOfTeam, teamsWithGames } from "../../lib/catalog.ts";
+import { gamesOfTeam, type TeamEntry, teamsWithGames } from "../../lib/catalog.ts";
 import { summarize } from "../../lib/game-summary.ts";
-import type { Team } from "../../lib/schema.ts";
-import { groupBySeason } from "../../lib/season-groups.ts";
+import { teamSpanLabel } from "../../lib/labels.ts";
 import { catalog } from "../../lib/site-data.ts";
 
 export function getStaticPaths() {
-  return teamsWithGames(catalog).map(({ team }) => ({ params: { id: team.id }, props: { team } }));
+  return teamsWithGames(catalog).map((entry) => ({
+    params: { id: entry.team.id },
+    props: { entry },
+  }));
 }
 
 interface Props {
-  team: Team;
+  entry: TeamEntry;
 }
 
-const { team } = Astro.props;
-const games = gamesOfTeam(catalog, team.id);
-const seasons = groupBySeason(games);
+const { entry } = Astro.props;
+const { team } = entry;
+const games = gamesOfTeam(catalog, team.id).map((game) => summarize(catalog, game));
 ---
 
 <Base title={team.name} description={`${team.name}の試合動画の一覧です。`}>
   <div class="page-head">
-    <h1 class="page-title">{team.name}</h1>
-    <p class="meta">{games.length}試合</p>
+    <h1 class="page-title"><TeamLabel team={team} size="large" /></h1>
+    <p class="meta">{entry.games}試合・{teamSpanLabel(entry)}</p>
   </div>
-  <div class="groups">
-    {seasons.map((group) => (
-      <section>
-        <div class="group__head">
-          <h2 class="section-title">{group.season}シーズン</h2>
-        </div>
-        <GameList games={group.games.map((game) => summarize(catalog, game))} />
-      </section>
-    ))}
-  </div>
+  {/* The team's games go to the browser with the component, which narrows them by opponent. */}
+  <TeamGames client:load teamId={team.id} games={games} />
 </Base>

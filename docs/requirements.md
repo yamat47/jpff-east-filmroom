@@ -48,7 +48,8 @@ Out of scope:
   differently, or uploaded by mistake. One version is on the game page and the others go to the
   exclusion list, each naming the game. The site does not link to them.
 - Linking a merged or joint team to the teams it came from.
-- Favorites, multi-view, watch history, a page per matchup.
+- Favorites, multi-view, watch history, a page per matchup. The meetings of two teams are a team
+  page narrowed to one opponent.
 - Analytics, a contact form, login, comments.
 - Downloading or re-uploading video files.
 - A server or a database. The site is static.
@@ -86,6 +87,11 @@ There are three kinds of tag, season, game type and team, and each is attached t
   and 「ワイルドギース&東京ブロンコス」 are the same joint team.
 - Whether a spelling is an alias or another team is decided by a person in pull request review.
 - The select teams of an all-star game are teams like any other, with a page of their own.
+- Each team has two colours, the main one first. They are drawn as a small mark beside the
+  team's name wherever the name stands, and nowhere without the name. A joint team has the main
+  colour of each of its two teams. The colours are those of the uniform or the logo, read from
+  the team's own site or given by a person who knows the team. They are near values and not an
+  official specification.
 
 The seed is the ten teams of the 2026-2027 season on the
 [official site](https://jpffeast.jimdofree.com/): 立川ファルコンズ, 鎌倉ラザロ, 群馬スタリオンズ,
@@ -100,46 +106,80 @@ The design is for a phone first.
 
 | Page | URL | Content |
 | --- | --- | --- |
-| Top | `/` | Live and scheduled games at the top, only when there are any. Then every game, newest first, under a heading per season, filtered by team, season and type |
-| Game | `/games/{gameId}/` | The two teams, game date, type, season, player, three lists of related games |
-| Team | `/teams/{teamId}/` | Every game of the team, grouped by season, newest first |
+| Top | `/` | Live and scheduled games at the top, only when there are any. Then the ways into the games: every team, every season, and the four newest games |
+| Games | `/games/` | Every game, newest first, under a heading per season, filtered by team, season and type |
+| Game | `/games/{gameId}/` | The two teams, game date, type, season, player, the other meetings of the two teams, the other games of the day, each team's games around this one |
+| Team | `/teams/{teamId}/` | Every game of the team, grouped by season, newest first, filtered by opponent |
 | Season | `/seasons/{seasonId}/` | Every game of the season, newest first, filtered by type |
-| Teams | `/teams/` | Every team with its number of games |
+| Teams | `/teams/` | Every team with its number of games, and the last season of a team that plays no more |
 | Seasons | `/seasons/` | Every season with its number of games |
 | About | `/about/` | That the site is unofficial, where the videos come from, a link to the official channel |
+
+### Top page
+
+The page a visitor opens first shows what the site can be searched by, and not a list of every
+game. Its sections stand one under the other, each as wide as the page.
+
+1. Teams (「チームから探す」): every team that has a game, the teams of the newest season first,
+   then the teams that play no more, each group in the order of `data/teams.yaml`. A team is of
+   the newest season once it has a game in it, so at the start of a season a team stands among
+   the others until its first game is on the site. On a desk
+   they are a grid of tiles, each with the number of games and, for a team that plays no more,
+   its last season (「22試合・2025-2026まで」, or 「のみ」 for a team of one season). On a phone they
+   are one row of chips to swipe, with the names alone. The heading links to the page of teams.
+2. Seasons (「シーズンから探す」): every season with its number of games, as links.
+3. The newest games (「最新の試合」): the four newest, with a link to the page of the newest
+   season. They show the full date, because at the start of a season they are of two seasons.
+   On a desk they are cards on the columns of the team tiles; on a phone they are rows.
 
 ### Game page
 
 The centre of the site. After a video, the visitor goes straight on to the next game.
 
-1. Heading: "A vs B" in the order of the title. Under it, in one line of text, the game date,
-   the type and the season. The heading links nowhere: the team pages and the season page are
-   reached through the lists below.
+1. Heading: "A vs B" in the order of the title, each name a link to that team's page. Under it,
+   in one line of text, the game date, the type and the season, which links to the season page.
 2. Player: the YouTube embed. Split videos are stacked, each under a heading "Part 1", "Part 2".
 3. Under each player, a link "YouTubeで開く". The original title of a video is not shown.
-4. The other games of team A, newest first.
-5. The other games of team B, newest first.
-6. The other games of the same season, newest first.
+4. The other games between the same two teams (「この対戦のほかの試合」), newest first. A row
+   shows the date and the type, because the teams are those of the page.
+5. The other games of the same day (「同じ日の試合」).
+6. For each of the two teams, its games around this one: the two that follow it and the five
+   before it, newest first, under a heading per season. The game on the page is in the list,
+   marked 「この試合」, so that a visitor sees where it stands. A row names the opponent alone.
+   The list stands under the team's name, with a link 「全N試合」 to the team page.
 
-Lists 4 to 6 leave out the game on the page and show at most ten games each. Each stands under
-a heading, 「{team}の試合」 or 「{season}シーズンの試合」, with a link 「全N試合」 beside it to the
-team page or the season page. N counts the game on the page too. A list with no game in it is
-left out, heading and all. When all three are empty, one line says so and links to the top page.
+On a desk the two lists of 6 stand in a column beside the video; on a phone they follow 5.
+Lists 4 and 5 leave out the game on the page, and a list with no game in it is left out, heading
+and all.
+
+### Team page
+
+The team's games stand under a heading per season. A row names the opponent alone (「vs 相手」),
+because every game on the page is this team's. The opponents are the filter of the page: each is
+a button with the number of games against it, the opponent met most often first, and 「すべて」
+opens the filter again. On a desk the buttons are a column beside the list; on a phone they are
+one row to swipe.
 
 ### Rules for every page
 
-- A game card shows the thumbnail, the two teams one above the other, and under them the game
-  date and the type as text. No type has a colour or a badge of its own. A split game adds the
-  number of videos, and a live stream its state on a line of its own. The season is not on the
-  card: the top page and a team page put the games of each season under a heading.
-- The navigation has three entries: games, teams and seasons. The about page is linked from the
-  footer.
+- A game is a row of a list: the thumbnail, the day, the two teams as 「A vs B」 and the type as
+  text. On a desk that is one line; on a phone the two teams stand one above the other beside
+  the thumbnail. A row leaves out what its page has already said: the year where the list
+  stands under its season, one of the two teams on that team's page. No type has a colour or a
+  badge of its own. A split game adds the number of videos, and a live stream its state on a
+  line of its own.
+- A team's name is written in full and is not broken in the middle. Where it does not fit in a
+  line it breaks at the sign that joins two names (「&」「・」).
+- Bold type is for headings and for what is selected. A name in a list is not bold.
+- The navigation has three entries: every game, teams and seasons. The name of the site leads
+  to the top page. The about page is linked from the footer.
 - Thumbnails point at YouTube's thumbnail URLs. No image is copied.
 - The player loads its iframe only after the thumbnail is pressed, to keep the first paint light.
   Until then it is a link to the video on YouTube, so it works without JavaScript. The iframe
   comes from `youtube-nocookie.com`.
-- The filter state of the top page is in the URL query, for example
-  `/?season=2026-2027&team=kamakura-lazaro&type=league`.
+- The state of a filter is in the URL query, for example
+  `/games/?season=2026-2027&team=kamakura-lazaro&type=league` on the page of every game and
+  `/teams/tachikawa-falcons/?team=kawasaki-grizzlies` on a team page narrowed to one opponent.
 - A select of a filter has no label beside it. Until a value is chosen it shows its own name
   (「チーム」「シーズン」「種別」), and choosing that entry again opens the filter. A select that
   narrows the list has a heavier border.
@@ -157,7 +197,7 @@ which is what makes a split game natural.
 
 | File | Role |
 | --- | --- |
-| `data/teams.yaml` | The teams and their aliases |
+| `data/teams.yaml` | The teams, their two colours and their aliases |
 | `data/games/{seasonId}.json` | Games and their videos, one file per season so that a pull request diff stays readable |
 | `data/excluded.json` | IDs of videos that are in no game, with the reason (not a game, or a second upload of one), so that they do not come back in a pull request |
 
@@ -166,6 +206,7 @@ A team:
 ```yaml
 - id: geese-broncos            # lower-case letters and hyphens, used in URLs
   name: ギースブロンコス合同チーム   # shown on the site
+  colors: ["#2459c9", "#d4232b"] # the mark beside the name, main colour first (section 3)
   aliases:                     # spellings found in titles, matched exactly after normalization
     - WG&ブロンコス合同
     - ワイルドギース&東京ブロンコス
@@ -356,7 +397,7 @@ to live and archived. Bowl games and a few others are expected.
 | --- | --- | --- |
 | `upcoming` | At the top, under 「ライブ配信」, with the scheduled start as 「13:00 配信予定」 | The embed (YouTube's waiting screen), and the scheduled start under the game date |
 | `live` | At the top, under 「ライブ配信」, with 「配信中」 in red | The embed plays the stream, and 「配信中」 stands under the game date |
-| `archived` | In line with ordinary games | Like an ordinary game |
+| `archived` | Not there: it is a game like any other, among the newest games while it is one of them | Like an ordinary game |
 
 - State and scheduled start come from the video resource of the YouTube Data API
   (`snippet.liveBroadcastContent` and `liveStreamingDetails`). Check the field names against the
@@ -392,7 +433,7 @@ and no database.
 | Area | Choice | Reason |
 | --- | --- | --- |
 | Site generation | Astro, static output | Most pages are lists and details built from data, with little interaction |
-| Interactive parts | React, as Astro islands | Only the filter above a list of games (top page, season page) and the live state switch |
+| Interactive parts | React, as Astro islands | Only the filter of a list of games (the page of every game, a season page, a team page) and the live state switch |
 | Data validation | Zod | One schema shared by the site and the import scripts |
 | Import scripts | Node.js and TypeScript | Same language and types as the site |
 | Tests | Vitest | Title parsing and season derivation, verified on real titles |
@@ -408,8 +449,8 @@ and no database.
 │   └── games/
 │       └── 2026-2027.json
 ├── src/
-│   ├── pages/            index, games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
-│   ├── components/       GameCard, GameList, FilteredGames, Player, ExternalMark
+│   ├── pages/            index, games/ and games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
+│   ├── components/       GameRow, GameList, TeamLabel, TeamTimeline, FilteredGames, Player, ExternalMark
 │   └── lib/              schema (Zod), season derivation, data loading
 ├── scripts/
 │   ├── sync.ts           import of new videos (--season writes one season only)
@@ -430,15 +471,17 @@ and no database.
 ```
 
 - Title parsing and season derivation are pure functions with no external API, fixed by tests.
-- A few hundred games are expected, so the top page receives every game and filters in the
-  browser. No search server.
+- A few hundred games are expected, so the page of every game receives them all and filters in
+  the browser. No search server.
 - With JavaScript off, the lists and the links to game pages still work.
-- No team logos or photographs. Text and YouTube thumbnails only.
+- No team logos or photographs. Text, the mark of a team's two colours and YouTube thumbnails
+  only.
 - The look: white, black and grey, text first, phone first. Two colours carry meaning, the blue
-  of a link and the red of a live stream, and nothing is decoration. System fonts only, so that
-  no font is requested from another site. A list of games is rows with a small thumbnail, side
-  by side in columns on a wide screen; the matchup on a game page is the largest text on the
-  site. Every design value is in `src/styles/tokens.css`.
+  of a link and the red of a live stream. The only other colour is the mark of a team's two
+  colours beside its name, which is data and not a design value. System fonts only, so that no
+  font is requested from another site. A list of games is rows with a small thumbnail, one
+  line to a row on a wide screen; the matchup on a game page is the largest text on the site.
+  Every design value is in `src/styles/tokens.css`.
 
 ## 10. Operations
 
@@ -486,8 +529,9 @@ as pull requests.
 
 - Every game of the channel's videos has a game page, and a second upload of a game is the
   only game video that is on none. No other video is on a page.
-- Every game page lists the other games of team A, the other games of team B and the other
-  games of the same season, newest first, as links.
+- Every game page lists, as links, the other games between its two teams, the other games of
+  its day, and each team's games around it, newest first.
+- From the top page a visitor reaches every team and every season, and from there every game.
 - The five titles in section 7 parse into the right date and teams (automated test).
 - 「WG＆ブロンコス合同」 and 「ワイルドギース&東京ブロンコス」 resolve to the same team (automated
   test).
@@ -496,8 +540,8 @@ as pull requests.
 - A newly published video leads to a pull request on the next import, and merging it puts the
   game on the site.
 - Reproducing a video that became private leads to a removal pull request.
-- A scheduled live stream is at the top of the top page, and in line with the others once it
-  has ended.
+- A scheduled live stream is at the top of the top page, and a game like any other once it has
+  ended.
 - At phone width the lists, the filter and playback work.
 
 Order of work:

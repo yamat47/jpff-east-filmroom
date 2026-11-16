@@ -1,0 +1,76 @@
+import type { GameSummary } from "../lib/game-summary.ts";
+import { opponentIn } from "../lib/opponents.ts";
+import { thumbnailUrl } from "../lib/youtube-urls.ts";
+import { TeamLabel } from "./TeamLabel.tsx";
+
+/**
+ * What a row says of its game. A row leaves out what the page around it has already said:
+ *
+ * - `matchup`: both teams. The date is the day where the list stands under its season, the full
+ *   date where it does not, and nothing on the page of that day.
+ * - `opponent`: the other team alone, on the page of the team `of`.
+ * - `date`: the full date alone, in a list of the meetings of two teams.
+ */
+export type GameListView =
+  | { readonly kind: "matchup"; readonly date: "none" | "day" | "full" }
+  | { readonly kind: "opponent"; readonly of: string }
+  | { readonly kind: "date" };
+
+/** One game in a list: its thumbnail and what the view asks for, linked to the game's page. */
+export function GameRow({ game, view }: { game: GameSummary; view: GameListView }) {
+  const [first, second] = game.teams;
+  const type = game.videoCount > 1 ? `${game.typeLabel}・動画${game.videoCount}本` : game.typeLabel;
+  const date =
+    view.kind === "matchup"
+      ? { none: null, day: game.dayLabel, full: game.dateLabel }[view.date]
+      : view.kind === "date"
+        ? game.dateLabel
+        : game.dayLabel;
+
+  return (
+    <li className={view.kind === "date" ? "game-row game-row--date" : "game-row"}>
+      <a className="game-row__link row-link" href={`/games/${game.id}/`}>
+        {/* Decorative: the text beside it says everything the picture could. */}
+        <img
+          className="game-row__thumb"
+          src={thumbnailUrl(game.videoId)}
+          alt=""
+          width={320}
+          height={180}
+          loading="lazy"
+          decoding="async"
+        />
+        <span className="game-row__meta">
+          {date !== null && (
+            <time className="game-row__date" dateTime={game.date}>
+              {date}
+            </time>
+          )}
+          <span className="game-row__type">{type}</span>
+        </span>
+        {view.kind === "matchup" && (
+          <span className="game-row__teams">
+            <TeamLabel team={first} />
+            <span className="versus">
+              {/* Where the two teams stand one above the other, their marks in a line say that
+                  they met, and the word is not drawn. A screen reader gets it everywhere. */}
+              <span className="visually-hidden">vs</span>
+              <span className="versus__vs game-row__vs" aria-hidden="true">
+                vs
+              </span>
+              <TeamLabel team={second} />
+            </span>
+          </span>
+        )}
+        {view.kind === "opponent" && (
+          <span className="game-row__teams game-row__teams--subject">
+            <span className="versus">
+              <span className="versus__vs">vs</span>
+              <TeamLabel team={opponentIn(game, view.of)} />
+            </span>
+          </span>
+        )}
+      </a>
+    </li>
+  );
+}

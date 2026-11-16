@@ -2,11 +2,19 @@ import { describe, expect, it } from "vitest";
 import { findDataProblems } from "../src/lib/data-problems.ts";
 import type { ExcludedVideo, Game, SiteData, Team, Video } from "../src/lib/schema.ts";
 
-const LAZARO: Team = { id: "kamakura-lazaro", name: "鎌倉ラザロ", aliases: [] };
-const SEAGULLS: Team = { id: "tokai-seagulls", name: "東海シーガルズ", aliases: [] };
+const COLORS: Team["colors"] = ["#17181a", "#ffffff"];
+
+const LAZARO: Team = { id: "kamakura-lazaro", name: "鎌倉ラザロ", colors: COLORS, aliases: [] };
+const SEAGULLS: Team = {
+  id: "tokai-seagulls",
+  name: "東海シーガルズ",
+  colors: COLORS,
+  aliases: [],
+};
 const JOINT: Team = {
   id: "geese-broncos",
   name: "ギースブロンコス合同チーム",
+  colors: COLORS,
   aliases: ["WG&ブロンコス合同", "ワイルドギース&東京ブロンコス"],
 };
 
@@ -141,6 +149,7 @@ describe("findDataProblems", () => {
     const other: Team = {
       id: "wild-geese",
       name: "ワイルドギース",
+      colors: COLORS,
       aliases: ["WG&ブロンコス合同"],
     };
 
@@ -153,6 +162,7 @@ describe("findDataProblems", () => {
     const other: Team = {
       id: "wild-geese",
       name: "ワイルドギース",
+      colors: COLORS,
       aliases: ["ＷＧ＆ブロンコス合同"],
     };
 
@@ -162,7 +172,7 @@ describe("findDataProblems", () => {
   });
 
   it("reports an alias that is another team's name", () => {
-    const other: Team = { id: "lazaro", name: "ラザロ", aliases: ["鎌倉ラザロ"] };
+    const other: Team = { id: "lazaro", name: "ラザロ", colors: COLORS, aliases: ["鎌倉ラザロ"] };
 
     expect(findDataProblems(data({ teams: [LAZARO, SEAGULLS, JOINT, other] }))).toEqual([
       'team lazaro: "鎌倉ラザロ" already names team kamakura-lazaro',
@@ -176,7 +186,12 @@ describe("findDataProblems", () => {
   });
 
   it("reports two teams with the same ID", () => {
-    const twin: Team = { id: "kamakura-lazaro", name: "鎌倉ラザロ II", aliases: [] };
+    const twin: Team = {
+      id: "kamakura-lazaro",
+      name: "鎌倉ラザロ II",
+      colors: COLORS,
+      aliases: [],
+    };
 
     expect(findDataProblems(data({ teams: [LAZARO, SEAGULLS, JOINT, twin] }))).toEqual([
       "team kamakura-lazaro: the ID is used by more than one team",

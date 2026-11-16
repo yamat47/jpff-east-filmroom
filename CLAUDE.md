@@ -12,17 +12,17 @@ scope changes that file in the same pull request.
 
 | Path | Contents |
 |---|---|
-| `data/teams.yaml` | The teams and the spellings their names take in video titles |
+| `data/teams.yaml` | The teams, their two colours, and the spellings their names take in video titles |
 | `data/games/{seasonId}.json` | The games of one season and their videos |
 | `data/excluded.json` | Videos that are in no game, with the reason: not game footage, or one game uploaded again. Listed so that the import does not offer them again |
 | `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
 | `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
-| `src/lib/catalog.ts`, `src/lib/site-data.ts` | The data as the pages read it: every game newest first, the games of a team or a season, the lists a game page links on to. `site-data.ts` reads `data/` once per build |
-| `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a card shows of a game, the Japanese words for dates and types, and the YouTube addresses of thumbnails, videos and the player |
-| `src/lib/game-filter.ts`, `src/lib/season-groups.ts`, `src/lib/game-types.ts` | The rules of the filter above a list (what a URL query selects, which games it leaves), the cut of a list into one list per season, and the closed sets of the model without the schema library |
-| `src/pages/`, `src/site.ts` | The routes (top, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
+| `src/lib/catalog.ts`, `src/lib/site-data.ts` | The data as the pages read it: every game newest first, the games of a team or a season, the teams with what their games say of them, the lists a game page links on to. `site-data.ts` reads `data/` once per build |
+| `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a row shows of a game and of a team, the Japanese words for dates, types and a team's seasons, and the YouTube addresses of thumbnails, videos and the player |
+| `src/lib/game-filter.ts`, `src/lib/opponents.ts`, `src/lib/season-groups.ts`, `src/lib/game-types.ts` | The rules of the filter of a list (what a URL query selects, which games it leaves), the opponents a team page offers as its filter, the cut of a list into one list per season, and the closed sets of the model without the schema library |
+| `src/pages/`, `src/site.ts` | The routes (top, `games/`, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
 | `src/layouts/Base.astro` | The shell of every page: header, navigation, and the footer with the unofficial notice |
-| `src/components/` | `GameCard` and `GameList` (React, rendered to HTML at build time), `FilteredGames` (React, the only component sent to the browser), `Player.astro` (the click-to-load YouTube player), `ExternalMark.astro` (the arrow after a link that leaves the site) |
+| `src/components/` | `GameRow` and `GameList` (a game as a row of a list), `TeamLabel` (a team's mark and name) and `TeamTimeline` (a team's games around one, beside the video), all React and rendered to HTML at build time; `FilteredGames` and `TeamGames` (React, in one file, the only components sent to the browser: a list with selects above it, and a team's games with its opponents beside them); `Player.astro` (the click-to-load YouTube player); `ExternalMark.astro` (the arrow after a link that leaves the site) |
 | `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
@@ -81,14 +81,15 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   files; the site, the scripts and the tests derive their types from it. A rule about one file
   goes into the schema, a rule that spans files or entries into `src/lib/data-problems.ts`.
 - **Design values live in `src/styles/tokens.css` only.** Colours, sizes, weights and fonts are
-  read through its variables everywhere else. Fonts are the system's: no font, script or image
-  is requested from another site, except YouTube's thumbnails and, once a visitor starts a
-  video, its player.
+  read through its variables everywhere else. The two colours of a team are data, not design
+  values: they are in `data/teams.yaml` and reach the stylesheet as properties of the mark.
+  Fonts are the system's: no font, script or image is requested from another site, except
+  YouTube's thumbnails and, once a visitor starts a video, its player.
 - **The pages work without JavaScript.** Every list and every link is in the built HTML. React
-  runs in the browser for one thing, the filter above a list (`FilteredGames`), which keeps its
-  state in the URL query; the live state switch of step 6 will be the second. Without
-  JavaScript the filter is hidden and the full list stands. Do not add an island for anything a
-  link can do.
+  runs in the browser for one thing, the filter of a list (`FilteredGames`, and `TeamGames` in
+  the same file for a team's opponents), which keeps its state in the URL query; the live state
+  switch of step 6 will be the second. Without JavaScript the filter is hidden and the full
+  list stands. Do not add an island for anything a link can do.
 - **Code that runs in the browser does not import `src/lib/schema.ts`.** That module builds the
   Zod schemas when it loads, and one import put the whole library into the page. The closed sets
   a component needs are in `src/lib/game-types.ts`; a type-only import of the schema is fine.

@@ -46,13 +46,15 @@ describe("Game", () => {
 });
 
 describe("Team", () => {
+  const TEAM = { id: "kamakura-lazaro", name: "鎌倉ラザロ", colors: ["#d8232a", "#17181a"] };
+
   it("reads a team written without aliases as having none", () => {
-    expect(Team.parse({ id: "kamakura-lazaro", name: "鎌倉ラザロ" }).aliases).toEqual([]);
+    expect(Team.parse(TEAM).aliases).toEqual([]);
   });
 
   it.each([
-    ["a name", { id: "kamakura-lazaro", name: "　" }],
-    ["an alias", { id: "kamakura-lazaro", name: "鎌倉ラザロ", aliases: [" "] }],
+    ["a name", { ...TEAM, name: "　" }],
+    ["an alias", { ...TEAM, aliases: [" "] }],
   ])("rejects %s made of spaces alone, which no title can spell", (_case, team) => {
     expect(Team.safeParse(team).success).toBe(false);
   });
@@ -60,7 +62,18 @@ describe("Team", () => {
   it.each(["Kamakura-Lazaro", "kamakura_lazaro", "鎌倉ラザロ", "kamakura--lazaro", "-lazaro"])(
     "rejects the ID %s, which a URL would not keep as written",
     (id) => {
-      expect(Team.safeParse({ id, name: "鎌倉ラザロ" }).success).toBe(false);
+      expect(Team.safeParse({ ...TEAM, id }).success).toBe(false);
     },
   );
+
+  it.each([
+    ["no colours", undefined],
+    ["one colour", ["#d8232a"]],
+    ["three colours", ["#d8232a", "#17181a", "#ffffff"]],
+    ["a colour by name", ["red", "#17181a"]],
+    ["a colour of three digits", ["#d22", "#17181a"]],
+    ["a colour in upper case", ["#D8232A", "#17181a"]],
+  ])("rejects a team with %s", (_case, colors) => {
+    expect(Team.safeParse({ ...TEAM, colors }).success).toBe(false);
+  });
 });
