@@ -68,8 +68,7 @@ const latest = catalog.games.slice(0, LATEST_LIMIT).map((game) => summarize(cata
             {newest.season}シーズンの全{newest.games}試合
           </a>
         </div>
-        {/* The full date: at the start of a season the newest games are of two seasons. */}
-        <GameList games={latest} view={{ kind: "matchup", date: "full" }} layout="cards" />
+        <GameList games={latest} layout="cards" />
       </section>
     )}
   </div>

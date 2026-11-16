@@ -9,27 +9,16 @@ export const TYPE_LABELS: Record<GameType, string> = {
   other: "その他",
 };
 
-const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-function partsOf(date: string): { year: number; day: string } {
+/**
+ * A game date as a visitor reads it: "2026/10/04". Every date on the site is written this
+ * way, with its year and without a weekday, so that it is as short on a phone as it gets.
+ */
+export function formatDate(date: string): string {
   const match = ISO_DATE.exec(date);
   if (match === null) throw new TypeError(`not a date in the form YYYY-MM-DD: ${date}`);
-  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
-  // Built in UTC, so that the weekday does not depend on where the site is built.
-  const weekday = WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
-  return { year, day: `${month}月${day}日(${weekday})` };
-}
-
-/** A game date as a visitor reads it: "2026年10月4日(日)". */
-export function formatDate(date: string): string {
-  const { year, day } = partsOf(date);
-  return `${year}年${day}`;
-}
-
-/** A game date in a list that stands under its season: "10月4日(日)". */
-export function formatDay(date: string): string {
-  return partsOf(date).day;
+  return `${match[1]}/${match[2]}/${match[3]}`;
 }
 
 /**

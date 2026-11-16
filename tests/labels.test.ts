@@ -1,41 +1,22 @@
 import { describe, expect, it } from "vitest";
 import type { TeamEntry } from "../src/lib/catalog.ts";
-import {
-  formatDate,
-  formatDay,
-  formatDuration,
-  teamCountLabel,
-  teamSpanLabel,
-} from "../src/lib/labels.ts";
+import { formatDate, formatDuration, teamCountLabel, teamSpanLabel } from "../src/lib/labels.ts";
 
 describe("formatDate", () => {
   it.each([
-    ["2026-10-04", "2026年10月4日(日)"],
-    ["2025-01-11", "2025年1月11日(土)"],
-    ["2019-07-15", "2019年7月15日(月)"],
-    ["2028-02-29", "2028年2月29日(火)"],
+    ["2026-10-04", "2026/10/04"],
+    ["2025-01-11", "2025/01/11"],
+    ["2028-02-29", "2028/02/29"],
   ])("writes %s as %s", (date, label) => {
     expect(formatDate(date)).toBe(label);
   });
-});
 
-describe("formatDate on what is not a date", () => {
-  it.each(["2026-10-xx", "2026/10/04", "2026-10-4", ""])("refuses %s", (date) => {
-    expect(() => formatDate(date)).toThrow(TypeError);
-  });
-});
-
-describe("formatDay", () => {
-  it.each([
-    ["2026-10-04", "10月4日(日)"],
-    ["2022-01-16", "1月16日(日)"],
-  ])("writes %s without its year as %s", (date, label) => {
-    expect(formatDay(date)).toBe(label);
-  });
-
-  it("refuses what is not a date", () => {
-    expect(() => formatDay("2026/10/04")).toThrow(TypeError);
-  });
+  it.each(["2026-10-xx", "2026/10/04", "2026-10-4", ""])(
+    "refuses %s, which is not a date",
+    (date) => {
+      expect(() => formatDate(date)).toThrow(TypeError);
+    },
+  );
 });
 
 describe("the labels of a team", () => {

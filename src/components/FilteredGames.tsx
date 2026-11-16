@@ -5,7 +5,7 @@ import { GAME_TYPES } from "../lib/game-types.ts";
 import { TYPE_LABELS } from "../lib/labels.ts";
 import { opponentsOf } from "../lib/opponents.ts";
 import { groupBySeason as seasonGroups } from "../lib/season-groups.ts";
-import { GameList, MATCHUP_WITH_DAY } from "./GameList.tsx";
+import { GameList, MATCHUP_WITH_DATE } from "./GameList.tsx";
 import type { GameListView } from "./GameRow.tsx";
 import { TeamLabel } from "./TeamLabel.tsx";
 
@@ -160,7 +160,7 @@ export function FilteredGames({
           )}
         </div>
       </div>
-      <ShownGames games={shown} groupBySeason={groupBySeason} view={MATCHUP_WITH_DAY} />
+      <ShownGames games={shown} groupBySeason={groupBySeason} view={MATCHUP_WITH_DATE} />
     </div>
   );
 }

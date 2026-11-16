@@ -71,7 +71,7 @@
   --width-text: 40rem;
   /* The thumbnail of a row. */
   --width-thumb: 6rem;
-  /* The date of a row on a desk, as wide as "12月21日(日)". */
+  /* The date of a row on a desk, as wide as "2026/12/21". */
   --width-date: 6.5rem;
   /* The narrowest a row of the lists of teams and seasons may get before the list takes fewer
      columns. */

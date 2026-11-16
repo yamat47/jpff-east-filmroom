@@ -75,7 +75,7 @@ const timelines = summary.teams.map((team) => ({
           <div class="group__head">
             <h2 class="section-title">同じ日の試合</h2>
           </div>
-          <GameList games={sameDay} view={{ kind: "matchup", date: "none" }} />
+          <GameList games={sameDay} view={{ kind: "matchup", withDate: false }} />
         </section>
       )}
     </div>

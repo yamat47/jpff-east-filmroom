@@ -1,6 +1,6 @@
 import type { Catalog } from "./catalog.ts";
 import type { GameType } from "./game-types.ts";
-import { formatDate, formatDay, TYPE_LABELS } from "./labels.ts";
+import { formatDate, TYPE_LABELS } from "./labels.ts";
 import type { Game, Team } from "./schema.ts";
 
 /**
@@ -11,8 +11,6 @@ export type GameSummary = {
   readonly id: string;
   readonly date: string;
   readonly dateLabel: string;
-  /** The date without its year, for a list that stands under its season. */
-  readonly dayLabel: string;
   readonly season: string;
   readonly type: GameType;
   readonly typeLabel: string;
@@ -47,7 +45,6 @@ export function summarize(catalog: Catalog, game: Game): GameSummary {
     id: game.id,
     date: game.date,
     dateLabel: formatDate(game.date),
-    dayLabel: formatDay(game.date),
     season: game.season,
     type: game.type,
     typeLabel: TYPE_LABELS[game.type],

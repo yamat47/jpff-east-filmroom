@@ -61,7 +61,7 @@ function TimelineGame({ game, team }: { game: GameSummary; team: TeamSummary }) 
         <TeamLabel team={opponentIn(game, team.id)} />
       </span>
       <span className="meta">
-        <time dateTime={game.date}>{game.dayLabel}</time>・{game.typeLabel}
+        <time dateTime={game.date}>{game.dateLabel}</time>・{game.typeLabel}
       </span>
     </span>
   );

@@ -39,8 +39,7 @@ describe("summarize", () => {
     expect(summarize(catalog, GAME)).toEqual({
       id: "2021-12-19-brandings-vs-wild-geese",
       date: "2021-12-19",
-      dateLabel: "2021年12月19日(日)",
-      dayLabel: "12月19日(日)",
+      dateLabel: "2021/12/19",
       season: "2021-2022",
       type: "playoff",
       typeLabel: "プレーオフ",

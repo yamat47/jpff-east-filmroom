@@ -293,7 +293,7 @@ main {
   text-underline-offset: 0.2em;
 }
 
-/* A list of games, one game to a row: the thumbnail, and beside it the day and the type over
+/* A list of games, one game to a row: the thumbnail, and beside it the date and the type over
    the teams. On a desk a row is one line, or a card (below). */
 
 .game-list {
@@ -366,7 +366,7 @@ main {
   text-underline-offset: 0.2em;
 }
 
-/* The day and the type share a line on a phone. */
+/* The date and the type share a line on a phone. */
 @media (max-width: 47.99rem) {
   .game-row:not(.game-row--date) .game-row__date + .game-row__type::before {
     content: "・";
@@ -374,7 +374,7 @@ main {
 }
 
 @media (min-width: 48rem) {
-  /* One line: thumbnail, day, teams, type. The day and the type leave their line and stand
+  /* One line: thumbnail, date, teams, type. The date and the type leave their line and stand
      left and right of the teams. */
   .game-list--rows .game-row__link {
     display: flex;
