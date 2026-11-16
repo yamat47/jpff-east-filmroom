@@ -521,13 +521,16 @@ and no database.
   the browser. No search server.
 - With JavaScript off, the lists and the links to game pages still work.
 - No team logos or photographs. Text, the mark of a team's two colours and YouTube thumbnails
-  only.
+  only. The site has a mark of its own, a football in the black and white of the pages, and
+  uses it as its favicon and nowhere on a page. It is not the league's logo.
 - The look: white, black and grey, text first, phone first. Two colours carry meaning, the blue
   of a link and the red of a live stream. The only other colour is the mark of a team's two
   colours beside its name, which is data and not a design value. System fonts only, so that no
   font is requested from another site. A list of games is rows with a small thumbnail, one
   line to a row on a wide screen; the matchup on a game page is the largest text on the site.
-  Every design value is in `src/styles/tokens.css`.
+  Every design value is in `src/styles/tokens.css`. The favicon alone repeats two of them,
+  the black of the text and the white of the page, because a file served on its own cannot
+  read a variable.
 
 ## 10. Operations
 
