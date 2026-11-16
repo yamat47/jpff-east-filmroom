@@ -18,7 +18,7 @@ endef
 
 .PHONY: help
 help: ## Show the list of targets
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-12s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-14s %s\n", $$1, $$2}'
 
 .PHONY: setup
 setup: ## Build the image and install dependencies (first time, and when the Dockerfile changes)
@@ -73,6 +73,14 @@ validate: ## Check the files under data/ against the schema and against each oth
 .PHONY: sync
 sync: ## Draft games from the channel's new videos (example: make sync ARGS="--season=2021-2022")
 	$(PNPM) run sync $(ARGS)
+
+.PHONY: check-removed
+check-removed: ## Take the videos YouTube no longer returns out of the season files
+	$(PNPM) run check-removed
+
+.PHONY: refresh-live
+refresh-live: ## Bring the state and the length of the live streams up to date
+	$(PNPM) run refresh-live
 
 .PHONY: check
 check: ## Typecheck, lint, test, validate and build (what CI runs, minus zizmor)
