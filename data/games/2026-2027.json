@@ -229,5 +229,47 @@
         "live": null
       }
     ]
+  },
+  {
+    "id": "xytfjku9",
+    "date": "2026-11-15",
+    "season": "2026-2027",
+    "type": "league",
+    "teams": [
+      "brandings",
+      "geese-broncos"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "c6BlkYEMLU4",
+        "part": 1,
+        "title": "20261115 ブランディングスvsギースブロンコス合同",
+        "publishedAt": "2026-11-16T12:35:50Z",
+        "durationSec": 1693,
+        "live": null
+      }
+    ]
+  },
+  {
+    "id": "t2dfmsab",
+    "date": "2026-11-15",
+    "season": "2026-2027",
+    "type": "league",
+    "teams": [
+      "kofu-atsugi-titans",
+      "tokorozawa-outlaws"
+    ],
+    "needsReview": false,
+    "videos": [
+      {
+        "videoId": "EY6cNt40mF4",
+        "part": 1,
+        "title": "20261115 甲府厚木タイタンズvs所沢アウトローズ",
+        "publishedAt": "2026-11-16T12:22:08Z",
+        "durationSec": 1477,
+        "live": null
+      }
+    ]
   }
 ]
