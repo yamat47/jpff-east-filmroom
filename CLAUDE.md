@@ -21,12 +21,12 @@ scope changes that file in the same pull request.
 | `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a row shows of a game and of a team, the form of a date (`2026/10/04`), the Japanese words for types and a team's seasons, and the YouTube addresses of thumbnails, videos and the player |
 | `src/lib/game-filter.ts`, `src/lib/opponents.ts`, `src/lib/season-groups.ts`, `src/lib/game-types.ts` | The rules of the filter of a list (what a URL query selects, which games it leaves), the opponents a team page offers as its filter, the cut of a list into one list per season, and the closed sets of the model without the schema library |
 | `src/lib/live.ts` | What a page says of a live stream at a given time (scheduled, on air, or over and a game like any other), the cut of the top page's games by it, and the date and time of day in Japan |
-| `src/pages/`, `src/site.ts` | The routes (top, `games/`, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
+| `src/pages/`, `src/site.ts` | The routes (top, `games/`, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links, with the titles and addresses of the pages there is one of (`PAGES`) |
 | `src/layouts/Base.astro` | The shell of every page: the head with what a shared link shows, header, navigation, and the footer with the unofficial notice |
 | `src/components/` | `GameRow` and `GameList` (a game as a row of a list), `TeamLabel` (a team's mark and name) and `TeamTimeline` (a team's games around one, beside the video), all React and rendered to HTML at build time; `FilteredGames` and `TeamGames` (React, in one file, sent to the browser: a list with selects above it, and a team's games with its opponents beside them); `LiveState` (the state of a live stream, by the clock) and `TopGames` (`LiveGames` and `NewestGames`, the two lists of the top page a stream moves between), sent to the browser only while the data has a stream that has not ended; `Player.astro` (the click-to-load YouTube player); `ExternalMark.astro` (the arrow after a link that leaves the site) |
 | `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
 | `public/` | The site's mark as its favicon: `favicon.svg` is the drawing, `favicon.ico` (32 px) and `apple-touch-icon.png` (180 px, with no rounded corners, which a phone cuts itself) are pictures of it. Nothing else is served as it is |
-| `src/lib/share-image.tsx`, `src/pages/og-image.png.ts`, `src/pages/games/[id]/og-image.png.ts` | The picture a shared link shows, drawn at build time (satori, resvg, and Noto Sans JP from a package): the site's for every page, and for a game page its own, with the date and the two teams. `tests/share-image.test.ts` draws every team of the data and fails when a name runs over the edge |
+| `src/lib/share-cards.ts`, `src/lib/share-image.tsx`, `src/pages/[...page]/og-image.png.ts` | The picture a shared link shows, one beside every page (`{path}og-image.png`): which page has which (`share-cards.ts`, plain data that the page shell reads too), and the drawing of them at build time (`share-image.tsx`: satori, resvg, and Noto Sans JP from a package). A game shows its date and teams, a team its name, a season and a list their title, the top page the site. `tests/share-image.test.ts` draws every picture of the site and fails when a name runs over the edge |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
 | `scripts/youtube.ts` | The YouTube Data API calls the import makes: the channel's uploads and the details of videos |
@@ -121,6 +121,11 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   a component needs are in `src/lib/game-types.ts`; a type-only import of the schema is fine.
 - **A URL ends with a slash.** `astro.config.ts` builds every page as a directory, so internal
   links are written `/games/{gameId}/`, never without the slash.
+- **A new page is added to the list of pictures.** The picture of a shared link is drawn for
+  the pages `shareCardsOf` in `src/lib/share-cards.ts` lists: a page there is one of comes
+  from `PAGES` in `src/site.ts`, a page per entry of the data from the catalog. The page
+  shell stops the build for a page with an address that is not in that list, so that no page
+  names a picture that was not drawn.
 - **Title parsing, season derivation and the state of a live stream stay pure.** They take what
   they need as arguments and call no API, read no file and no clock, so that tests can fix
   their behaviour on real titles and at chosen times. A title the rules cannot read is reported
