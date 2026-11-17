@@ -4,12 +4,13 @@ import Base from "../../layouts/Base.astro";
 import { teamsWithGames } from "../../lib/catalog.ts";
 import { teamCountLabel } from "../../lib/labels.ts";
 import { catalog } from "../../lib/site-data.ts";
+import { PAGES } from "../../site.ts";
 
 const teams = teamsWithGames(catalog);
 ---
 
-<Base title="チーム" description="J.P.F.F East の試合動画があるチームの一覧です。">
-  <h1 class="page-title">チーム</h1>
+<Base title={PAGES.teams.title} description="J.P.F.F East の試合動画があるチームの一覧です。">
+  <h1 class="page-title">{PAGES.teams.title}</h1>
   <ul class="index-list index-list--wide">
     {teams.map((entry) => (
       <li>

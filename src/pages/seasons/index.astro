@@ -2,13 +2,14 @@
 import Base from "../../layouts/Base.astro";
 import { seasonsWithGames } from "../../lib/catalog.ts";
 import { catalog } from "../../lib/site-data.ts";
+import { PAGES } from "../../site.ts";
 
 const seasons = seasonsWithGames(catalog);
 ---
 
-<Base title="シーズン" description="J.P.F.F East の試合動画があるシーズンの一覧です。">
+<Base title={PAGES.seasons.title} description="J.P.F.F East の試合動画があるシーズンの一覧です。">
   <div class="page-head">
-    <h1 class="page-title">シーズン</h1>
+    <h1 class="page-title">{PAGES.seasons.title}</h1>
     <p class="lead">シーズンは3月1日から翌年2月末日までです。</p>
   </div>
   <ul class="index-list">

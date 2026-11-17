@@ -203,16 +203,23 @@ one row to swipe.
   (`2026-10-04-kamakura-lazaro-vs-tokai-seagulls`). Those URLs were public for one day and
   lead nowhere now: no page forwards them.
 - A link to a page shows, where it is shared, the page's own title and description and a
-  picture of 1200 by 630. For a game page it is the game's own: its date and its two teams,
-  each with the mark of its colours, above the name of the site (`/games/{gameId}/og-image.png`).
-  Every other page shows the picture of the site: its mark and its name (`/og-image.png`).
-  Both say that the site is unofficial. The build draws them, so a new game has its picture
-  when its pull request is merged. A name stays on one line inside the picture: both names of
-  a game are written smaller for the longer of the two, down to a smallest size that 24
-  letters fit in. A longer name would reach into the margin and then over the edges. A test
-  draws every registered team and fails on such a name, so a team cannot be registered with one before a person has
-  decided what the picture does with it. A game page does not use the thumbnail of its video
-  for this.
+  picture of 1200 by 630 that says what the page is of. The picture stands beside the page,
+  at `{path of the page}og-image.png`:
+  - a game page: its date and its two teams, each with the mark of its colours;
+  - a team page: the team, with its mark;
+  - a season page and each of the pages there is one of (every game, teams, seasons, about):
+    the title of the page;
+  - the top page: the mark and the name of the site. A page without a picture of its own, as
+    the not-found page, shows this one.
+
+  Every picture carries the name of the site and says that it is unofficial. The build draws
+  them, so a new game has its picture when its pull request is merged, and it stops for a
+  page with an address that is not in the list the pictures are drawn from. A name stays on
+  one line inside the picture: it is written smaller the longer it is, down to a smallest
+  size that 24 letters fit in. A longer name would reach into the margin and then over the
+  edges. A test draws every picture of the site and fails on such a name, so a team cannot be
+  registered with one before a person has decided what the picture does with it. A game page
+  does not use the thumbnail of its video for this.
 - The footer of every page says in one sentence that the site is an unofficial fan site and
   that the videos are those of the official channel. It links to the official channel, the
   official site and the about page.
@@ -506,10 +513,10 @@ and no database.
 │       └── 2026-2027.json
 ├── src/
 │   ├── pages/            index, games/ and games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about,
-│   │                     og-image.png and games/[id]/og-image.png (the pictures of a shared link)
+│   │                     [...page]/og-image.png (the picture of a shared link, beside every page)
 │   ├── components/       GameRow, GameList, TeamLabel, TeamTimeline, FilteredGames, LiveState, TopGames, Player, ExternalMark
 │   └── lib/              schema (Zod), game IDs, season derivation, the state of a live stream, data loading,
-│                         the drawing of the pictures of a shared link
+│                         which page has which picture of a shared link, and the drawing of them
 ├── scripts/
 │   ├── sync.ts           import of new videos (--season writes one season only)
 │   ├── check-removed.ts  removal check
