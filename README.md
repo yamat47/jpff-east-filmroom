@@ -33,7 +33,8 @@ is loaded from another site before that.
 `make sync` asks the YouTube Data API for the channel's uploads, places the ones the data does
 not know yet into games by the rules in [`scripts/parse-title.ts`](scripts/parse-title.ts),
 writes the season files and prints a draft for the pull request body. A video the rules cannot
-read is listed as unread and placed by hand. It needs `YOUTUBE_API_KEY` in `.env`
+read is listed as unread and placed by hand; `make game-id` prints the ID for a game that is
+made that way. The import needs `YOUTUBE_API_KEY` in `.env`
 ([`.env.example`](.env.example) says where the key comes from).
 
 Two more commands ask YouTube about the videos the data already has, with the same key.

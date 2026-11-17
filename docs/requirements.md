@@ -189,14 +189,30 @@ one row to swipe.
 - A select of a filter has no label beside it. Until a value is chosen it shows its own name
   (「チーム」「シーズン」「種別」), and choosing that entry again opens the filter. A select that
   narrows the list has a heavier border.
-- `gameId` has the form `{date}-{teamA}-vs-{teamB}`, for example
-  `2026-10-04-kamakura-lazaro-vs-tokai-seagulls`. It names the game, not a video, so a split
-  game still has one URL.
-- A correction does not break a published URL. The ID follows the game's date and teams, so
-  correcting either changes the ID and with it the URL of the game page; the old URL then
-  stays as a page that leads to the new one. That forwarding is not built: the pull request
-  that first corrects the date or the teams of a published game builds it. A game whose videos
-  are all gone is removed (section 6), and its URL goes with it.
+- `gameId` is eight lower-case letters and digits, for example `k7m2x9qd`, short enough to
+  pass on. `0`, `o`, `1`, `l` and `i` are not among them: they are read as one another. It
+  names the game, not a video, so a split game still has one URL.
+- A correction does not break a published URL. The ID is drawn by chance when the game enters
+  the data and says nothing of the game, so correcting the date or the teams leaves it, and
+  with it the URL of the game page, as it is. An ID is never changed and never given to
+  another game. A game whose videos are all gone is removed (section 6), and its URL goes
+  with it. When such a game comes back, because its video is public again or was uploaded
+  again, the import drafts it with a new ID, as it cannot know the old one; the person who
+  merges that draft puts back the ID the game had, so that the links to it work again.
+- Until 2026-11-17 an ID spelled out the date and the teams
+  (`2026-10-04-kamakura-lazaro-vs-tokai-seagulls`). Those URLs were public for one day and
+  lead nowhere now: no page forwards them.
+- A link to a page shows, where it is shared, the page's own title and description and a
+  picture of 1200 by 630. For a game page it is the game's own: its date and its two teams,
+  each with the mark of its colours, above the name of the site (`/games/{gameId}/og-image.png`).
+  Every other page shows the picture of the site: its mark and its name (`/og-image.png`).
+  Both say that the site is unofficial. The build draws them, so a new game has its picture
+  when its pull request is merged. A name stays on one line inside the picture: both names of
+  a game are written smaller for the longer of the two, down to a smallest size that 24
+  letters fit in. A longer name would reach into the margin and then over the edges. A test
+  draws every registered team and fails on such a name, so a team cannot be registered with one before a person has
+  decided what the picture does with it. A game page does not use the thumbnail of its video
+  for this.
 - The footer of every page says in one sentence that the site is an unofficial fan site and
   that the videos are those of the official channel. It links to the official channel, the
   official site and the about page.
@@ -230,7 +246,7 @@ A game and its videos:
 
 ```json
 {
-  "id": "2026-10-25-kofu-atsugi-titans-vs-geese-broncos",
+  "id": "k7m2x9qd",
   "date": "2026-10-25",
   "season": "2026-2027",
   "type": "league",
@@ -251,7 +267,7 @@ A game and its videos:
 
 | Field | Meaning |
 | --- | --- |
-| `id` | `{date}-{teams[0]}-vs-{teams[1]}`. It is the URL of the game page, which a correction does not break (section 4) |
+| `id` | Eight lower-case letters and digits, without `0`, `o`, `1`, `l` and `i`, drawn by chance: by the import for a game it drafts, by `make game-id` for a game a person places by hand. It is the URL of the game page and never changes (section 4) |
 | `date` | Game date in Japan time. The date in the title wins, unless the league's or a team's own record shows the title is wrong; such a date is set by hand |
 | `season` | By default the value derived from `date`. Rewritten by hand only for an exception |
 | `type` | `league` / `playoff` / `allstar` / `other` |
@@ -266,7 +282,8 @@ Checked by CI on every change:
 
 - Every ID in `teams` exists in `teams.yaml`.
 - No `videoId` appears twice across all games and the exclusion list.
-- No game `id` appears twice, and each equals the value built from `date` and `teams`.
+- No game `id` appears twice, and no two games have the same date and the same two teams: the
+  videos of one game are its parts, and the import finds the game of a new video by these.
 - No alias is registered for more than one team.
 - The season in a game file's name equals the `season` of every game in it.
 
@@ -286,7 +303,7 @@ values named under "Changes that do not go through a pull request".
 4. Parse the title into a game date and two teams (section 7).
 5. Estimate the game type and the rest with the Claude API (section 7).
 6. If a game with the same date and the same two teams exists, add the video to it (a split
-   game). Otherwise create a game.
+   game). Otherwise create a game, with a new ID.
 7. Commit to a branch and open a pull request. If an import pull request is still open, update
    it.
 8. When a person has checked, corrected and merged it, the build and the deployment run.
@@ -473,6 +490,7 @@ and no database.
 | Site generation | Astro, static output | Most pages are lists and details built from data, with little interaction |
 | Interactive parts | React, as Astro islands | Only the filter of a list of games (the page of every game, a season page, a team page) and the live state switch |
 | Data validation | Zod | One schema shared by the site and the import scripts |
+| Pictures of a shared link | satori and resvg, with Noto Sans JP from a package | Drawn at build time from the data, so a new game needs no picture made by hand. The font is used by the build alone and is not served |
 | Import scripts | Node.js and TypeScript | Same language and types as the site |
 | Tests | Vitest | Title parsing and season derivation, verified on real titles |
 | Automation | GitHub Actions | Import, removal check, validation, deployment |
@@ -487,9 +505,11 @@ and no database.
 │   └── games/
 │       └── 2026-2027.json
 ├── src/
-│   ├── pages/            index, games/ and games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about
+│   ├── pages/            index, games/ and games/[id], teams/ and teams/[id], seasons/ and seasons/[id], about,
+│   │                     og-image.png and games/[id]/og-image.png (the pictures of a shared link)
 │   ├── components/       GameRow, GameList, TeamLabel, TeamTimeline, FilteredGames, LiveState, TopGames, Player, ExternalMark
-│   └── lib/              schema (Zod), season derivation, the state of a live stream, data loading
+│   └── lib/              schema (Zod), game IDs, season derivation, the state of a live stream, data loading,
+│                         the drawing of the pictures of a shared link
 ├── scripts/
 │   ├── sync.ts           import of new videos (--season writes one season only)
 │   ├── check-removed.ts  removal check
@@ -500,6 +520,7 @@ and no database.
 │   ├── removed-videos.ts taking the videos YouTube no longer returns out of the games
 │   ├── live-state.ts     what the refresh changes of a stream
 │   ├── season-files.ts   writing the season files
+│   ├── new-game-id.ts    an unused ID for a game placed by hand
 │   ├── classify.ts       Claude API calls
 │   └── validate.ts       data validation
 ├── tests/
@@ -522,7 +543,8 @@ and no database.
 - With JavaScript off, the lists and the links to game pages still work.
 - No team logos or photographs. Text, the mark of a team's two colours and YouTube thumbnails
   only. The site has a mark of its own, a football in the black and white of the pages, and
-  uses it as its favicon and nowhere on a page. It is not the league's logo.
+  uses it as its favicon and on the pictures of a shared link, and nowhere on a page. It is
+  not the league's logo.
 - The look: white, black and grey, text first, phone first. Two colours carry meaning, the blue
   of a link and the red of a live stream. The only other colour is the mark of a team's two
   colours beside its name, which is data and not a design value. System fonts only, so that no
@@ -530,7 +552,13 @@ and no database.
   line to a row on a wide screen; the matchup on a game page is the largest text on the site.
   Every design value is in `src/styles/tokens.css`. The favicon alone repeats two of them,
   the black of the text and the white of the page, because a file served on its own cannot
-  read a variable.
+  read a variable. The pictures of a shared link take their colours, weights and line height
+  from that file when they are drawn. Their measures are their own, as nothing else on the
+  site is 1200 by 630, and so is their grey: a picture is the page turned over, white on
+  black, and its grey is the white let through in part. They are also the one place with a font that is not the system's: the
+  build draws their letters with Noto Sans JP, which it installs as a package, because the
+  machine that builds the site has no Japanese font. The font is not served: only the drawn
+  letters are in the pictures.
 
 ## 10. Operations
 
