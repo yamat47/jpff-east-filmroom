@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Game, Team } from "../src/lib/schema.ts";
 
 const GAME = {
-  id: "2026-10-25-kofu-atsugi-titans-vs-geese-broncos",
+  id: "k7m2x9qd",
   date: "2026-10-25",
   season: "2026-2027",
   type: "league",
@@ -39,6 +39,9 @@ describe("Game", () => {
   });
 
   it.each([
+    ["an ID that spells out the game", { id: "2026-10-25-kofu-atsugi-titans-vs-geese-broncos" }],
+    ["an ID with a capital letter", { id: "K7m2x9qd" }],
+    ["an ID of seven letters and digits", { id: "k7m2x9q" }],
     ["a game type outside the four", { type: "friendly" }],
     ["a date that is not on the calendar", { date: "2026-02-30" }],
     ["a season whose years are not consecutive", { season: "2026-2028" }],

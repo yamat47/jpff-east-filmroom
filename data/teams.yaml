@@ -1,6 +1,6 @@
 # The teams and the spellings their names take in video titles.
 #
-#   id       part of the team's URL and of every game ID. Never changed once published.
+#   id       part of the team's URL (/teams/{id}/). Never changed once published.
 #   name     shown on the site. A title that spells the team this way matches too.
 #   colors   the two colours of the mark beside the name, main colour first. A joint team has the
 #            main colour of each of its two teams. One colour twice draws a plain mark.

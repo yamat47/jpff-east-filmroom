@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { GAME_ID_ALPHABET, GAME_ID_LENGTH } from "./game-id.ts";
 import { GAME_TYPES, LIVE_STATUSES } from "./game-types.ts";
 
 export { GAME_TYPES, type GameType, LIVE_STATUSES, type LiveStatus } from "./game-types.ts";
 
-// A team ID is part of a URL (/teams/{id}/) and of every game ID.
+// A team ID is part of a URL (/teams/{id}/).
 const TeamId = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lower-case letters, digits and hyphens");
@@ -14,6 +15,15 @@ export const SeasonId = z
   .refine(
     (id) => Number(id.slice(5)) === Number(id.slice(0, 4)) + 1,
     "the second year follows the first",
+  );
+
+// A game ID is the URL of the game's page (/games/{id}/). It says nothing of the game, so that a
+// correction of the date or of the teams leaves the URL as it is. `newGameId` makes one.
+const GameId = z
+  .string()
+  .regex(
+    new RegExp(`^[${GAME_ID_ALPHABET}]{${GAME_ID_LENGTH}}$`),
+    `${GAME_ID_LENGTH} lower-case letters and digits, none of 0, o, 1, l and i (make game-id prints one)`,
   );
 
 const VideoId = z.string().regex(/^[A-Za-z0-9_-]{11}$/, "a YouTube video ID");
@@ -54,7 +64,7 @@ export const Video = z
 export type Video = z.infer<typeof Video>;
 
 export const Game = z.strictObject({
-  id: z.string().min(1),
+  id: GameId,
   date: z.iso.date(),
   season: SeasonId,
   type: z.enum(GAME_TYPES),

@@ -29,6 +29,13 @@ function upload(title: string, overrides: Partial<ChannelVideo> = {}): ChannelVi
   };
 }
 
+// The chance of a test is none: the first game drafted gets the ID "aaaaaaaa", the second
+// "bbbbbbbb". An ID takes eight picks.
+function inTurn(): (below: number) => number {
+  let picks = 0;
+  return (below) => Math.floor(picks++ / 8) % below;
+}
+
 function data(parts: Partial<SiteData> = {}): SiteData {
   return { teams: TEAMS, seasons: [], excluded: [], ...parts };
 }
@@ -37,10 +44,10 @@ describe("draftGames", () => {
   it("makes a league game of a video whose title gives a date and two teams", () => {
     const video = upload("2026 10 4 鎌倉ラザロvs東海シーガルズ");
 
-    expect(draftGames([video], data())).toEqual({
+    expect(draftGames([video], data(), inTurn())).toEqual({
       games: [
         {
-          id: "2026-10-04-kamakura-lazaro-vs-tokai-seagulls",
+          id: "aaaaaaaa",
           date: "2026-10-04",
           season: "2026-2027",
           type: "league",
@@ -62,8 +69,33 @@ describe("draftGames", () => {
     });
   });
 
+  it("gives each new game an ID of its own, and none the data has", () => {
+    const known = draftGames([upload("2026 10 4 鎌倉ラザロvs東海シーガルズ")], data(), inTurn());
+    const uploads = [
+      upload("2026 10 11 鎌倉ラザロvs東海シーガルズ"),
+      upload("2026 10 18 鎌倉ラザロvs東海シーガルズ"),
+    ];
+
+    // The chance begins again at "aaaaaaaa", which the known game has.
+    const { games } = draftGames(
+      uploads,
+      data({ seasons: [{ season: "2026-2027", games: known.games }] }),
+      inTurn(),
+    );
+
+    expect(known.games.map((game) => game.id)).toEqual(["aaaaaaaa"]);
+    expect(games.map((game) => [game.date, game.id])).toEqual([
+      ["2026-10-11", "bbbbbbbb"],
+      ["2026-10-18", "cccccccc"],
+    ]);
+  });
+
   it("puts a January game in the season that began the year before", () => {
-    const { games } = draftGames([upload("20220116 鎌倉ラザロ vs 東海シーガルズ")], data());
+    const { games } = draftGames(
+      [upload("20220116 鎌倉ラザロ vs 東海シーガルズ")],
+      data(),
+      inTurn(),
+    );
 
     expect(games.map((game) => game.season)).toEqual(["2021-2022"]);
   });
@@ -72,6 +104,7 @@ describe("draftGames", () => {
     const { games } = draftGames(
       [upload("2025/12/07 プレーオフ 鎌倉ラザロvs東海シーガルズ")],
       data(),
+      inTurn(),
     );
 
     expect(games.map((game) => game.type)).toEqual(["playoff"]);
@@ -81,7 +114,7 @@ describe("draftGames", () => {
     const second = upload("20211121 鎌倉vs東海 後半");
     const first = upload("20211121 鎌倉vs東海 前半");
 
-    const { games } = draftGames([second, first], data());
+    const { games } = draftGames([second, first], data(), inTurn());
 
     expect(games).toHaveLength(1);
     expect(games[0]?.videos.map((video) => [video.part, video.videoId])).toEqual([
@@ -95,7 +128,7 @@ describe("draftGames", () => {
     const earlier = upload("20231217-2 鎌倉vs東海", { publishedAt: "2023-12-17T05:00:00Z" });
     const later = upload("20231217-2 鎌倉vs東海", { publishedAt: "2023-12-17T09:00:00Z" });
 
-    const { games } = draftGames([later, earlier], data());
+    const { games } = draftGames([later, earlier], data(), inTurn());
 
     expect(games[0]?.videos.map((video) => [video.part, video.videoId])).toEqual([
       [1, earlier.videoId],
@@ -109,7 +142,7 @@ describe("draftGames", () => {
     const secondQuarter = upload("20211114 1鎌倉vs東海前半2Q");
     const secondHalf = upload("20211114 1鎌倉vs東海後半");
 
-    const { games } = draftGames([firstQuarter, secondQuarter, secondHalf], data());
+    const { games } = draftGames([firstQuarter, secondQuarter, secondHalf], data(), inTurn());
 
     expect(games[0]?.videos.map((video) => [video.part, video.videoId])).toEqual([
       [1, firstQuarter.videoId],
@@ -121,7 +154,7 @@ describe("draftGames", () => {
 
   it("adds a new video to the game the data already has", () => {
     const known: Game = {
-      id: "2021-11-21-kamakura-lazaro-vs-tokai-seagulls",
+      id: "kkkkkkkk",
       date: "2021-11-21",
       season: "2021-2022",
       type: "playoff",
@@ -143,16 +176,17 @@ describe("draftGames", () => {
     const { games } = draftGames(
       [second],
       data({ seasons: [{ season: "2021-2022", games: [known] }] }),
+      inTurn(),
     );
 
-    expect(games).toHaveLength(1);
+    expect(games.map((game) => game.id)).toEqual(["kkkkkkkk"]);
     expect(games[0]?.type).toBe("playoff");
     expect(games[0]?.videos.map((video) => video.videoId)).toEqual(["known-first", second.videoId]);
   });
 
   it("adds another upload to the game a person moved to another date", () => {
     const corrected: Game = {
-      id: "2022-12-04-kamakura-lazaro-vs-tokai-seagulls",
+      id: "mmmmmmmm",
       date: "2022-12-04",
       season: "2022-2023",
       type: "league",
@@ -174,9 +208,10 @@ describe("draftGames", () => {
     const { games } = draftGames(
       [again],
       data({ seasons: [{ season: "2022-2023", games: [corrected] }] }),
+      inTurn(),
     );
 
-    expect(games.map((game) => game.id)).toEqual(["2022-12-04-kamakura-lazaro-vs-tokai-seagulls"]);
+    expect(games.map((game) => game.id)).toEqual(["mmmmmmmm"]);
     expect(games[0]?.videos.map((video) => video.videoId)).toEqual(["known-first", again.videoId]);
     expect(games[0]?.needsReview).toBe(true);
   });
@@ -185,9 +220,11 @@ describe("draftGames", () => {
     const first = upload("2026 10 4 鎌倉ラザロvs東海シーガルズ");
     const second = upload("2026 10 4 東海シーガルズvs鎌倉ラザロ");
 
-    const { games } = draftGames([first, second], data());
+    const { games } = draftGames([first, second], data(), inTurn());
 
-    expect(games.map((game) => game.id)).toEqual(["2026-10-04-kamakura-lazaro-vs-tokai-seagulls"]);
+    expect(games.map((game) => [game.id, game.teams])).toEqual([
+      ["aaaaaaaa", ["kamakura-lazaro", "tokai-seagulls"]],
+    ]);
     expect(games[0]?.videos.map((video) => video.videoId)).toEqual([first.videoId, second.videoId]);
     expect(games[0]?.needsReview).toBe(true);
   });
@@ -195,7 +232,7 @@ describe("draftGames", () => {
   it("leaves alone a video that is already in a game or on the exclusion list", () => {
     const inGame = upload("2026 10 4 鎌倉ラザロvs東海シーガルズ");
     const excluded = upload("2026/10/4 開会式");
-    const known = draftGames([inGame], data()).games;
+    const known = draftGames([inGame], data(), inTurn()).games;
 
     const draft = draftGames(
       [inGame, excluded],
@@ -203,6 +240,7 @@ describe("draftGames", () => {
         seasons: [{ season: "2026-2027", games: known }],
         excluded: [{ videoId: excluded.videoId, title: excluded.title, reason: "a ceremony" }],
       }),
+      inTurn(),
     );
 
     expect(draft).toEqual({ games: [], unread: [] });
@@ -216,7 +254,10 @@ describe("draftGames", () => {
   ])("leaves %s unread: %s", (title, reason) => {
     const video = upload(title);
 
-    expect(draftGames([video], data())).toEqual({ games: [], unread: [{ video, reason }] });
+    expect(draftGames([video], data(), inTurn())).toEqual({
+      games: [],
+      unread: [{ video, reason }],
+    });
   });
 
   it("makes a game of a scheduled stream, with its state and without a length", () => {
@@ -226,12 +267,12 @@ describe("draftGames", () => {
       live,
     });
 
-    const { games, unread } = draftGames([stream], data());
+    const { games, unread } = draftGames([stream], data(), inTurn());
 
     expect(unread).toEqual([]);
     expect(games).toMatchObject([
       {
-        id: "2026-12-20-kamakura-lazaro-vs-tokai-seagulls",
+        date: "2026-12-20",
         type: "playoff",
         needsReview: false,
         videos: [{ videoId: stream.videoId, part: 1, durationSec: null, live }],
@@ -244,8 +285,8 @@ describe("draftGames", () => {
     const live = { status: "upcoming", scheduledStartTime: "2026-12-20T15:30:00Z" } as const;
     const stream = upload("ハーバーボウル 鎌倉ラザロvs東海シーガルズ", { durationSec: null, live });
 
-    expect(draftGames([stream], data()).games).toMatchObject([
-      { id: "2026-12-21-kamakura-lazaro-vs-tokai-seagulls", needsReview: true },
+    expect(draftGames([stream], data(), inTurn()).games).toMatchObject([
+      { date: "2026-12-21", needsReview: true },
     ]);
   });
 
@@ -253,13 +294,15 @@ describe("draftGames", () => {
     const live = { status: "archived", scheduledStartTime: "2026-12-21T04:00:00Z" } as const;
     const stream = upload("2026/12/20 鎌倉ラザロvs東海シーガルズ", { live });
 
-    expect(draftGames([stream], data()).games.map((game) => game.date)).toEqual(["2026-12-20"]);
+    expect(draftGames([stream], data(), inTurn()).games.map((game) => game.date)).toEqual([
+      "2026-12-20",
+    ]);
   });
 });
 
 describe("seasonFilesOf", () => {
-  const known = (date: string): Game => ({
-    id: `${date}-kamakura-lazaro-vs-tokai-seagulls`,
+  const known = (date: string, id = "kkkkkkkk"): Game => ({
+    id,
     date,
     season: "2021-2022",
     type: "playoff",
@@ -278,18 +321,19 @@ describe("seasonFilesOf", () => {
   });
 
   it("keeps the games a file already has, as they are, beside the new one", () => {
-    const earlier = known("2021-11-07");
-    const later = known("2021-12-19");
+    const earlier = known("2021-11-07", "eeeeeeee");
+    const later = known("2021-12-19", "tttttttt");
     const site = data({ seasons: [{ season: "2021-2022", games: [earlier, later] }] });
-    const { games } = draftGames([upload("20211121 鎌倉vs東海")], site);
+    const { games } = draftGames([upload("20211121 鎌倉vs東海")], site, inTurn());
 
     const files = seasonFilesOf(site, games);
 
     expect([...files.keys()]).toEqual(["2021-2022"]);
+    // The new game stands at its date, whatever ID it got.
     expect(files.get("2021-2022")?.map((game) => game.id)).toEqual([
-      "2021-11-07-kamakura-lazaro-vs-tokai-seagulls",
-      "2021-11-21-kamakura-lazaro-vs-tokai-seagulls",
-      "2021-12-19-kamakura-lazaro-vs-tokai-seagulls",
+      "eeeeeeee",
+      "aaaaaaaa",
+      "tttttttt",
     ]);
     expect(files.get("2021-2022")?.[0]).toEqual(earlier);
     expect(files.get("2021-2022")?.[2]).toEqual(later);
@@ -298,7 +342,7 @@ describe("seasonFilesOf", () => {
   it("puts a game that gained a video in the place of its earlier version", () => {
     const first = known("2021-11-21");
     const site = data({ seasons: [{ season: "2021-2022", games: [first] }] });
-    const { games } = draftGames([upload("20211121 鎌倉vs東海 後半")], site);
+    const { games } = draftGames([upload("20211121 鎌倉vs東海 後半")], site, inTurn());
 
     const written = seasonFilesOf(site, games).get("2021-2022");
 
@@ -308,13 +352,17 @@ describe("seasonFilesOf", () => {
 
   it("gives a season without a file a file, and leaves the other seasons unwritten", () => {
     const site = data({ seasons: [{ season: "2021-2022", games: [known("2021-11-07")] }] });
-    const { games } = draftGames([upload("2026 10 4 鎌倉ラザロvs東海シーガルズ")], site);
+    const { games } = draftGames([upload("2026 10 4 鎌倉ラザロvs東海シーガルズ")], site, inTurn());
 
     expect([...seasonFilesOf(site, games).keys()]).toEqual(["2026-2027"]);
   });
 
   it("writes the keys of a new game in the order a file read back has them", () => {
-    const { games } = draftGames([upload("2026 10 4 鎌倉ラザロvs東海シーガルズ")], data());
+    const { games } = draftGames(
+      [upload("2026 10 4 鎌倉ラザロvs東海シーガルズ")],
+      data(),
+      inTurn(),
+    );
 
     const written = seasonFilesOf(data(), games).get("2026-2027")?.[0] ?? {};
 
@@ -339,6 +387,7 @@ describe("renderDraft", () => {
         upload("2026/10/4 開会式 ", { videoId: "ccccccccccc" }),
       ],
       data(),
+      inTurn(),
     );
 
     expect(renderDraft(draft, TEAMS)).toBe(
@@ -362,6 +411,7 @@ describe("renderDraft", () => {
     const draft = draftGames(
       [upload("2026/12/20 鎌倉ラザロvs東海シーガルズ", { durationSec: null, live })],
       data(),
+      inTurn(),
     );
 
     expect(renderDraft(draft, TEAMS)).toContain(

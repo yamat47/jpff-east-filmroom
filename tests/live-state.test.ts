@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { followedVideoIds, refreshLive, renderLiveRefresh } from "../scripts/live-state.ts";
 import type { ChannelVideo } from "../scripts/youtube.ts";
-import type { Game, SiteData, Video } from "../src/lib/schema.ts";
+import type { Game, SiteData, Team, Video } from "../src/lib/schema.ts";
+
+const COLORS: Team["colors"] = ["#17181a", "#ffffff"];
+const TEAMS: Team[] = [
+  { id: "kamakura-lazaro", name: "鎌倉ラザロ", colors: COLORS, aliases: [] },
+  { id: "tokai-seagulls", name: "東海シーガルズ", colors: COLORS, aliases: [] },
+];
 
 // 13:00 in Japan on December 20.
 const START = "2026-12-20T04:00:00Z";
@@ -16,6 +22,7 @@ const video = (videoId: string, change: Partial<Video> = {}): Video => ({
   ...change,
 });
 
+// An ID that names the video of its game, for the reading of a test. A real one says nothing of the game.
 const game = (id: string, videos: Video[]): Game => ({
   id: `2026-12-20-${id}`,
   date: "2026-12-20",
@@ -80,7 +87,7 @@ describe("refreshLive", () => {
     ]);
     expect(changes).toEqual([
       {
-        gameId: "2026-12-20-scheduled00",
+        game: game("scheduled00", [SCHEDULED]),
         videoId: "scheduled00",
         before: { durationSec: null, live: SCHEDULED.live },
         after: { durationSec: 5400, live: now.live },
@@ -99,19 +106,19 @@ describe("refreshLive", () => {
 
   it("names a stream that was put off to another day, and leaves the game date", () => {
     const nextDay = { status: "upcoming", scheduledStartTime: "2026-12-21T04:00:00Z" } as const;
-    const note = { gameId: "2026-12-20-scheduled00", videoId: "scheduled00", day: "2026-12-21" };
+    const note = { game: { date: "2026-12-20" }, videoId: "scheduled00", day: "2026-12-21" };
 
     const first = refreshLive(data(SCHEDULED), [fetched(SCHEDULED, { live: nextDay })]);
 
     expect(first.files.get("2026-2027")?.[0]?.date).toBe("2026-12-20");
-    expect(first.offDay).toEqual([note]);
+    expect(first.offDay).toMatchObject([note]);
 
     // The note is of the data, so the next run still has it though nothing changes any more.
     const putOff = { ...SCHEDULED, live: nextDay };
     const second = refreshLive(data(putOff), [fetched(putOff, {})]);
 
     expect(second.changes).toEqual([]);
-    expect(second.offDay).toEqual([note]);
+    expect(second.offDay).toMatchObject([note]);
   });
 
   it("has no note for a stream that has ended, whatever day it ran on", () => {
@@ -147,7 +154,7 @@ describe("refreshLive", () => {
 
 describe("renderLiveRefresh", () => {
   it("says that nothing changed", () => {
-    expect(renderLiveRefresh({ changes: [], offDay: [] })).toBe("No stream has changed.\n");
+    expect(renderLiveRefresh({ changes: [], offDay: [] }, TEAMS)).toBe("No stream has changed.\n");
   });
 
   it("writes one line per stream that changed, then the streams on another day than their game", () => {
@@ -156,14 +163,14 @@ describe("renderLiveRefresh", () => {
       fetched(UNPROCESSED, { durationSec: 5400 }),
     ]);
 
-    expect(renderLiveRefresh(refresh)).toBe(
+    expect(renderLiveRefresh(refresh, TEAMS)).toBe(
       [
-        "- 2026-12-20-scheduled00 (scheduled00): upcoming, 2026-12-20T04:00:00Z, no length yet -> live, 2026-12-21T04:00:00Z, no length yet",
-        "- 2026-12-20-unprocessed (unprocessed): archived, 2026-12-20T04:00:00Z, no length yet -> archived, 2026-12-20T04:00:00Z, 5400s",
+        "- 2026-12-20 鎌倉ラザロ vs 東海シーガルズ (scheduled00): upcoming, 2026-12-20T04:00:00Z, no length yet -> live, 2026-12-21T04:00:00Z, no length yet",
+        "- 2026-12-20 鎌倉ラザロ vs 東海シーガルズ (unprocessed): archived, 2026-12-20T04:00:00Z, no length yet -> archived, 2026-12-20T04:00:00Z, 5400s",
         "",
         "Scheduled for another day in Japan than the date of the game, which a person corrects:",
         "",
-        "- 2026-12-20-scheduled00 (scheduled00): 2026-12-21",
+        "- 2026-12-20 鎌倉ラザロ vs 東海シーガルズ (scheduled00): 2026-12-21",
         "",
       ].join("\n"),
     );

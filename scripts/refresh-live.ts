@@ -18,4 +18,4 @@ const refresh = refreshLive(data, await youtube.getVideos(followed));
 await writeSeasonFiles(DATA_DIR, refresh.files);
 
 console.log(`${followed.length} followed.`);
-console.log(renderLiveRefresh(refresh));
+console.log(renderLiveRefresh(refresh, data.teams));

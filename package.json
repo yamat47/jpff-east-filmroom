@@ -16,6 +16,7 @@
     "lint:fix": "biome check --write .",
     "test": "vitest run",
     "validate": "node scripts/validate.ts",
+    "game-id": "node scripts/new-game-id.ts",
     "sync": "node --env-file-if-exists=.env scripts/sync.ts",
     "check-removed": "node --env-file-if-exists=.env scripts/check-removed.ts",
     "refresh-live": "node --env-file-if-exists=.env scripts/refresh-live.ts",

@@ -13,7 +13,7 @@ const video = (videoId: string, part: number): Video => ({
 });
 
 const GAME: Game = {
-  id: "2021-12-19-brandings-vs-wild-geese",
+  id: "gameaaaa",
   date: "2021-12-19",
   season: "2021-2022",
   type: "playoff",
@@ -37,7 +37,7 @@ const catalog = buildCatalog({
 describe("summarize", () => {
   it("gives a list the names and colours of the teams, the words for date and type, and the first video", () => {
     expect(summarize(catalog, GAME)).toEqual({
-      id: "2021-12-19-brandings-vs-wild-geese",
+      id: "gameaaaa",
       date: "2021-12-19",
       dateLabel: "2021/12/19",
       season: "2021-2022",
