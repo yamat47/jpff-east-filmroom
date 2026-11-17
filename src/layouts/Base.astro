@@ -9,17 +9,26 @@ interface Props {
   description?: string;
   /** `false` for a page that has no address of its own, as the not-found page. */
   canonical?: boolean;
+  /** The picture a link to the page shows where it is shared. The site's, unless given. */
+  shareImage?: { path: string; alt: string };
 }
 
-const { title, description, canonical = true } = Astro.props;
+const {
+  title,
+  description,
+  canonical = true,
+  shareImage = { path: SITE.shareImage.path, alt: `${SITE.name}、${SITE.unofficialNote}` },
+} = Astro.props;
 const fullTitle = title === undefined ? SITE.name : `${title} | ${SITE.name}`;
+const pageDescription = description ?? SITE.description;
+const path = Astro.url.pathname;
+const url = new URL(path, SITE.url);
 const NAV = [
   { href: "/games/", label: "すべての試合" },
   { href: "/teams/", label: "チーム" },
   { href: "/seasons/", label: "シーズン" },
 ];
 const ABOUT = "/about/";
-const path = Astro.url.pathname;
 // "page" on the entry that is this page, "true" on the entry this page belongs under. The top
 // page is no entry: the name of the site leads to it.
 const currentOf = (href: string) => {
@@ -34,8 +43,24 @@ const currentOf = (href: string) => {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
-    <meta name="description" content={description ?? SITE.description} />
-    {canonical && <link rel="canonical" href={new URL(path, SITE.url)} />}
+    <meta name="description" content={pageDescription} />
+    {canonical && <link rel="canonical" href={url} />}
+    {/* What a link to the page shows where it is shared: the page's own title and description,
+        and a picture, the game's on a game page and the site's everywhere else. The name of
+        the site is left out of the title: it is in og:site_name and on the picture. A service
+        fetches the picture from outside the site, so its address is written whole, and its
+        size is given so that the card is laid out before the picture has come. */}
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title ?? SITE.name} />
+    <meta property="og:description" content={pageDescription} />
+    {canonical && <meta property="og:url" content={url} />}
+    <meta property="og:image" content={new URL(shareImage.path, SITE.url)} />
+    <meta property="og:image:width" content={String(SITE.shareImage.width)} />
+    <meta property="og:image:height" content={String(SITE.shareImage.height)} />
+    <meta property="og:image:alt" content={shareImage.alt} />
+    {/* Without this X shows the picture as a small square beside the title. */}
+    <meta name="twitter:card" content="summary_large_image" />
     {/* The drawing for a browser that takes one, a picture of it for the others, and a larger
         picture for the home screen of a phone. All three are in public/. The size on the
         picture keeps a browser that takes both from choosing it over the drawing. */}

@@ -25,9 +25,12 @@
   "packageManager": "pnpm@11.8.0",
   "dependencies": {
     "@astrojs/react": "^7.1.9",
+    "@fontsource/noto-sans-jp": "^5.3.1",
+    "@resvg/resvg-js": "^2.6.2",
     "astro": "^7.4.12",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "satori": "^0.63.2",
     "yaml": "^2.9.1",
     "zod": "^4.6.7"
   },
