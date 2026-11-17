@@ -1,7 +1,9 @@
-// The picture a link to a page shows where it is shared: one for the site, and one for each
-// game with its date and its two teams. They are drawn when the site is built, so a new game
-// has its picture without a person drawing one. Only the routes of the pictures import this
-// module: it reads font files and runs native code, and none of it reaches the browser.
+// The picture a link to a page shows where it is shared: the site's for the top page, and for
+// every other page one that says what the page is of, a game with its date and its two teams,
+// a team, a season, a list. They are drawn when the site is built, so a new game has its
+// picture without a person drawing one. Which page has which picture is in share-cards.ts.
+// Only the route of the pictures imports this module: it reads font files and runs native
+// code, and none of it reaches the browser.
 import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -10,7 +12,8 @@ import { Resvg } from "@resvg/resvg-js";
 import type { CSSProperties, ReactNode } from "react";
 import satori from "satori";
 import { SITE } from "../site.ts";
-import type { GameSummary, TeamSummary } from "./game-summary.ts";
+import type { TeamSummary } from "./game-summary.ts";
+import type { ShareCard } from "./share-cards.ts";
 
 const SIZE = { width: SITE.shareImage.width, height: SITE.shareImage.height };
 
@@ -58,13 +61,15 @@ const REGULAR = weightToken("weight-regular");
 const BOLD = weightToken("weight-bold");
 
 /**
- * The sizes a team's name is written in, the largest and the smallest, and the width the
- * longer name of a game must fit in. Below the smallest a name is no longer read at the size
- * a shared link is shown in.
+ * The sizes the words a picture is of are written in. Two names of a game share the picture,
+ * so each is smaller than a name or a title that stands alone. Below the smallest size a word
+ * is no longer read at the size a shared link is shown in. The words must fit in the width of
+ * the row.
  */
-const NAME_SIZE_MAX = 76;
-const NAME_SIZE_MIN = 40;
-const NAME_ROW_WIDTH = 1040;
+export const PAIR_SIZE_MAX = 76;
+export const LONE_SIZE_MAX = 92;
+const SIZE_MIN = 40;
+const ROW_WIDTH = 1040;
 /** The mark of a team's colours and the gap after it, in ems of the name. */
 const MARK_EMS = 0.7;
 const MARK_GAP_EMS = 0.4;
@@ -83,58 +88,90 @@ const page: CSSProperties = {
   lineHeight: Number(token("leading-tight")),
 };
 
-/** The picture of every page but a game's: the site's mark, its name, and that it is unofficial. */
-export function siteCard(): ReactNode {
-  return (
-    <div style={page}>
-      <Ball size={184} />
-      <div style={{ marginTop: 36, fontSize: 64, fontWeight: BOLD }}>{SITE.name}</div>
-      <div style={{ marginTop: 20, fontSize: 26, opacity: MUTED }}>{SITE.unofficialNote}</div>
-    </div>
-  );
-}
-
-/** The picture of a game page: the date, the two teams as the page's title has them, the site. */
-export function gameCard({
-  dateLabel,
-  teams,
-}: Pick<GameSummary, "dateLabel" | "teams">): ReactNode {
-  const [first, second] = teams;
-  const size = nameSizeOf([first.name, second.name]);
-  return (
-    <div style={page}>
-      <div style={{ fontSize: 40, opacity: MUTED }}>{dateLabel}</div>
-      <div
-        style={{ marginTop: 28, display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <TeamName team={first} size={size} />
-        <div style={{ fontSize: Math.round(size * 0.5), opacity: MUTED }}>vs</div>
-        <TeamName team={second} size={size} />
-      </div>
-      <div style={{ marginTop: 52, display: "flex", alignItems: "center" }}>
-        <Ball size={36} />
-        <div style={{ marginLeft: 14, fontSize: 28, fontWeight: BOLD }}>{SITE.name}</div>
-        <div style={{ marginLeft: 20, fontSize: 22, opacity: MUTED }}>{SITE.unofficialNote}</div>
-      </div>
-    </div>
-  );
+/** The card as satori lays it out. */
+function layoutOf(card: ShareCard): ReactNode {
+  switch (card.kind) {
+    case "site":
+      return (
+        <div style={page}>
+          <Ball size={184} />
+          <div style={{ marginTop: 36, fontSize: 64, fontWeight: BOLD }}>{SITE.name}</div>
+          <div style={{ marginTop: 20, fontSize: 26, opacity: MUTED }}>{SITE.unofficialNote}</div>
+        </div>
+      );
+    case "game": {
+      // The two teams as the title of the page has them, one above the other.
+      const [first, second] = card.teams;
+      const size = nameSizeOf([first.name, second.name], PAIR_SIZE_MAX);
+      return (
+        <div style={page}>
+          <div style={{ marginBottom: 28, fontSize: 40, opacity: MUTED }}>{card.dateLabel}</div>
+          <TeamName team={first} size={size} />
+          <div style={{ fontSize: Math.round(size * 0.5), opacity: MUTED }}>vs</div>
+          <TeamName team={second} size={size} />
+          <SiteLine />
+        </div>
+      );
+    }
+    case "team":
+      return (
+        <div style={page}>
+          <TeamName team={card.team} size={nameSizeOf([card.team.name], LONE_SIZE_MAX)} />
+          <SiteLine />
+        </div>
+      );
+    case "title":
+      return (
+        <div style={page}>
+          <div
+            style={{ fontSize: titleSizeOf(card.title), fontWeight: BOLD, whiteSpace: "nowrap" }}
+          >
+            {card.title}
+          </div>
+          <SiteLine />
+        </div>
+      );
+    default: {
+      const unknown: never = card;
+      throw new Error(`no picture is drawn for ${JSON.stringify(unknown)}`);
+    }
+  }
 }
 
 /**
- * The size both names of a game are written in: the largest at which the longer one stays on
- * one line and inside the picture, and never less than the smallest. Every letter is counted
- * as wide as the size. No letter of the font is wider, so a name is never wider than it is
- * counted, whatever it is written in; a name with Latin letters, which are narrower, only
- * comes out a little smaller than it might.
+ * The size names of teams are written in on one picture: the largest at which the longest
+ * stays on one line and inside the picture, and never less than the smallest. Every letter is
+ * counted as wide as the size. No letter of the font is wider, so a name is never wider than
+ * it is counted, whatever it is written in; a name with Latin letters, which are narrower,
+ * only comes out a little smaller than it might.
  *
  * A name too long for the smallest size is not made smaller still: it runs over the edges.
- * tests/share-image.test.ts draws every team of the data and fails on such a name, so that a
- * person decides what the picture does with it.
+ * tests/share-image.test.ts draws every picture of the site and fails on such a name, so that
+ * a person decides what the picture does with it.
  */
-export function nameSizeOf(names: readonly string[]): number {
+export function nameSizeOf(names: readonly string[], largest: number): number {
   const letters = Math.max(...names.map((name) => [...name].length));
-  const fitting = Math.floor(NAME_ROW_WIDTH / (letters + MARK_EMS + MARK_GAP_EMS));
-  return Math.max(NAME_SIZE_MIN, Math.min(NAME_SIZE_MAX, fitting));
+  return sizeFor(letters + MARK_EMS + MARK_GAP_EMS, largest);
+}
+
+/** The size the title of a page is written in, by the same count. */
+export function titleSizeOf(title: string): number {
+  return sizeFor([...title].length, LONE_SIZE_MAX);
+}
+
+function sizeFor(ems: number, largest: number): number {
+  return Math.max(SIZE_MIN, Math.min(largest, Math.floor(ROW_WIDTH / ems)));
+}
+
+/** The line every picture but the site's own ends with: whose page this is. */
+function SiteLine() {
+  return (
+    <div style={{ marginTop: 52, display: "flex", alignItems: "center" }}>
+      <Ball size={36} />
+      <div style={{ marginLeft: 14, fontSize: 28, fontWeight: BOLD }}>{SITE.name}</div>
+      <div style={{ marginLeft: 20, fontSize: 22, opacity: MUTED }}>{SITE.unofficialNote}</div>
+    </div>
+  );
 }
 
 /** A team as the pages write it: the dot of its two colours, then its name. */
@@ -196,17 +233,17 @@ function loadFonts(): Promise<Font[]> {
 
 /** The card as it is drawn, in the size of `SITE.shareImage`: `pixels` holds four bytes (RGBA) for each. */
 export async function drawShareImage(
-  card: ReactNode,
+  card: ShareCard,
 ): Promise<{ readonly pixels: Buffer; asPng(): Buffer }> {
   fonts ??= loadFonts();
-  const svg = await satori(card, { ...SIZE, fonts: await fonts });
+  const svg = await satori(layoutOf(card), { ...SIZE, fonts: await fonts });
   // Satori has already drawn the letters as shapes, so the fonts of the machine are not looked
   // for: the picture is the same wherever it is built.
   return new Resvg(svg, { font: { loadSystemFonts: false } }).render();
 }
 
 /** The card as the answer of a route: a PNG file. */
-export async function shareImageResponse(card: ReactNode): Promise<Response> {
+export async function shareImageResponse(card: ShareCard): Promise<Response> {
   const png = (await drawShareImage(card)).asPng();
   return new Response(new Uint8Array(png), { headers: { "Content-Type": "image/png" } });
 }

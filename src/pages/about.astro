@@ -1,13 +1,13 @@
 ---
 import ExternalMark from "../components/ExternalMark.astro";
 import Base from "../layouts/Base.astro";
-import { SITE } from "../site.ts";
+import { PAGES, SITE } from "../site.ts";
 ---
 
-<Base title="このサイトについて" description={`${SITE.name} は非公式のファンサイトです。`}>
+<Base title={PAGES.about.title} description={`${SITE.name} は非公式のファンサイトです。`}>
   <div class="prose">
     <div class="page-head">
-      <h1 class="page-title">このサイトについて</h1>
+      <h1 class="page-title">{PAGES.about.title}</h1>
       <p>
         J.P.F.F East の試合動画を、シーズン・チーム・種別で探せる非公式のファンサイトです。JPFF とは関係ありません。
       </p>

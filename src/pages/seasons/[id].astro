@@ -3,6 +3,7 @@ import { FilteredGames } from "../../components/FilteredGames.tsx";
 import Base from "../../layouts/Base.astro";
 import { gamesOfSeason } from "../../lib/catalog.ts";
 import { summarize } from "../../lib/game-summary.ts";
+import { seasonTitle } from "../../lib/labels.ts";
 import { catalog } from "../../lib/site-data.ts";
 
 export function getStaticPaths() {
@@ -17,7 +18,7 @@ const { season } = Astro.props;
 const games = gamesOfSeason(catalog, season).map((game) => summarize(catalog, game));
 ---
 
-<Base title={`${season}シーズン`} description={`${season}シーズンの試合動画の一覧です。`}>
-  <h1 class="page-title">{season}シーズン</h1>
+<Base title={seasonTitle(season)} description={`${seasonTitle(season)}の試合動画の一覧です。`}>
+  <h1 class="page-title">{seasonTitle(season)}</h1>
   <FilteredGames client:load games={games} filters={["type"]} />
 </Base>

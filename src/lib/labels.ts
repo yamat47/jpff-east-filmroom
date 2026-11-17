@@ -52,3 +52,8 @@ export function formatDuration(seconds: number): string {
   const rest = pad(seconds % 60);
   return hours > 0 ? `${hours}:${pad(minutes)}:${rest}` : `${minutes}:${rest}`;
 }
+
+/** A season as the title of its page: "2026-2027シーズン". */
+export function seasonTitle(season: string): string {
+  return `${season}シーズン`;
+}

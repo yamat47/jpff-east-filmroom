@@ -4,13 +4,14 @@ import Base from "../../layouts/Base.astro";
 import { teamsWithGames } from "../../lib/catalog.ts";
 import { summarize, summarizeTeam } from "../../lib/game-summary.ts";
 import { catalog } from "../../lib/site-data.ts";
+import { PAGES } from "../../site.ts";
 
 const games = catalog.games.map((game) => summarize(catalog, game));
 const teams = teamsWithGames(catalog).map(({ team }) => summarizeTeam(team));
 ---
 
-<Base title="すべての試合" description="J.P.F.F East の試合動画を、チーム・シーズン・種別で絞り込めます。">
-  <h1 class="page-title">すべての試合</h1>
+<Base title={PAGES.games.title} description="J.P.F.F East の試合動画を、チーム・シーズン・種別で絞り込めます。">
+  <h1 class="page-title">{PAGES.games.title}</h1>
   {/* Every game goes to the browser with the component, which filters them in place. */}
   <FilteredGames
     client:load

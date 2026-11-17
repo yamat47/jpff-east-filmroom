@@ -1,5 +1,6 @@
 ---
-import { SITE } from "../site.ts";
+import { shareCards } from "../lib/site-data.ts";
+import { PAGES, SITE } from "../site.ts";
 import "../styles/tokens.css";
 import "../styles/global.css";
 
@@ -9,26 +10,29 @@ interface Props {
   description?: string;
   /** `false` for a page that has no address of its own, as the not-found page. */
   canonical?: boolean;
-  /** The picture a link to the page shows where it is shared. The site's, unless given. */
-  shareImage?: { path: string; alt: string };
 }
 
-const {
-  title,
-  description,
-  canonical = true,
-  shareImage = { path: SITE.shareImage.path, alt: `${SITE.name}、${SITE.unofficialNote}` },
-} = Astro.props;
+const { title, description, canonical = true } = Astro.props;
 const fullTitle = title === undefined ? SITE.name : `${title} | ${SITE.name}`;
 const pageDescription = description ?? SITE.description;
 const path = Astro.url.pathname;
 const url = new URL(path, SITE.url);
-const NAV = [
-  { href: "/games/", label: "すべての試合" },
-  { href: "/teams/", label: "チーム" },
-  { href: "/seasons/", label: "シーズン" },
-];
-const ABOUT = "/about/";
+// The picture of the page stands beside it. Only a page without an address of its own, as the
+// not-found page, has none and shows the picture of the site, which is the one of the top
+// page. Any other page that the list of pictures does not have stops the build here: it would
+// name a picture that was not drawn.
+const hasPicture = shareCards.has(path);
+if (canonical && !hasPicture) {
+  throw new Error(`${path} has no picture for a shared link: add it to src/lib/share-cards.ts`);
+}
+const picture = {
+  url: new URL(`${hasPicture ? path : "/"}${SITE.shareImage.file}`, SITE.url),
+  alt: [...(hasPicture && title !== undefined ? [title] : []), SITE.name, SITE.unofficialNote].join(
+    "、",
+  ),
+};
+const NAV = [PAGES.games, PAGES.teams, PAGES.seasons];
+const ABOUT = PAGES.about;
 // "page" on the entry that is this page, "true" on the entry this page belongs under. The top
 // page is no entry: the name of the site leads to it.
 const currentOf = (href: string) => {
@@ -46,19 +50,19 @@ const currentOf = (href: string) => {
     <meta name="description" content={pageDescription} />
     {canonical && <link rel="canonical" href={url} />}
     {/* What a link to the page shows where it is shared: the page's own title and description,
-        and a picture, the game's on a game page and the site's everywhere else. The name of
-        the site is left out of the title: it is in og:site_name and on the picture. A service
-        fetches the picture from outside the site, so its address is written whole, and its
-        size is given so that the card is laid out before the picture has come. */}
+        and the page's own picture. The name of the site is left out of the title: it is in
+        og:site_name and on the picture. A service fetches the picture from outside the site,
+        so its address is written whole, and its size is given so that the card is laid out
+        before the picture has come. */}
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title ?? SITE.name} />
     <meta property="og:description" content={pageDescription} />
     {canonical && <meta property="og:url" content={url} />}
-    <meta property="og:image" content={new URL(shareImage.path, SITE.url)} />
+    <meta property="og:image" content={picture.url} />
     <meta property="og:image:width" content={String(SITE.shareImage.width)} />
     <meta property="og:image:height" content={String(SITE.shareImage.height)} />
-    <meta property="og:image:alt" content={shareImage.alt} />
+    <meta property="og:image:alt" content={picture.alt} />
     {/* Without this X shows the picture as a small square beside the title. */}
     <meta name="twitter:card" content="summary_large_image" />
     {/* The drawing for a browser that takes one, a picture of it for the others, and a larger
@@ -76,9 +80,9 @@ const currentOf = (href: string) => {
         <a class="site-name" href="/">{SITE.name}</a>
         <nav class="site-nav" aria-label="サイト内">
           <ul>
-            {NAV.map(({ href, label }) => (
+            {NAV.map(({ href, title }) => (
               <li>
-                <a href={href} aria-current={currentOf(href)}>{label}</a>
+                <a href={href} aria-current={currentOf(href)}>{title}</a>
               </li>
             ))}
           </ul>
@@ -96,7 +100,7 @@ const currentOf = (href: string) => {
         <ul class="site-footer__links">
           <li><a href={SITE.channelUrl}>公式 YouTube</a></li>
           <li><a href={SITE.officialSiteUrl}>公式サイト</a></li>
-          <li><a href={ABOUT} aria-current={currentOf(ABOUT)}>このサイトについて</a></li>
+          <li><a href={ABOUT.href} aria-current={currentOf(ABOUT.href)}>{ABOUT.title}</a></li>
         </ul>
       </div>
     </footer>

@@ -9,11 +9,22 @@ export const SITE = {
   lang: "ja",
   // What the pictures of a shared link say of the site, under its name.
   unofficialNote: "非公式ファンサイト",
-  // The picture a link to a page shows where it is shared, unless the page has one of its own
-  // as a game page does (src/pages/og-image.png.ts), and the size every such picture has: the
-  // one the services that show a shared link ask for.
-  shareImage: { path: "/og-image.png", width: 1200, height: 630 },
+  // The picture a link to a page shows where it is shared: the name of its file, which stands
+  // beside the page (src/pages/[...page]/og-image.png.ts), and its size, the one the services
+  // that show a shared link ask for.
+  shareImage: { file: "og-image.png", width: 1200, height: 630 },
   channelUrl: "https://youtube.com/@jpffeast",
   channelId: "UCgJ7OL5RIVnTI1MlRsy61ig",
   officialSiteUrl: "https://jpffeast.jimdofree.com/",
+} as const;
+
+/**
+ * The pages there is one of, by where they are and what they are called: in the navigation, in
+ * their own title, and on the picture of their shared link.
+ */
+export const PAGES = {
+  games: { href: "/games/", title: "すべての試合" },
+  teams: { href: "/teams/", title: "チーム" },
+  seasons: { href: "/seasons/", title: "シーズン" },
+  about: { href: "/about/", title: "このサイトについて" },
 } as const;
