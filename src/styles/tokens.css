@@ -8,7 +8,8 @@
   /* White, black and grey. Two colours carry meaning: the blue of a link, and the red of a
      stream that is live. The thumbnails bring the rest.
      The favicon repeats the paper and the ink: public/favicon.svg and the two pictures of it
-     are drawn again when either changes. */
+     are drawn again when either changes. The pictures of a shared link read them, the
+     weights and --leading-tight from this file by name (src/lib/share-image.tsx). */
   --color-paper: #ffffff;
   --color-ink: #17181a;
   --color-muted: #5f6470;

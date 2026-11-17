@@ -17,6 +17,7 @@ const video = (videoId: string, part: number, title: string): Video => ({
   live: null,
 });
 
+// An ID that names its game, for the reading of a test. A real one says nothing of the game.
 const game = (date: string, videos: Video[]): Game => ({
   id: `${date}-kamakura-lazaro-vs-tokai-seagulls`,
   date,

@@ -1,4 +1,4 @@
-import { gameIdOf } from "../src/lib/game-id.ts";
+import { byDateAndTeams, matchupOf, newGameId } from "../src/lib/game-id.ts";
 import { japanDateOf } from "../src/lib/live.ts";
 import { type Game, Games, type SiteData, type Team, type Video } from "../src/lib/schema.ts";
 import { seasonOf } from "../src/lib/season.ts";
@@ -18,9 +18,16 @@ export type Draft = {
 /**
  * Places the channel's videos that the data does not know yet into games, by the rules alone.
  * The result is a draft: it reaches the site only through a pull request a person has checked.
+ *
+ * `pick` is the chance a new game takes its ID from (`newGameId`).
  */
-export function draftGames(videos: readonly ChannelVideo[], data: SiteData): Draft {
+export function draftGames(
+  videos: readonly ChannelVideo[],
+  data: SiteData,
+  pick: (below: number) => number,
+): Draft {
   const knownGames = data.seasons.flatMap((season) => season.games);
+  const takenIds = new Set(knownGames.map((game) => game.id));
   const knownVideoIds = new Set([
     ...knownGames.flatMap((game) => game.videos.map((video) => video.videoId)),
     ...data.excluded.map((video) => video.videoId),
@@ -52,14 +59,20 @@ export function draftGames(videos: readonly ChannelVideo[], data: SiteData): Dra
       continue;
     }
 
-    // A game the data already has keeps what a person decided about it: its type, its flag.
-    const game = gameOf.get(matchupOf(placed.game)) ?? placed.game;
-    gameOf.set(matchupOf(placed.game), game);
+    // A game the data already has keeps what a person decided about it: its ID, its type, its
+    // flag. Only a game no video led to before gets an ID.
+    const matchup = matchupOf(placed.game);
+    let game = gameOf.get(matchup);
+    if (game === undefined) {
+      game = { id: newGameId(takenIds, pick), ...placed.game };
+      takenIds.add(game.id);
+      gameOf.set(matchup, game);
+    }
 
     const entry = gained.get(game.id) ?? { game, videos: [], offTitle: false };
     entry.videos.push({ video, part: placed.part });
     // The title alone would have made another game of this video.
-    entry.offTitle ||= game.id !== placed.game.id;
+    entry.offTitle ||= asTitled(game) !== asTitled(placed.game);
     gained.set(game.id, entry);
   }
 
@@ -67,12 +80,15 @@ export function draftGames(videos: readonly ChannelVideo[], data: SiteData): Dra
     const withNew = withVideos(game, videos);
     return offTitle ? { ...withNew, needsReview: true } : withNew;
   });
-  return { games: drafted.sort((a, b) => a.id.localeCompare(b.id)), unread };
+  return { games: drafted.sort(byDateAndTeams), unread };
 }
 
-/** What two videos of one game share whatever order their titles name the teams in. */
-function matchupOf(game: Pick<Game, "date" | "teams">): string {
-  return [game.date, ...[...game.teams].sort()].join(" ");
+/** A game as a title gives it: everything but the ID, which no title holds. */
+type TitledGame = Omit<Game, "id">;
+
+/** The date and the two teams in the order a title names them. */
+function asTitled(game: Pick<Game, "date" | "teams">): string {
+  return [game.date, ...game.teams].join(" ");
 }
 
 type NewVideo = { readonly video: ChannelVideo; readonly part: number | null };
@@ -80,7 +96,7 @@ type NewVideo = { readonly video: ChannelVideo; readonly part: number | null };
 function placeTitle(
   { title, live }: Pick<Video, "title" | "live">,
   registered: readonly Team[],
-): { game: Game; part: number | null } | { reason: string } {
+): { game: TitledGame; part: number | null } | { reason: string } {
   const parsed = parseTitle(title, registered);
   if (parsed.sides === null) return { reason: "no matchup in the title" };
 
@@ -100,9 +116,7 @@ function placeTitle(
 
   const teams: [string, string] = [first.teamId, second.teamId];
   return {
-    // The keys in the order of the schema, which is the order a season file keeps them in.
     game: {
-      id: gameIdOf({ date, teams }),
       date,
       season: seasonOf(date),
       // Without a keyword in the title the rules have no evidence, and most games are league
@@ -169,7 +183,7 @@ export function seasonFilesOf(data: SiteData, drafted: readonly Game[]): Map<str
     );
     // Through the schema, so that the keys are written in its order whatever built the game, and
     // a file that does not fit the schema is not written at all.
-    files.set(season, Games.parse([...games.values()].sort((a, b) => a.id.localeCompare(b.id))));
+    files.set(season, Games.parse([...games.values()].sort(byDateAndTeams)));
   }
   return files;
 }

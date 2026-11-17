@@ -23,6 +23,7 @@ const TEAMS = [
   team("titans", "甲府厚木タイタンズ"),
 ];
 
+// An ID that names its game, for the reading of a test. A real one says nothing of the game.
 function game(date: string, a: string, b: string): Game {
   return {
     id: `${date}-${a}-vs-${b}`,

@@ -1,5 +1,5 @@
-// What the two pull request bodies the scripts render share: the draft of an import and the
-// removal of videos that are gone.
+// What the reports the scripts render share: the draft of an import, the removal of videos
+// that are gone, and the refresh of the live streams.
 import type { Game, Team } from "../src/lib/schema.ts";
 
 /** A text inside a table cell, where a bar would end the cell. */

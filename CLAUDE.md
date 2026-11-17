@@ -16,16 +16,17 @@ scope changes that file in the same pull request.
 | `data/games/{seasonId}.json` | The games of one season and their videos |
 | `data/excluded.json` | Videos that are in no game, with the reason: not game footage, or one game uploaded again. Listed so that the import does not offer them again |
 | `src/lib/schema.ts` | The Zod schema of those files; the types are derived from it |
-| `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), game IDs, season derivation (`season.ts`), team spellings and their normalization |
+| `src/lib/` | Loading the data (`load-data.ts`), the rules that span files (`data-problems.ts`), the making of a game ID and the order of games in a file (`game-id.ts`), season derivation (`season.ts`), team spellings and their normalization |
 | `src/lib/catalog.ts`, `src/lib/site-data.ts` | The data as the pages read it: every game newest first, the games of a team or a season, the teams with what their games say of them, the lists a game page links on to. `site-data.ts` reads `data/` once per build |
 | `src/lib/game-summary.ts`, `src/lib/labels.ts`, `src/lib/youtube-urls.ts` | What a row shows of a game and of a team, the form of a date (`2026/10/04`), the Japanese words for types and a team's seasons, and the YouTube addresses of thumbnails, videos and the player |
 | `src/lib/game-filter.ts`, `src/lib/opponents.ts`, `src/lib/season-groups.ts`, `src/lib/game-types.ts` | The rules of the filter of a list (what a URL query selects, which games it leaves), the opponents a team page offers as its filter, the cut of a list into one list per season, and the closed sets of the model without the schema library |
 | `src/lib/live.ts` | What a page says of a live stream at a given time (scheduled, on air, or over and a game like any other), the cut of the top page's games by it, and the date and time of day in Japan |
 | `src/pages/`, `src/site.ts` | The routes (top, `games/`, `games/[id]`, `teams/`, `seasons/`, about, 404), and the site's name, address and official links |
-| `src/layouts/Base.astro` | The shell of every page: header, navigation, and the footer with the unofficial notice |
+| `src/layouts/Base.astro` | The shell of every page: the head with what a shared link shows, header, navigation, and the footer with the unofficial notice |
 | `src/components/` | `GameRow` and `GameList` (a game as a row of a list), `TeamLabel` (a team's mark and name) and `TeamTimeline` (a team's games around one, beside the video), all React and rendered to HTML at build time; `FilteredGames` and `TeamGames` (React, in one file, sent to the browser: a list with selects above it, and a team's games with its opponents beside them); `LiveState` (the state of a live stream, by the clock) and `TopGames` (`LiveGames` and `NewestGames`, the two lists of the top page a stream moves between), sent to the browser only while the data has a stream that has not ended; `Player.astro` (the click-to-load YouTube player); `ExternalMark.astro` (the arrow after a link that leaves the site) |
 | `src/styles/` | `tokens.css` holds every design value; `global.css` uses them |
 | `public/` | The site's mark as its favicon: `favicon.svg` is the drawing, `favicon.ico` (32 px) and `apple-touch-icon.png` (180 px, with no rounded corners, which a phone cuts itself) are pictures of it. Nothing else is served as it is |
+| `src/lib/share-image.tsx`, `src/pages/og-image.png.ts`, `src/pages/games/[id]/og-image.png.ts` | The picture a shared link shows, drawn at build time (satori, resvg, and Noto Sans JP from a package): the site's for every page, and for a game page its own, with the date and the two teams. `tests/share-image.test.ts` draws every team of the data and fails when a name runs over the edge |
 | `scripts/validate.ts` | Checks `data/` against the schema and against itself. CI runs it on every pull request |
 | `scripts/parse-title.ts` | Reads the game date, the two teams, the part and the game type from a video title, by rule |
 | `scripts/youtube.ts` | The YouTube Data API calls the import makes: the channel's uploads and the details of videos |
@@ -34,6 +35,7 @@ scope changes that file in the same pull request.
 | `scripts/removed-videos.ts`, `scripts/check-removed.ts` | The removal check: takes the videos YouTube no longer returns out of their games, and renders the removal for a pull request body. `make check-removed` |
 | `scripts/live-state.ts`, `scripts/refresh-live.ts` | The refresh of the live streams: their state, scheduled start and length as YouTube reports them now. `make refresh-live` |
 | `scripts/season-files.ts` | Writes the season files, for the three scripts above |
+| `scripts/new-game-id.ts` | Prints an unused game ID, for a game a person places by hand. `make game-id` |
 | `tests/` | Vitest tests of the functions under `src/lib/` and `scripts/` |
 | `tests/fixtures/titles.txt` | Real titles from the channel, one per line, each followed by the date, the two team IDs and the part the rules must read from it (tab-separated, `-` for what they leave unread). Add a title as written when a new way of writing one turns up, and replace a `-` when its team is registered |
 | `docker/`, `Makefile` | Development image and compose, and the entry point for development commands |
@@ -54,6 +56,7 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
 | Typecheck, lint, test, validate and build in one go | `make check` (CI runs the same, plus zizmor on the workflows) |
 | Type check / lint / auto-fix / test | `make typecheck` / `make lint` / `make fix` / `make test` |
 | Check the data | `make validate` (always after editing a file under `data/`) |
+| Get an ID for a game placed by hand | `make game-id` (the import gives the games it drafts theirs) |
 | Import new videos | `make sync` (needs `YOUTUBE_API_KEY` in `.env`; `ARGS="--season=2026-2027"` writes one season only) |
 | Draft the removal of videos that are gone from YouTube | `make check-removed` (needs the key too) |
 | Bring the live streams up to date | `make refresh-live` (needs the key too) |
@@ -74,9 +77,13 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   The only exception is what YouTube itself reports about a game that is already merged: the
   state of a live stream, its scheduled start and the length of the video (requirements,
   section 6).
-- **A correction does not break a published game URL.** The ID of a game is the URL of its
-  page (`/games/{date}-{teamA}-vs-{teamB}/`) and follows its date and teams, so a correction of
-  either needs the old URL to lead to the new one (requirements, section 4).
+- **A game ID never changes.** It is the URL of the game's page (`/games/{gameId}/`): eight
+  letters and digits drawn by chance, which say nothing of the game, so that a correction of
+  its date or its teams leaves the URL as it is. Do not rewrite the ID of a merged game, and
+  do not make one up: the import draws them, and `make game-id` prints one for a game placed
+  by hand (requirements, section 4). Two games never share a date and the same two teams;
+  `make validate` refuses it. A game that was removed and comes back gets the ID it had
+  (`git log -S` on its season file finds it), not the new one the import drafts.
 - **No analytics, no advertising, no contact form, no login.** Do not add a script from another
   site other than YouTube's player.
 - **The site says it is unofficial on every page.** The footer and the about page carry the
@@ -94,8 +101,13 @@ the `Makefile` invokes it with `docker compose -f docker/compose.yaml run`.
   values: they are in `data/teams.yaml` and reach the stylesheet as properties of the mark.
   The favicon repeats the ink and the paper, because a file served on its own cannot read a
   variable: when either colour changes, the three files under `public/` are drawn again.
+  The pictures of a shared link read their colours, weights and line height from `tokens.css`
+  when they are drawn. What `src/lib/share-image.tsx` holds of its own is what only a picture
+  has: its measures (pixels, and ems of a name), its grey, which is the paper let through in
+  part, and a second copy of the cut of a team's mark.
   Fonts are the system's: no font, script or image is requested from another site, except
-  YouTube's thumbnails and, once a visitor starts a video, its player.
+  YouTube's thumbnails and, once a visitor starts a video, its player. The pictures of a
+  shared link are drawn with a font the build installs; it is not served.
 - **The pages work without JavaScript.** Every list and every link is in the built HTML. React
   runs in the browser for two things. One is the filter of a list (`FilteredGames`, and
   `TeamGames` in the same file for a team's opponents), which keeps its state in the URL query;

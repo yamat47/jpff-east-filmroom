@@ -32,7 +32,7 @@ function video(overrides: Partial<Video> = {}): Video {
 
 function game(overrides: Partial<Game> = {}): Game {
   return {
-    id: "2026-10-04-kamakura-lazaro-vs-tokai-seagulls",
+    id: "gameaaaa",
     date: "2026-10-04",
     season: "2026-2027",
     type: "league",
@@ -54,7 +54,7 @@ function data(
 }
 
 describe("findDataProblems", () => {
-  it("finds nothing in a game whose ID, season, teams and videos agree", () => {
+  it("finds nothing in a game whose season, teams and videos agree", () => {
     expect(findDataProblems(data())).toEqual([]);
   });
 
@@ -62,25 +62,7 @@ describe("findDataProblems", () => {
     const problems = findDataProblems(data({ teams: [LAZARO] }));
 
     expect(problems).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: team tokai-seagulls is not in teams.yaml",
-    ]);
-  });
-
-  it("reports a game ID that its date and teams do not make", () => {
-    const problems = findDataProblems(data({ games: [game({ date: "2026-10-11" })] }));
-
-    expect(problems).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: its date and teams make the ID 2026-10-11-kamakura-lazaro-vs-tokai-seagulls",
-    ]);
-  });
-
-  it("reports a game ID that depends on the order of the teams", () => {
-    const problems = findDataProblems(
-      data({ games: [game({ teams: ["tokai-seagulls", "kamakura-lazaro"] })] }),
-    );
-
-    expect(problems).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: its date and teams make the ID 2026-10-04-tokai-seagulls-vs-kamakura-lazaro",
+      "game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls): team tokai-seagulls is not in teams.yaml",
     ]);
   });
 
@@ -90,26 +72,48 @@ describe("findDataProblems", () => {
     );
 
     expect(problems).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: the ID is used by more than one game",
+      "game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls): the ID is used by more than one game",
     ]);
+  });
+
+  it("reports a second game of the same date and the same two teams, in either order", () => {
+    const twin = game({
+      id: "gamebbbb",
+      teams: ["tokai-seagulls", "kamakura-lazaro"],
+      videos: [video({ videoId: "bbbbbbbbbbb" })],
+    });
+
+    expect(findDataProblems(data({ games: [game(), twin] }))).toEqual([
+      "game gamebbbb (2026-10-04 tokai-seagulls vs kamakura-lazaro): game gameaaaa has the same date and the same two teams",
+    ]);
+  });
+
+  it("accepts the same two teams on another day", () => {
+    const rematch = game({
+      id: "gamebbbb",
+      date: "2026-11-01",
+      videos: [video({ videoId: "bbbbbbbbbbb" })],
+    });
+
+    expect(findDataProblems(data({ games: [game(), rematch] }))).toEqual([]);
   });
 
   it("reports a game kept in the file of another season", () => {
     const problems = findDataProblems(data({ games: [game({ season: "2025-2026" })] }));
 
     expect(problems).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: season 2025-2026 is in the file of 2026-2027",
+      "game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls): season 2025-2026 is in the file of 2026-2027",
     ]);
   });
 
   it("reports a video that belongs to two games", () => {
     const rematch = game({
-      id: "2026-11-01-kamakura-lazaro-vs-tokai-seagulls",
+      id: "gamebbbb",
       date: "2026-11-01",
     });
 
     expect(findDataProblems(data({ games: [game(), rematch] }))).toEqual([
-      "video aaaaaaaaaaa: listed in game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls and again in game 2026-11-01-kamakura-lazaro-vs-tokai-seagulls",
+      "video aaaaaaaaaaa: listed in game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls) and again in game gamebbbb (2026-11-01 kamakura-lazaro vs tokai-seagulls)",
     ]);
   });
 
@@ -117,7 +121,7 @@ describe("findDataProblems", () => {
     const excluded = [{ videoId: "aaaaaaaaaaa", title: "開会式", reason: "not a game" }];
 
     expect(findDataProblems(data({ excluded }))).toEqual([
-      "video aaaaaaaaaaa: listed in game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls and again in the exclusion list",
+      "video aaaaaaaaaaa: listed in game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls) and again in the exclusion list",
     ]);
   });
 
@@ -125,7 +129,7 @@ describe("findDataProblems", () => {
     const split = game({ videos: [video(), video({ videoId: "bbbbbbbbbbb" })] });
 
     expect(findDataProblems(data({ games: [split] }))).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: two videos have the same part number",
+      "game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls): two videos have the same part number",
     ]);
   });
 
@@ -135,7 +139,7 @@ describe("findDataProblems", () => {
     });
 
     expect(findDataProblems(data({ games: [split] }))).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-tokai-seagulls: its videos are not in the order of their part numbers",
+      "game gameaaaa (2026-10-04 kamakura-lazaro vs tokai-seagulls): its videos are not in the order of their part numbers",
     ]);
   });
 
@@ -200,12 +204,11 @@ describe("findDataProblems", () => {
 
   it("reports a game between a team and itself", () => {
     const mirror = game({
-      id: "2026-10-04-kamakura-lazaro-vs-kamakura-lazaro",
       teams: ["kamakura-lazaro", "kamakura-lazaro"],
     });
 
     expect(findDataProblems(data({ games: [mirror] }))).toEqual([
-      "game 2026-10-04-kamakura-lazaro-vs-kamakura-lazaro: both sides are team kamakura-lazaro",
+      "game gameaaaa (2026-10-04 kamakura-lazaro vs kamakura-lazaro): both sides are team kamakura-lazaro",
     ]);
   });
 });

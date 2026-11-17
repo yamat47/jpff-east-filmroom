@@ -70,6 +70,10 @@ test: ## Run the unit tests (Vitest)
 validate: ## Check the files under data/ against the schema and against each other
 	$(PNPM) run validate
 
+.PHONY: game-id
+game-id: ## Print an unused ID for a game that is placed by hand
+	@$(PNPM) run --silent game-id
+
 .PHONY: sync
 sync: ## Draft games from the channel's new videos (example: make sync ARGS="--season=2021-2022")
 	$(PNPM) run sync $(ARGS)

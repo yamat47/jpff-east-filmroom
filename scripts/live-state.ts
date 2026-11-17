@@ -1,5 +1,6 @@
 import { isPending, japanDateOf } from "../src/lib/live.ts";
-import type { SiteData, Video } from "../src/lib/schema.ts";
+import type { Game, SiteData, Team, Video } from "../src/lib/schema.ts";
+import { matchupNames } from "./markdown.ts";
 import { changedSeasonFiles, type SeasonFiles } from "./season-files.ts";
 import type { ChannelVideo } from "./youtube.ts";
 
@@ -7,7 +8,8 @@ import type { ChannelVideo } from "./youtube.ts";
 type StreamValues = Pick<Video, "durationSec" | "live">;
 
 export type LiveChange = {
-  readonly gameId: string;
+  /** The game as it was. The report names it by its date and teams: its ID says nothing of it. */
+  readonly game: Game;
   readonly videoId: string;
   readonly before: StreamValues;
   readonly after: StreamValues;
@@ -18,7 +20,7 @@ export type LiveChange = {
  * a game is not YouTube's to decide, so the refresh leaves it and a person corrects the game.
  */
 export type OffDayStream = {
-  readonly gameId: string;
+  readonly game: Game;
   readonly videoId: string;
   readonly day: string;
 };
@@ -68,7 +70,7 @@ export function refreshLive(data: SiteData, fetched: readonly ChannelVideo[]): L
       if (sameValues(video, after)) return video;
 
       changes.push({
-        gameId: game.id,
+        game,
         videoId: video.videoId,
         before: { durationSec: video.durationSec, live: video.live },
         after,
@@ -79,7 +81,7 @@ export function refreshLive(data: SiteData, fetched: readonly ChannelVideo[]): L
     for (const { videoId, live } of videos) {
       if (live === null || !isPending(live)) continue;
       const day = japanDateOf(live.scheduledStartTime);
-      if (day !== game.date) offDay.push({ gameId: game.id, videoId, day });
+      if (day !== game.date) offDay.push({ game, videoId, day });
     }
     return changes.length === before ? game : { ...game, videos };
   });
@@ -95,28 +97,30 @@ function sameValues(a: StreamValues, b: StreamValues): boolean {
 }
 
 /** What a refresh did and found, as lines of text for the log and for a commit message. */
-export function renderLiveRefresh({
-  changes,
-  offDay,
-}: Pick<LiveRefresh, "changes" | "offDay">): string {
+export function renderLiveRefresh(
+  { changes, offDay }: Pick<LiveRefresh, "changes" | "offDay">,
+  teams: readonly Team[],
+): string {
   const told = ({ live, durationSec }: StreamValues) =>
     live === null
       ? "not a stream"
       : `${live.status}, ${live.scheduledStartTime}, ${durationSec === null ? "no length yet" : `${durationSec}s`}`;
+
+  const name = (game: Game) => `${game.date} ${matchupNames(game, teams)}`;
 
   const lines =
     changes.length === 0
       ? ["No stream has changed."]
       : changes.map(
           (change) =>
-            `- ${change.gameId} (${change.videoId}): ${told(change.before)} -> ${told(change.after)}`,
+            `- ${name(change.game)} (${change.videoId}): ${told(change.before)} -> ${told(change.after)}`,
         );
   if (offDay.length > 0) {
     lines.push(
       "",
       "Scheduled for another day in Japan than the date of the game, which a person corrects:",
       "",
-      ...offDay.map((stream) => `- ${stream.gameId} (${stream.videoId}): ${stream.day}`),
+      ...offDay.map((stream) => `- ${name(stream.game)} (${stream.videoId}): ${stream.day}`),
     );
   }
   return `${lines.join("\n")}\n`;

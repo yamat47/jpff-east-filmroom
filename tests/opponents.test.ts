@@ -12,6 +12,7 @@ const LAZARO = team("kamakura-lazaro", "鎌倉ラザロ");
 const SEAGULLS = team("tokai-seagulls", "東海シーガルズ");
 const ULOWERS = team("urawa-ulowers", "浦和ウラワーズ");
 
+// An ID that names its game, for the reading of a test. A real one says nothing of the game.
 function game(date: string, first: TeamSummary, second: TeamSummary): GameSummary {
   return {
     id: `${date}-${first.id}-vs-${second.id}`,

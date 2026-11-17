@@ -9,11 +9,9 @@ import { gamesAround, gamesOfTeam, otherMeetings, sameDayGames } from "../../lib
 import { summarize } from "../../lib/game-summary.ts";
 import type { Game } from "../../lib/schema.ts";
 import { groupBySeason } from "../../lib/season-groups.ts";
-import { catalog } from "../../lib/site-data.ts";
+import { catalog, gamePaths } from "../../lib/site-data.ts";
 
-export function getStaticPaths() {
-  return catalog.games.map((game) => ({ params: { id: game.id }, props: { game } }));
-}
+export const getStaticPaths = gamePaths;
 
 interface Props {
   game: Game;
@@ -36,6 +34,10 @@ const timelines = summary.teams.map((team) => ({
 <Base
   title={`${first.name} vs ${second.name} (${summary.dateLabel})`}
   description={`${summary.dateLabel}の${first.name} vs ${second.name}（${summary.typeLabel}）の試合動画です。`}
+  shareImage={{
+    path: `/games/${game.id}/og-image.png`,
+    alt: `${summary.dateLabel} ${first.name} vs ${second.name}`,
+  }}
 >
   <header class="page-head">
     {/* A line breaks between the two teams, and "vs" goes down with the second. */}

@@ -2,6 +2,7 @@
 // writes the season files, and prints the draft for the pull request body. Every run looks at
 // every upload; `make sync ARGS="--season=2021-2022"` writes that season's file only, which is
 // how the first import was cut into one pull request per season.
+import { randomInt } from "node:crypto";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { loadData } from "../src/lib/load-data.ts";
@@ -31,7 +32,7 @@ const known = new Set(
 const uploads = await youtube.listUploadIds(SITE.channelId);
 const videos = await youtube.getVideos(uploads.filter((videoId) => !known.has(videoId)));
 
-const draft = draftGames(videos, data);
+const draft = draftGames(videos, data, randomInt);
 const written = draft.games.filter((game) => onlySeasons === null || onlySeasons.has(game.season));
 
 await writeSeasonFiles(DATA_DIR, seasonFilesOf(data, written));

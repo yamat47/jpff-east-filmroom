@@ -1,3 +1,4 @@
+import { byTeams } from "./game-id.ts";
 import { pendingStreamOf } from "./live.ts";
 import type { Game, SiteData, Team } from "./schema.ts";
 
@@ -27,7 +28,7 @@ export function buildCatalog(data: SiteData): Catalog {
 
 // Two games of one day keep a fixed order, so that a list does not change between builds.
 function newestFirst(a: Game, b: Game): number {
-  return b.date.localeCompare(a.date) || a.id.localeCompare(b.id);
+  return b.date.localeCompare(a.date) || byTeams(a, b);
 }
 
 export function gamesOfTeam(catalog: Catalog, teamId: string): Game[] {

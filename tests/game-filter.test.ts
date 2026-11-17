@@ -16,7 +16,7 @@ const OFFERED: Offered = {
 
 function summary(overrides: Partial<GameSummary> = {}): GameSummary {
   return {
-    id: "2026-10-04-kamakura-lazaro-vs-tokai-seagulls",
+    id: "gameaaaa",
     date: "2026-10-04",
     dateLabel: "2026/10/04",
     season: "2026-2027",

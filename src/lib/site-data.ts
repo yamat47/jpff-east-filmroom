@@ -8,3 +8,11 @@ const DATA_DIR = pathToFileURL(`${process.cwd()}/data/`);
 
 /** Everything under data/, read once per build. */
 export const catalog = buildCatalog(await loadData(DATA_DIR));
+
+/**
+ * One path for each game. The game page and the picture of its shared link are both built
+ * from this list, so that no page points at a picture that was not drawn.
+ */
+export function gamePaths() {
+  return catalog.games.map((game) => ({ params: { id: game.id }, props: { game } }));
+}

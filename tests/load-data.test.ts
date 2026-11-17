@@ -15,7 +15,7 @@ const TEAMS = `
 `;
 
 const GAME = {
-  id: "2026-10-04-kamakura-lazaro-vs-tokai-seagulls",
+  id: "gameaaaa",
   date: "2026-10-04",
   season: "2026-2027",
   type: "league",
